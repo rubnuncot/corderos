@@ -4,6 +4,7 @@ import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
+@reflector
 class VehicleRegistration extends ModelDao {
   String? id;
   String? registrationId;
@@ -36,10 +37,8 @@ class VehicleRegistration extends ModelDao {
   }
 
   static final Iterable<String> _names = _fields.keys;
-
   static final List<String> _primary = [_names.elementAt(0)];
   static final List<String> _exception = [];
-
   static final List<String> _foreign = [];
 
   static List<String> get foreign => _foreign;

@@ -14,7 +14,7 @@ class Slaughterhouse extends ModelDao{
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'name': Constants.integer,
+    'name': Constants.varchar["255"]!,
   };
 
   Map<String, dynamic> toMap() {

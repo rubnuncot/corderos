@@ -3,6 +3,6 @@ targets:
     builders:
       reflectable:
         generate_for:
-          - lib/data/database/entities/**.dart # Here your entity directory
+          - lib/**.dart # Here your entity directory
         options:
           formatted: true

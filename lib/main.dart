@@ -1,9 +1,15 @@
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
+import 'main.reflectable.dart';
+
+import '!helpers/!helpers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  DatabaseConfig();
+  initializeReflectable();
   runApp(const BlocsProviders());
 }
 
