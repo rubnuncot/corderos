@@ -1,14 +1,16 @@
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'data/preferences/preferences.dart';
 import 'main.reflectable.dart';
 
 import '!helpers/!helpers.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseConfig();
   initializeReflectable();
+  await Preferences.init();
   runApp(const BlocsProviders());
 }
 
