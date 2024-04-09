@@ -1,3 +1,4 @@
+export './tabla_ticket.dart';
 export './search_panel.dart';
 export './custom_table.dart';
 export './layout.dart';
