@@ -8,42 +8,65 @@ class Preferences {
   }
 
   static final Map<String, dynamic> _userPreferences = {
-    'dni': 'none',
-    'nombre': 'none',
-    'save': '0',
-    'overlay': '1',
-    'salt': 'none',
+    'nif': 'none',
+    'name': 'none',
+    'vehicle_registration': 'none',
+    'slaughterhouse': 1,
+    'host': 'none',
+    'port': 21,
+    'username': 'none',
     'password': 'none',
-    'connection': 'none'
+    'path': 'none',
+    'theme': true,
   };
 
   static Future<dynamic> getValue(String key) async {
     return _userPreferences.containsKey(key)
         ? await _convertValue<dynamic>(key) ?? 'none'
         : throw Exception(
-        'The key $key is not defined as User Preferences variable. Cannot get value.');
+            'The key $key is not defined as User Preferences variable. Cannot get value.');
   }
 
   static Future<void> setValue(String key, dynamic value) async {
     _userPreferences.containsKey(key)
         ? await _convertValue<dynamic>(key, value: value)
         : throw Exception(
-        'The key $key is not defined as User Preferences variable. Cannot set value $value.');
+            'The key $key is not defined as User Preferences variable. Cannot set value $value.');
   }
 
   static Future<void> restorePreferences() async {
     _userPreferences.forEach((key, value) async {
-      String finalValue = 'none';
+      dynamic finalValue = 'none';
       switch (key) {
-        case 'save':
-          finalValue = '0';
+        case 'nif':
+          finalValue = 'none';
           break;
-        case 'overlay':
-          finalValue = '1';
+        case 'name':
+          finalValue = 'none';
           break;
-        case 'connection':
+        case 'vehicle_registration':
+          finalValue = 'none';
+          break;
+        case 'slaughterhouse':
+          finalValue = 1;
+          break;
+        case 'host':
+          finalValue = 'none';
+          break;
+        case 'port':
+          finalValue = 21;
+          break;
+        case 'username':
+          finalValue = 'none';
           break;
         case 'password':
+          finalValue = 'none';
+          break;
+        case 'path':
+          finalValue = 'name';
+          break;
+        case 'theme':
+          finalValue = true;
           break;
       }
       await setValue(key, finalValue);
@@ -82,9 +105,9 @@ class Preferences {
       default:
         value != ''
             ? throw Exception(
-            'The type ${value.runtimeType} cannot be set on preferences.')
+                'The type ${value.runtimeType} cannot be set on preferences.')
             : throw Exception(
-            'The type ${value.runtimeType} cannot be get from preferences.');
+                'The type ${value.runtimeType} cannot be get from preferences.');
     }
 
     return returnValue;
