@@ -19,5 +19,7 @@ class NavigatorState {
   final int index;
   final String name;
 
-  NavigatorState({this.screen = const HomeScreen(), this.index = 0, this.name = HomeScreen.name});
+  NavigatorState({Widget? screen, this.index = 0, this.name = HomeScreen.name})
+      : screen = screen ?? HomeScreen();
 }
+
