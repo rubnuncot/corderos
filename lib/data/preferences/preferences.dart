@@ -17,7 +17,7 @@ class Preferences {
     'username': 'none',
     'password': 'none',
     'path': 'none',
-    'theme': true,
+    'theme': true, // true = light, false = dark
   };
 
   static Future<dynamic> getValue(String key) async {
