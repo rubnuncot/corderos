@@ -17,7 +17,7 @@ class Panel extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         height: openPanelState.isOpen ? size.height * 0.7 : 0,
-        width: openPanelState.isOpen ? size.width * 0.9 : 0,
+        width: openPanelState.isOpen ? size.width * 0.95 : 0,
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(10),

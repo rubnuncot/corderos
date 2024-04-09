@@ -21,7 +21,7 @@ class Layout extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final Map<int, Widget> screens = {
-      0: const HomeScreen(),
+      0: HomeScreen(),
       1: const BurdenScreen(),
       2: const TicketSelectionScreen(),
       3: const SettingsScreen(),
