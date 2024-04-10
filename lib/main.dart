@@ -33,6 +33,9 @@ class BlocsProviders extends StatelessWidget {
         BlocProvider(
           create: (context) => OpenTable(),
         ),
+        BlocProvider(
+          create: (context) => ThemeBloc(),
+        ),
       ],
       child: const MyApp(),
     );
