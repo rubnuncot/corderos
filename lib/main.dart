@@ -42,15 +42,37 @@ class BlocsProviders extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget {
+//Cuando entre en la app, tiene que leer de las preferencias el tema
+//y aplicarlo.
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Gestión Documental',
-      routerConfig: context.read<RouterBloc>().state,
-    );
+    final themeBloc = context.read<ThemeBloc>();
+    final themeBlocState = context.watch<ThemeBloc>().state;
+
+    return FutureBuilder(
+        future: themeBloc.preferencesTheme(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Corderos',
+              theme: themeBlocState.isDarkTheme
+                  ? AppTheme.darkTheme
+                  : AppTheme.lightTheme,
+            );
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        });
   }
 }
