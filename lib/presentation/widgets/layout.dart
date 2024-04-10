@@ -20,6 +20,13 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    Map<String, dynamic> _theme = {
+      'primaryColor': Theme.of(context).primaryColor,
+      'iconTheme': Theme.of(context).iconTheme,
+      'textTheme': Theme.of(context).textTheme,
+      'dividerColor': Theme.of(context).dividerColor,
+    };
+
     final Map<int, Widget> screens = {
       0: HomeScreen(),
       1: const BurdenScreen(),
@@ -43,7 +50,6 @@ class Layout extends StatelessWidget {
         appBar: AppBar(
           title: Text(text),
           centerTitle: true,
-          backgroundColor: Colors.grey.shade100,
           actions: const [
             ThemeButton()
           ],
@@ -51,7 +57,6 @@ class Layout extends StatelessWidget {
         body: content,
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: navigatorState.index,
-          backgroundColor: Colors.grey.shade100,
           onTap: (index) {
             navigator.push(screens[index]!, index, names[index]!);
           },

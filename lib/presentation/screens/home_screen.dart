@@ -36,7 +36,7 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                ActionButton(
+                CustomButton(
                   text: 'Cargar',
                   onPressed: () {
                     navigator.push(const BurdenScreen(), 1, 'Carga');
@@ -45,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                   textColor: Colors.white,
                 ),
                 const SizedBox(height: 20),
-                ActionButton(
+                CustomButton(
                   text: 'Descargar',
                   onPressed: () {
                     openPanel.openPanel();
@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: ActionButton(
+                      child: CustomButton(
                         text: 'Enviar',
                         onPressed: () {
                           // TODO: Agregar lógica del tercer botón
@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 20),
                     Expanded(
-                      child: ActionButton(
+                      child: CustomButton(
                         text: 'Recibir',
                         onPressed: () {
                           // TODO: Agregar lógica del cuarto botón
