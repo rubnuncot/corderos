@@ -44,6 +44,9 @@ class Layout extends StatelessWidget {
           title: Text(text),
           centerTitle: true,
           backgroundColor: Colors.grey.shade100,
+          actions: const [
+            ThemeButton()
+          ],
         ),
         body: content,
         bottomNavigationBar: SalomonBottomBar(
