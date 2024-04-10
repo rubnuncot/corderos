@@ -76,7 +76,7 @@ class Preferences {
   static Future<T> _convertValue<T>(dynamic key, {dynamic value = ''}) async {
     late dynamic returnValue;
 
-    switch (value.runtimeType) {
+    switch (value == '' ? _userPreferences[key].runtimeType : value.runtimeType) {
       case String:
         returnValue = value != ''
             ? await _prefs.setString(key, value) as T

@@ -6,7 +6,7 @@ import '../../../!helpers/!helpers.dart';
 class RouterBloc extends Cubit<GoRouter> {
   RouterBloc() : super(appRouter);
 
-  String actualRoute = '/';
+  String actualRoute = '/loading';
 
   void goBack() {
     switch (actualRoute) {
@@ -27,6 +27,11 @@ class RouterBloc extends Cubit<GoRouter> {
   void goMain() {
     state.push('/main');
     actualRoute = '/main';
+  }
+
+  void goLoading() {
+    state.push('/loading');
+    actualRoute = '/loading';
   }
 
   void redirectCurrentRoute() {

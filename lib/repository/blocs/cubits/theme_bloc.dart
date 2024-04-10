@@ -16,7 +16,7 @@ class ThemeBloc extends Cubit {
 
   Future<void> preferencesTheme() async {
     final isDarkTheme = await _getPreferencesTheme();
-    emit(ThemeBlocState(isDarkTheme: !isDarkTheme));
+    emit(ThemeBlocState(isDarkTheme: isDarkTheme));
   }
 
   Future<bool> _getPreferencesTheme() async {

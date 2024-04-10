@@ -54,25 +54,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    final themeBloc = context.read<ThemeBloc>();
     final themeBlocState = context.watch<ThemeBloc>().state;
 
-    return FutureBuilder(
-        future: themeBloc.preferencesTheme(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Corderos',
-              theme: themeBlocState.isDarkTheme
-                  ? AppTheme.darkTheme
-                  : AppTheme.lightTheme,
-            );
-          } else {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-        });
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Corderos',
+      routerConfig: context.read<RouterBloc>().state,
+      theme: themeBlocState.isDarkTheme
+          ? AppTheme.darkTheme
+          : AppTheme.lightTheme,
+    );
   }
 }

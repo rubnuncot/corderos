@@ -127,7 +127,12 @@ class _TablaTicketState extends State<TablaTicket> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minWidth: constraints.maxWidth),
                 child: DataTable(
-                  headingRowColor: WidgetStateColor.resolveWith((states) => Colors.green[200]!),
+                  headingRowColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Colors.blue[200]; // Color cuando está seleccionado (opcional)
+                    }
+                    return Colors.green[200]; // Color predeterminado
+                  }),
                   columns: const [
                     DataColumn(label: Text('Nº Corderos', style: TextStyle(fontWeight: FontWeight.bold))),
                     DataColumn(label: Text('Clase', style: TextStyle(fontWeight: FontWeight.bold))),
