@@ -6,45 +6,46 @@ import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
 
 @reflector
-class Client extends ModelDao {
+class Performance extends ModelDao {
   int? id;
-  String? nif;
-  String? name;
-  String? email;
+  int? idProduct;
+  int? idClassification;
+  int? performance;
 
-  Client();
+  Performance();
 
-  Client.all({
+  Performance.all({
       @required required this.id,
-      @required required this.nif,
-      @required required this.name,
-      @required required this.email
+      @required required this.idProduct,
+      @required required this.idClassification,
+      @required required this.performance
   });
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'nif': Constants.varchar["10"]!,
-    'name': Constants.varchar["255"]!,
-    'email': Constants.varchar["255"]!,
+    'idProduct': Constants.bigint,
+    'idClassification': Constants.bigint,
+    'performance': Constants.bigint,
   };
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'nif': nif,
-      'name': name,
-      'email': email,
+      'idProduct': idProduct,
+      'idClassification': idClassification,
+      'performance': performance,
     };
   }
 
-  factory Client.fromRawJson(String str) => Client.fromMap(json.decode(str));
+  factory Performance.fromRawJson(String str) =>
+      Performance.fromMap(json.decode(str));
 
-  static Client fromMap(Map<String, dynamic> map) {
-    return Client.all(
+  static Performance fromMap(Map<String, dynamic> map) {
+    return Performance.all(
       id: map['id'],
-      nif: map['nif'],
-      name: map['name'],
-      email: map['email'],
+      idProduct: map['idProduct'],
+      idClassification: map['idClassification'],
+      performance: map['performance'],
     );
   }
 
@@ -70,14 +71,17 @@ class Client extends ModelDao {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Client &&
+    return other is Performance &&
         other.id == id &&
-        other.nif == nif &&
-        other.name == name &&
-        other.email == email;
+        other.idProduct == idProduct &&
+        other.idClassification == idClassification &&
+        other.performance == performance;
   }
 
   @override
   int get hashCode =>
-      id.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
+      id.hashCode ^
+      idProduct.hashCode ^
+      idClassification.hashCode ^
+      performance.hashCode;
 }

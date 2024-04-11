@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
@@ -11,11 +12,11 @@ class Rancher extends ModelDao {
   String? name;
 
   Rancher();
-  Rancher.all({this.id, this.nif, this.name});
+  Rancher.all({@required required this.id, @required required this.nif, @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'nif': Constants.varchar["255"]!,
+    'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
   };
 

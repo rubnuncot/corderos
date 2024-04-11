@@ -5,14 +5,14 @@ class DatabaseConfig {
   DatabaseConfig() {
     Append.dbParameters(param: 'name', value: 'Corderos');
     Append.dbParameters(param: 'tables', value: [
-      Category,
+      Classification,
       Slaughterhouse,
       VehicleRegistration,
       Client,
       Driver,
       Product,
       Rancher,
-      Ticket
+      DeliveryTicker
     ]);
     Append.dbParameters(param: 'version', value: 1);
   }
