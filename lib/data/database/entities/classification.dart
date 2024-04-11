@@ -1,17 +1,18 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
 
 @reflector
-class Category extends ModelDao {
+class Classification extends ModelDao {
   int? id;
   String? name;
   int? productId;
 
-  Category();
-  Category.all({this.id, this.name, this.productId});
+  Classification();
+  Classification.all({@required required this.id, @required required this.name, @required required this.productId});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -27,11 +28,11 @@ class Category extends ModelDao {
     };
   }
 
-  factory Category.fromRawJson(String str) =>
-      Category.fromMap(json.decode(str));
+  factory Classification.fromRawJson(String str) =>
+      Classification.fromMap(json.decode(str));
 
-  static Category fromMap(Map<String, dynamic> map) {
-    return Category.all(
+  static Classification fromMap(Map<String, dynamic> map) {
+    return Classification.all(
       id: map['id'],
       name: map['name'],
       productId: map['product_id'],
@@ -60,7 +61,7 @@ class Category extends ModelDao {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Category &&
+    return other is Classification &&
         other.id == id &&
         other.name == name &&
         other.productId == productId;

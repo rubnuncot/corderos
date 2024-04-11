@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
@@ -10,7 +11,7 @@ class Product extends ModelDao {
   String? name;
 
   Product();
-  Product.all({this.id, this.name});
+  Product.all({ @required required this.id, @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
