@@ -11,9 +11,15 @@ class LoadingScreen extends StatelessWidget {
 
     final navigator = context.read<RouterBloc>();
     final themeBloc = context.read<ThemeBloc>();
+    final dropDownBloc = context.read<DropDownBloc>();
+
+    Future<void> load() async {
+      await themeBloc.preferencesTheme();
+      await dropDownBloc.getPreferenceValue();
+    }
 
     return FutureBuilder(
-      future: themeBloc.preferencesTheme(),
+      future: load(),
       builder: (context, snapshot) {
         if(snapshot.connectionState == ConnectionState.done && context.mounted) {
           Future.microtask(() => navigator.goMain());

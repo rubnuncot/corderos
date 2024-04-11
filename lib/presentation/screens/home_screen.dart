@@ -1,8 +1,8 @@
 import 'package:corderos_app/presentation/!presentation.dart';
+import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class HomeScreen extends StatelessWidget {
   static const String name = "Inicio";
@@ -20,21 +20,9 @@ class HomeScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CustomDropdown(
-                  hint: 'Seleccionar nombre',
-                  items: ['Cuco', 'Paco', 'Juli'],
-                  onChanged: (String newValue) {
-                    // TODO: Agregar lógica de cambio
-                  },
-                ),
+                const NewDropDown(listIndex: 1),
                 const SizedBox(height: 20),
-                CustomDropdown(
-                  hint: 'Seleccionar matrícula',
-                  items: ['Matrícula 1', 'Matrícula 2', 'Matrícula 3'],
-                  onChanged: (String newValue) {
-                    // TODO: Agregar lógica de cambio
-                  },
-                ),
+                const NewDropDown(listIndex: 2),
                 const SizedBox(height: 20),
                 CustomButton(
                   text: 'Cargar',

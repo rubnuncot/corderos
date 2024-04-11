@@ -36,6 +36,9 @@ class BlocsProviders extends StatelessWidget {
         BlocProvider(
           create: (context) => ThemeBloc(),
         ),
+        BlocProvider(
+          create: (context) => DropDownBloc(),
+        ),
       ],
       child: const MyApp(),
     );
