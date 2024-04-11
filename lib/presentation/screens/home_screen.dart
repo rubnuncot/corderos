@@ -41,8 +41,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     navigator.push(const BurdenScreen(), 1, 'Carga');
                   },
-                  backgroundColor: Theme.of(context).primaryColor,
-                  textColor: Colors.white,
+                  textColor: Theme.of(context).primaryColor,
                 ),
                 const SizedBox(height: 20),
                 CustomButton(
@@ -50,8 +49,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     openPanel.openPanel();
                   },
-                  backgroundColor: Colors.indigoAccent,
-                  textColor: Colors.white,
+                  textColor: Colors.indigoAccent,
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -62,8 +60,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           // TODO: Agregar lógica del tercer botón
                         },
-                        backgroundColor: Colors.orangeAccent,
-                        textColor: Colors.white,
+                        textColor: Colors.orangeAccent,
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -73,8 +70,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           // TODO: Agregar lógica del cuarto botón
                         },
-                        backgroundColor: Colors.lightGreen,
-                        textColor: Colors.white,
+                        textColor: Colors.lightGreen,
                       ),
                     ),
                   ],

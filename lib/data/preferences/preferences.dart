@@ -110,6 +110,6 @@ class Preferences {
                 'The type ${value.runtimeType} cannot be get from preferences.');
     }
 
-    return returnValue;
+    return returnValue ?? _userPreferences[key] as T;
   }
 }

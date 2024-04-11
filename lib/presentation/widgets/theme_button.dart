@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
+import '../../!helpers/!helpers.dart';
 import '../../repository/!repository.dart';
 
 class ThemeButton extends StatelessWidget {
@@ -14,6 +15,7 @@ class ThemeButton extends StatelessWidget {
     final size = MediaQuery.of(context).size.width * 0.11;
     final themeBloc = context.read<ThemeBloc>();
     final themeBlocState = context.watch<ThemeBloc>().state;
+    final appColors = AppColors(context: context).getColors();
 
     return ZoomTapAnimation(
         child: Container(
@@ -22,14 +24,21 @@ class ThemeButton extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(size * 0.5),
-            color: Colors.white,
+            color: appColors?['themeButtonColor'],
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: appColors?['buttonShadowInput'],
                 spreadRadius: 1,
                 blurRadius: 1,
-                offset: const Offset(0, 3),
-              )
+                offset: themeBlocState.isDarkTheme ? const Offset(-2, -1) : const Offset(0, 3),
+              ),
+              if(themeBlocState.isDarkTheme)
+                BoxShadow(
+                  color: appColors?['secondShadowDarkMode'],
+                  spreadRadius: 1,
+                  blurRadius: 1,
+                  offset: themeBlocState.isDarkTheme ? const Offset(1, 1) : const Offset(0, 3),
+                )
             ],
           ),
           child: themeBlocState.isDarkTheme
