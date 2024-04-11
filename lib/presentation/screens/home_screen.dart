@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeScreen extends StatelessWidget {
   static const String name = "Inicio";
 
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final navigator = context.read<NavigatorBloc>();
