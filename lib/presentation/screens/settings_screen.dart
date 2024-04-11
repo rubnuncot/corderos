@@ -24,6 +24,8 @@ class SettingsScreen extends StatelessWidget {
             itemCount: settings.length,
             itemBuilder: (context, index) {
               return InputSettings(
+                isNumeric: settings.values.toList()[index] == 'host'
+                || settings.values.toList()[index] == 'port',
                 label: settings.keys.toList()[index],
                 preferenceKey: settings.values.toList()[index],
                 isPassword: settings.values.toList()[index] == 'password',

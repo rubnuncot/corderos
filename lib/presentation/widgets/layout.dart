@@ -1,3 +1,4 @@
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -45,11 +46,18 @@ class Layout extends StatelessWidget {
 
     final navigator = context.read<NavigatorBloc>();
     final navigatorState = context.watch<NavigatorBloc>().state;
+    final appThemes = AppColors(context: context).getColors();
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(text),
+          title: Text(
+              text,
+              style: TextStyle(
+                color: appThemes?['appBarTitle']
+              ),
+          ),
           centerTitle: true,
+          backgroundColor: appThemes?['appBarBackground'],
           actions: const [
             ThemeButton()
           ],
@@ -57,6 +65,9 @@ class Layout extends StatelessWidget {
         body: content,
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: navigatorState.index,
+          backgroundColor: appThemes?['buttonNavigationBackground'],
+          selectedItemColor: appThemes?['selectedItemColor'],
+          unselectedItemColor: appThemes?['unselectedItemColor'],
           onTap: (index) {
             navigator.push(screens[index]!, index, names[index]!);
           },
