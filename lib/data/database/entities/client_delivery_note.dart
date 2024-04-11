@@ -8,7 +8,7 @@ import '!!model_dao.dart';
 @reflector
 class ClientDeliveryNote extends ModelDao {
   int? idDeliveryNote;
-  DateTime? fecha;
+  DateTime? date;
   int? slaughterhouseId;
   int? productId;
 
@@ -16,14 +16,14 @@ class ClientDeliveryNote extends ModelDao {
 
   ClientDeliveryNote.all({
     @required required this.idDeliveryNote,
-    @required required this.fecha,
+    @required required this.date,
     @required required this.slaughterhouseId,
     @required required this.productId,
   });
 
   static final Map<String, String> _fields = {
     'idDeliveryNote': Constants.bigint,
-    'fecha': Constants.datetime,
+    'date': Constants.datetime,
     'slaughterhouseId': Constants.bigint,
     'productId': Constants.bigint,
   };
@@ -31,7 +31,7 @@ class ClientDeliveryNote extends ModelDao {
   Map<String, dynamic> toMap() {
     return {
       'idDeliveryNote': idDeliveryNote,
-      'fecha': fecha?.toIso8601String(),
+      'date': date?.toString(),
       'slaughterhouseId': slaughterhouseId,
       'productId': productId,
     };
@@ -43,7 +43,7 @@ class ClientDeliveryNote extends ModelDao {
   static ClientDeliveryNote fromMap(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
       idDeliveryNote: map['idDeliveryNote'],
-      fecha: map['fecha'] != null ? DateTime.parse(map['fecha']) : null,
+      date: map['date'] != null ? DateTime.parse(map['date']) : null,
       slaughterhouseId: map['slaughterhouseId'],
       productId: map['productId'],
     );
@@ -65,7 +65,7 @@ class ClientDeliveryNote extends ModelDao {
 
     return other is ClientDeliveryNote &&
         other.idDeliveryNote == idDeliveryNote &&
-        other.fecha == fecha &&
+        other.date == date &&
         other.slaughterhouseId == slaughterhouseId &&
         other.productId == productId;
   }
@@ -73,7 +73,7 @@ class ClientDeliveryNote extends ModelDao {
   @override
   int get hashCode {
     return idDeliveryNote.hashCode ^
-    fecha.hashCode ^
+    date.hashCode ^
     slaughterhouseId.hashCode ^
     productId.hashCode;
   }

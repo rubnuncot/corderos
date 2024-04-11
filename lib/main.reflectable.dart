@@ -187,7 +187,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
               r'all': (bool b) =>
                   ({idDeliveryNote, fecha, slaughterhouseId, productId}) => b
                       ? prefix2.ClientDeliveryNote.all(
-                          fecha: fecha,
+                          date: fecha,
                           idDeliveryNote: idDeliveryNote,
                           productId: productId,
                           slaughterhouseId: slaughterhouseId)
@@ -838,7 +838,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
                           idSlaughterhouse: idSlaughterhouse,
                           idVehicleRegistration: idVehicleRegistration,
                           numTicket: numTicket,
-                          serie: serie)
+                          series: serie)
                       : null,
               r'fromRawJson': (bool b) =>
                   (str) => b ? prefix10.DeliveryTicker.fromRawJson(str) : null
@@ -2072,7 +2072,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'idPerformance': (dynamic instance) => instance.idPerformance,
         r'losses': (dynamic instance) => instance.losses,
         r'idDeliveryNote': (dynamic instance) => instance.idDeliveryNote,
-        r'fecha': (dynamic instance) => instance.fecha,
+        r'fecha': (dynamic instance) => instance.date,
         r'slaughterhouseId': (dynamic instance) => instance.slaughterhouseId,
         r'productId': (dynamic instance) => instance.productId,
         r'id': (dynamic instance) => instance.id,
@@ -2083,7 +2083,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'nif': (dynamic instance) => instance.nif,
         r'email': (dynamic instance) => instance.email,
         r'numTicket': (dynamic instance) => instance.numTicket,
-        r'serie': (dynamic instance) => instance.serie,
+        r'serie': (dynamic instance) => instance.series,
         r'deliveryTicket': (dynamic instance) => instance.deliveryTicket,
         r'date': (dynamic instance) => instance.date,
         r'idDriver': (dynamic instance) => instance.idDriver,
@@ -2105,7 +2105,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'losses=': (dynamic instance, value) => instance.losses = value,
         r'idDeliveryNote=': (dynamic instance, value) =>
             instance.idDeliveryNote = value,
-        r'fecha=': (dynamic instance, value) => instance.fecha = value,
+        r'fecha=': (dynamic instance, value) => instance.date = value,
         r'slaughterhouseId=': (dynamic instance, value) =>
             instance.slaughterhouseId = value,
         r'productId=': (dynamic instance, value) => instance.productId = value,
@@ -2119,7 +2119,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'nif=': (dynamic instance, value) => instance.nif = value,
         r'email=': (dynamic instance, value) => instance.email = value,
         r'numTicket=': (dynamic instance, value) => instance.numTicket = value,
-        r'serie=': (dynamic instance, value) => instance.serie = value,
+        r'serie=': (dynamic instance, value) => instance.series = value,
         r'deliveryTicket=': (dynamic instance, value) =>
             instance.deliveryTicket = value,
         r'date=': (dynamic instance, value) => instance.date = value,

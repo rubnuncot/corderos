@@ -14,12 +14,11 @@ class Client extends ModelDao {
 
   Client();
 
-  Client.all({
-      @required required this.id,
+  Client.all(
+      {@required required this.id,
       @required required this.nif,
       @required required this.name,
-      @required required this.email
-  });
+      @required required this.email});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,

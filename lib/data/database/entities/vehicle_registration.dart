@@ -16,7 +16,7 @@ class VehicleRegistration extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'deliveryTicketId': Constants.varchar['4']!, //!OJO
+    'deliveryTicketId': Constants.varchar['4']!,
   };
 
   Map<String, dynamic> toMap() {

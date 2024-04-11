@@ -12,7 +12,11 @@ class Classification extends ModelDao {
   int? productId;
 
   Classification();
-  Classification.all({@required required this.id, @required required this.name, @required required this.productId});
+
+  Classification.all(
+      {@required required this.id,
+      @required required this.name,
+      @required required this.productId});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,

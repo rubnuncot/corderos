@@ -8,7 +8,7 @@ import '!!model_dao.dart';
 @reflector
 class DeliveryTicker extends ModelDao {
   String? numTicket;
-  String? serie;
+  String? series;
   String? deliveryTicket;
   DateTime? date;
   int? idDriver;
@@ -21,7 +21,7 @@ class DeliveryTicker extends ModelDao {
 
   DeliveryTicker.all({
     @required required this.numTicket,
-    @required required this.serie,
+    @required required this.series,
     @required required this.deliveryTicket,
     @required required this.date,
     @required required this.idDriver,
@@ -33,7 +33,7 @@ class DeliveryTicker extends ModelDao {
 
   static final Map<String, String> _fields = {
     'numTicket': Constants.bigint,
-    'serie': Constants.varchar['4']!,
+    'series': Constants.varchar['4']!,
     'deliveryTicket': Constants.varchar['255']!,
     'date': Constants.datetime,
     'idDriver': Constants.bigint,
@@ -45,7 +45,7 @@ class DeliveryTicker extends ModelDao {
 
   Map<String, dynamic> toMap() {
     return {
-      'serie': serie,
+      'series': series,
       'deliveryTicket': deliveryTicket,
       'date': date?.toString(),
       'idDriver': idDriver,
@@ -62,7 +62,7 @@ class DeliveryTicker extends ModelDao {
   static DeliveryTicker fromMap(Map<String, dynamic> map) {
     return DeliveryTicker.all(
       numTicket: map['numTicket'],
-      serie: map['serie'],
+      series: map['series'],
       deliveryTicket: map['deliveryTicket'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       idDriver: map['idDriver'],
@@ -97,7 +97,7 @@ class DeliveryTicker extends ModelDao {
 
     return other is DeliveryTicker &&
         other.numTicket == numTicket &&
-        other.serie == serie &&
+        other.series == series &&
         other.deliveryTicket == deliveryTicket &&
         other.date == date &&
         other.idDriver == idDriver &&
@@ -110,7 +110,7 @@ class DeliveryTicker extends ModelDao {
   @override
   int get hashCode {
     return numTicket.hashCode ^
-    serie.hashCode ^
+    series.hashCode ^
     deliveryTicket.hashCode ^
     date.hashCode ^
     idDriver.hashCode ^
