@@ -1,0 +1,12 @@
+export './classification_model.dart';
+export './client_delivery_note_model.dart';
+export './delivery_ticket_model.dart';
+export './client_model.dart';
+export './driver_model.dart';
+export './performance_model.dart';
+export './product_delivery_note_model.dart';
+export './product_model.dart';
+export './product_ticket_model.dart';
+export './rancher_model.dart';
+export './slaughterhouse_model.dart';
+export './vehicle_registration_model.dart';
