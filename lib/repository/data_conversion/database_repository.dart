@@ -18,6 +18,9 @@ class DatabaseRepository{
   /*
   ! Esta clase va a recibir una lista donde vendrán los datos que
   ! vamos a insertar en la base de datos.
+
+  * Lo que vamos a hacer es obtener TODOS los datos necesarios para escribir
+  * los ficheros que irán al FTP y guardarlos en un map.
   */
 
   //TODO: Crear los métodos necesarios para obtener los datos que vamos a mostrar en pantalla
@@ -28,8 +31,5 @@ class DatabaseRepository{
   ? La diferencia con el método anterior es que aquí vamos a obtener sólo
   ? los datos que vayamos a necesitar para mostrar en pantalla, es decir
   ? datos de una sola tabla.
-
-  * En el anterior lo que vamos a hacer es obtener TODOS los datos necesarios
-  * para escribir los ficheros que irán al FTP y guardarlos en un map.
   */
 }
