@@ -7,19 +7,19 @@ import '!!model_dao.dart';
 
 @reflector
 class Performance extends ModelDao {
-  int? id;
-  int? idProduct;
-  int? idClassification;
-  int? performance;
+    int? id;
+    int? idProduct;
+    int? idClassification;
+    int? performance;
 
-  Performance();
+    Performance();
 
-  Performance.all({
-      @required required this.id,
-      @required required this.idProduct,
-      @required required this.idClassification,
-      @required required this.performance
-  });
+    Performance.all({
+        @required required this.id,
+        @required required this.idProduct,
+        @required required this.idClassification,
+        @required required this.performance
+    });
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,

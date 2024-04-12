@@ -6,7 +6,8 @@ import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
 
 @reflector
-class DeliveryTicker extends ModelDao {
+class DeliveryTicket extends ModelDao {
+  int? id;
   String? numTicket;
   String? series;
   String? deliveryTicket;
@@ -17,9 +18,10 @@ class DeliveryTicker extends ModelDao {
   int? idRancher;
   int? idProduct;
 
-  DeliveryTicker();
+  DeliveryTicket();
 
-  DeliveryTicker.all({
+  DeliveryTicket.all({
+    @required required this.id,
     @required required this.numTicket,
     @required required this.series,
     @required required this.deliveryTicket,
@@ -32,6 +34,7 @@ class DeliveryTicker extends ModelDao {
   });
 
   static final Map<String, String> _fields = {
+    'id': Constants.bigint,
     'numTicket': Constants.bigint,
     'series': Constants.varchar['4']!,
     'deliveryTicket': Constants.varchar['255']!,
@@ -45,6 +48,8 @@ class DeliveryTicker extends ModelDao {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
+      'numTicket': numTicket,
       'series': series,
       'deliveryTicket': deliveryTicket,
       'date': date?.toString(),
@@ -56,11 +61,12 @@ class DeliveryTicker extends ModelDao {
     };
   }
 
-  factory DeliveryTicker.fromRawJson(String str) =>
-      DeliveryTicker.fromMap(json.decode(str));
+  factory DeliveryTicket.fromRawJson(String str) =>
+      DeliveryTicket.fromMap(json.decode(str));
 
-  static DeliveryTicker fromMap(Map<String, dynamic> map) {
-    return DeliveryTicker.all(
+  static DeliveryTicket fromMap(Map<String, dynamic> map) {
+    return DeliveryTicket.all(
+      id: map['id'],
       numTicket: map['numTicket'],
       series: map['series'],
       deliveryTicket: map['deliveryTicket'],
@@ -75,7 +81,11 @@ class DeliveryTicker extends ModelDao {
 
   static final Iterable<String> _names = _fields.keys;
 
-  static final List<String> _primary = [_names.elementAt(0), _names.elementAt(1)];
+  static final List<String> _primary = [
+    _names.elementAt(0),
+    _names.elementAt(1),
+    _names.elementAt(2)
+  ];
 
   static final List<String> _exception = [];
 
@@ -95,7 +105,8 @@ class DeliveryTicker extends ModelDao {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is DeliveryTicker &&
+    return other is DeliveryTicket &&
+        other.id == id &&
         other.numTicket == numTicket &&
         other.series == series &&
         other.deliveryTicket == deliveryTicket &&
@@ -109,14 +120,15 @@ class DeliveryTicker extends ModelDao {
 
   @override
   int get hashCode {
-    return numTicket.hashCode ^
-    series.hashCode ^
-    deliveryTicket.hashCode ^
-    date.hashCode ^
-    idDriver.hashCode ^
-    idVehicleRegistration.hashCode ^
-    idSlaughterhouse.hashCode ^
-    idRancher.hashCode ^
-    idProduct.hashCode;
+    return id.hashCode ^
+        numTicket.hashCode ^
+        series.hashCode ^
+        deliveryTicket.hashCode ^
+        date.hashCode ^
+        idDriver.hashCode ^
+        idVehicleRegistration.hashCode ^
+        idSlaughterhouse.hashCode ^
+        idRancher.hashCode ^
+        idProduct.hashCode;
   }
 }

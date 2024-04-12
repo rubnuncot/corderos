@@ -7,7 +7,9 @@ import '!!model_dao.dart';
 
 @reflector
 class ProductTicket extends ModelDao {
-  int? idProductTicket;
+  int? id;
+  int? idTicket;
+  int? idProduct;
   String? nameClassification;
   int? numAnimals;
   double? weight;
@@ -17,7 +19,9 @@ class ProductTicket extends ModelDao {
   ProductTicket();
 
   ProductTicket.all({
-    @required required this.idProductTicket,
+    @required required this.id,
+    @required required this.idTicket,
+    @required required this.idProduct,
     @required required this.nameClassification,
     @required required this.numAnimals,
     @required required this.weight,
@@ -26,7 +30,9 @@ class ProductTicket extends ModelDao {
   });
 
   static final Map<String, String> _fields = {
-    'idProductTicket': Constants.bigint,
+    'id': Constants.bigint,
+    'idTicket': Constants.bigint,
+    'idProduct': Constants.bigint,
     'nameClassification': Constants.varchar['255']!,
     'numAnimals': Constants.bigint,
     'weight': Constants.decimal['9,2']!,
@@ -36,7 +42,9 @@ class ProductTicket extends ModelDao {
 
   Map<String, dynamic> toMap() {
     return {
-      'idProductTicket': idProductTicket,
+      'id': id,
+      'idTicket': idTicket,
+      'idProduct': idProduct,
       'nameClassification': nameClassification,
       'numAnimals': numAnimals,
       'weight': weight,
@@ -50,7 +58,9 @@ class ProductTicket extends ModelDao {
 
   static ProductTicket fromMap(Map<String, dynamic> map) {
     return ProductTicket.all(
-      idProductTicket: map['idProductTicket'],
+      id: map['id'],
+      idTicket: map['idTicket'],
+      idProduct: map['idProduct'],
       nameClassification: map['nameClassification'],
       numAnimals: map['numAnimals'],
       weight: map['weight']?.toDouble(),
@@ -61,7 +71,11 @@ class ProductTicket extends ModelDao {
 
   static final Iterable<String> _names = _fields.keys;
 
-  static final List<String> _primary = [_names.elementAt(0)];
+  static final List<String> _primary = [
+    _names.elementAt(0),
+    _names.elementAt(1),
+    _names.elementAt(2)
+  ];
 
   static final List<String> _exception = [];
 
@@ -82,7 +96,9 @@ class ProductTicket extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ProductTicket &&
-        other.idProductTicket == idProductTicket &&
+        other.id == id &&
+        other.idTicket == idTicket &&
+        other.idProduct == idProduct &&
         other.nameClassification == nameClassification &&
         other.numAnimals == numAnimals &&
         other.weight == weight &&
@@ -92,11 +108,13 @@ class ProductTicket extends ModelDao {
 
   @override
   int get hashCode {
-    return idProductTicket.hashCode ^
-    nameClassification.hashCode ^
-    numAnimals.hashCode ^
-    weight.hashCode ^
-    idPerformance.hashCode ^
-    losses.hashCode;
+    return id.hashCode ^
+        idTicket.hashCode ^
+        idProduct.hashCode ^
+        nameClassification.hashCode ^
+        numAnimals.hashCode ^
+        weight.hashCode ^
+        idPerformance.hashCode ^
+        losses.hashCode;
   }
 }
