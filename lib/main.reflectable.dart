@@ -185,9 +185,9 @@ final _data = <r.Reflectable, r.ReflectorData>{
             {
               r'': (bool b) => () => b ? prefix2.ClientDeliveryNote() : null,
               r'all': (bool b) =>
-                  ({idDeliveryNote, fecha, slaughterhouseId, productId}) => b
+                  ({idDeliveryNote, date, slaughterhouseId, productId}) => b
                       ? prefix2.ClientDeliveryNote.all(
-                          date: fecha,
+                          date: date,
                           idDeliveryNote: idDeliveryNote,
                           productId: productId,
                           slaughterhouseId: slaughterhouseId)
@@ -820,7 +820,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
               r'': (bool b) => () => b ? prefix10.DeliveryTicker() : null,
               r'all': (bool b) => (
                       {numTicket,
-                      serie,
+                      series,
                       deliveryTicket,
                       date,
                       idDriver,
@@ -838,7 +838,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
                           idSlaughterhouse: idSlaughterhouse,
                           idVehicleRegistration: idVehicleRegistration,
                           numTicket: numTicket,
-                          series: serie)
+                          series: series)
                       : null,
               r'fromRawJson': (bool b) =>
                   (str) => b ? prefix10.DeliveryTicker.fromRawJson(str) : null
@@ -936,7 +936,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'idDeliveryNote', 67239941, 1,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
-        r.VariableMirrorImpl(r'fecha', 67239941, 1,
+        r.VariableMirrorImpl(r'date', 67239941, 1,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'slaughterhouseId', 67239941, 1,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
@@ -986,7 +986,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'numTicket', 67239941, 9,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
-        r.VariableMirrorImpl(r'serie', 67239941, 9,
+        r.VariableMirrorImpl(r'series', 67239941, 9,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'deliveryTicket', 67239941, 9,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
@@ -1657,18 +1657,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             null,
             #idDeliveryNote),
-        r.ParameterMirrorImpl(
-            r'fecha',
-            67249158,
-            100,
-            const prefix0.MyReflectable(),
-            -1,
-            -1,
-            -1,
-            null,
-            null,
-            null,
-            #fecha),
+        r.ParameterMirrorImpl(r'date', 67249158, 100,
+            const prefix0.MyReflectable(), -1, -1, -1, null, null, null, #date),
         r.ParameterMirrorImpl(
             r'slaughterhouseId',
             67249158,
@@ -1697,7 +1687,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_idDeliveryNote', 67240038, 88,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
-        r.ParameterMirrorImpl(r'_fecha', 67240038, 90,
+        r.ParameterMirrorImpl(r'_date', 67240038, 90,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_slaughterhouseId', 67240038, 92,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
@@ -1896,7 +1886,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             #numTicket),
         r.ParameterMirrorImpl(
-            r'serie',
+            r'series',
             67249158,
             256,
             const prefix0.MyReflectable(),
@@ -1906,7 +1896,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             null,
             null,
-            #serie),
+            #series),
         r.ParameterMirrorImpl(
             r'deliveryTicket',
             67249158,
@@ -1985,7 +1975,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_numTicket', 67240038, 232,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
-        r.ParameterMirrorImpl(r'_serie', 67240038, 234,
+        r.ParameterMirrorImpl(r'_series', 67240038, 234,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_deliveryTicket', 67240038, 236,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
@@ -2072,7 +2062,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'idPerformance': (dynamic instance) => instance.idPerformance,
         r'losses': (dynamic instance) => instance.losses,
         r'idDeliveryNote': (dynamic instance) => instance.idDeliveryNote,
-        r'fecha': (dynamic instance) => instance.date,
+        r'date': (dynamic instance) => instance.date,
         r'slaughterhouseId': (dynamic instance) => instance.slaughterhouseId,
         r'productId': (dynamic instance) => instance.productId,
         r'id': (dynamic instance) => instance.id,
@@ -2083,9 +2073,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'nif': (dynamic instance) => instance.nif,
         r'email': (dynamic instance) => instance.email,
         r'numTicket': (dynamic instance) => instance.numTicket,
-        r'serie': (dynamic instance) => instance.series,
+        r'series': (dynamic instance) => instance.series,
         r'deliveryTicket': (dynamic instance) => instance.deliveryTicket,
-        r'date': (dynamic instance) => instance.date,
         r'idDriver': (dynamic instance) => instance.idDriver,
         r'idVehicleRegistration': (dynamic instance) =>
             instance.idVehicleRegistration,
@@ -2105,7 +2094,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'losses=': (dynamic instance, value) => instance.losses = value,
         r'idDeliveryNote=': (dynamic instance, value) =>
             instance.idDeliveryNote = value,
-        r'fecha=': (dynamic instance, value) => instance.date = value,
+        r'date=': (dynamic instance, value) => instance.date = value,
         r'slaughterhouseId=': (dynamic instance, value) =>
             instance.slaughterhouseId = value,
         r'productId=': (dynamic instance, value) => instance.productId = value,
@@ -2119,10 +2108,9 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'nif=': (dynamic instance, value) => instance.nif = value,
         r'email=': (dynamic instance, value) => instance.email = value,
         r'numTicket=': (dynamic instance, value) => instance.numTicket = value,
-        r'serie=': (dynamic instance, value) => instance.series = value,
+        r'series=': (dynamic instance, value) => instance.series = value,
         r'deliveryTicket=': (dynamic instance, value) =>
             instance.deliveryTicket = value,
-        r'date=': (dynamic instance, value) => instance.date = value,
         r'idDriver=': (dynamic instance, value) => instance.idDriver = value,
         r'idVehicleRegistration=': (dynamic instance, value) =>
             instance.idVehicleRegistration = value,
