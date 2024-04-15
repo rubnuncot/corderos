@@ -12,4 +12,14 @@
  !se necesita más funcionalidad se debe crear una clase nueva.
 */
 
-class DataFileWriter{}
+class DataFileWriter{
+
+  //TODO: Crear un método que escriba los ficheros que vamos a enviar.
+  /*
+  ! Este método debe leer de la base de datos los datos que vamos a enviar
+  ! al ftp y escribirlos en un fichero.
+
+  * Este fichero que vamos a escribir NO lo vamos a enviar directamente al ftp
+  * sino que lo vamos a devolver para que el repositorio del ftp lo envíe.
+  */
+}
