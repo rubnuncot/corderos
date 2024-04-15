@@ -24,6 +24,7 @@ class CustomButton extends StatelessWidget {
     final themeBlocState = context.watch<ThemeBloc>().state;
 
     return ZoomTapAnimation(
+      onTap: onPressed,
         child: Container(
           width: double.infinity,
           height: 50,

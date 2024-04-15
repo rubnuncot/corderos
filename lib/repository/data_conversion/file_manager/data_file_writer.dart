@@ -12,7 +12,20 @@
  !se necesita más funcionalidad se debe crear una clase nueva.
 */
 
+import '../../../data/!data.dart';
+
 class DataFileWriter{
+
+  Map<dynamic, String> files = {
+    Driver(): 'conductores.txt',
+    VehicleRegistration(): 'matriculas.txt',
+    Rancher(): 'ganaderos.txt',
+    Slaughterhouse(): 'mataderos.txt',
+    Client(): 'clientes.txt',
+    Product(): 'productos.txt',
+    Classification(): 'clasifiaciones.txt',
+    Performance(): 'rendimientos.txt'
+  };
 
   //TODO: Crear un método que escriba los ficheros que vamos a enviar.
   /*

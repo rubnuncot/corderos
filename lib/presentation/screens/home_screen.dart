@@ -1,8 +1,12 @@
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
+
+import '../../data/!data.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String name = "Inicio";
@@ -29,7 +33,10 @@ class HomeScreen extends StatelessWidget {
                 CustomButton(
                   text: 'Cargar',
                   onPressed: () {
-                    navigator.push(const BurdenScreen(), 1, 'Carga');
+                    //navigator.push(const BurdenScreen(), 1, 'Carga');
+                    Product product = Product.all(id: 0, name: 'Prueba');
+                    product.insert();
+                    LogHelper.logger.d(product.select(sqlBuilder: SqlBuilder().querySelect(fields: ['*']).queryFrom(table: product.getTableName(product))));
                   },
                   textColor: Theme.of(context).primaryColor,
                 ),

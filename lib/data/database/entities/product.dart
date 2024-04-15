@@ -18,7 +18,7 @@ class Product extends ModelDao {
     'name': Constants.varchar["255"]!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
@@ -26,9 +26,9 @@ class Product extends ModelDao {
   }
 
   factory Product.fromRawJson(String str) =>
-      Product.fromMap(json.decode(str));
+      Product.fromRawJson(json.decode(str));
 
-  static Product fromMap(Map<String, dynamic> map) {
+  static Product fromJson(Map<String, dynamic> map) {
     return Product.all(
       id: map['id'],
       name: map['name'],

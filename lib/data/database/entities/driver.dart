@@ -20,7 +20,7 @@ class Driver extends ModelDao {
     'name': Constants.varchar["255"]!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'nif': nif,
@@ -29,9 +29,9 @@ class Driver extends ModelDao {
   }
 
   factory Driver.fromRawJson(String str) =>
-      Driver.fromMap(json.decode(str));
+      Driver.fromJson(json.decode(str));
 
-  static Driver fromMap(Map<String, dynamic> map) {
+  static Driver fromJson(Map<String, dynamic> map) {
     return Driver.all(
       id: map['id'],
       nif: map['nif'],

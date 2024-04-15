@@ -1,19 +1,65 @@
+import 'dart:io';
+
+import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:ftpconnect/ftpconnect.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
+
 class FtpDataTransfer {
+  FtpConnector ftp = FtpConnector.instance;
 
-  //TODO: Implementar un método que reciba los datos que necesitemos
-  /*
-  ! Este método tiene que recibir los datos que necesitemos del ftp.
+  List<String> files = [
+    'conductores.txt',
+    'matriculas.txt',
+    'ganaderos.txt',
+    'mataderos.txt',
+    'clientes.txt',
+    'productos.txt',
+    'clasifiaciones.txt',
+    'rendimientos.txt'
+  ];
 
-  * Estos datos van a ser siempre los mismos pero dependerá de si estamos
-  * actualizando la app o si estamos leyendo ficheros. Por lo tanto vamos a
-  * hacer dos listas a nivel de clase (en esta clase digo) para identificar el
-  * nombre de los datos que vamos a necesitar.
+  Future<bool> checkVersion() async {
+    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    Directory directory = await getApplicationDocumentsDirectory();
+    File version = File('${directory.path}/version.txt');
+    await ftpConnect.downloadFile('version.txt', version);
 
-  ? Preguntame y hacemos las listas.
-  */
+    String versionFile = await version.readAsString();
 
-  //TODO: Implementar un método que envíe los ficheros al FTP
-  /*
+    await ftp.closeConnection();
+
+    return int.parse(versionFile) > int.parse(packageInfo.buildNumber);
+  }
+
+  Future<bool> getFtpData() async {
+    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: false);
+    Directory directory = await getApplicationDocumentsDirectory();
+
+    try {
+      for (var file in files) {
+        File storedFile = File('${directory.path}/$file');
+        await ftpConnect.downloadFile(file, storedFile);
+      }
+      return true;
+    }catch (e) {
+      LogHelper.logger.d('Error getting FTP data: $e');
+      return false;
+    }
+  }
+
+  Future<void> downloadApk () async {
+    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
+    Directory directory = await getApplicationDocumentsDirectory();
+    File apk = File('${directory.path}/app-release.apk');
+    await ftpConnect.downloadFile('app-release.apk', apk);
+    ftp.closeConnection();
+  }
+
+//TODO: Implementar un método que envíe los ficheros al FTP
+/*
   ! Este método tiene que enviar los ficheros al ftp, estos ficheros siempre
   ! van a ser los mismos, los cuales los vamos a recibir desde el repositorio.
   ! (data_file_writer.dart)

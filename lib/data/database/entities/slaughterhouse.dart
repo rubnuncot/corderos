@@ -18,7 +18,7 @@ class Slaughterhouse extends ModelDao{
     'name': Constants.varchar["255"]!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
@@ -26,9 +26,9 @@ class Slaughterhouse extends ModelDao{
   }
 
   factory Slaughterhouse.fromRawJson(String str) =>
-      Slaughterhouse.fromMap(json.decode(str));
+      Slaughterhouse.fromJson(json.decode(str));
 
-  static Slaughterhouse fromMap(Map<String, dynamic> map) {
+  static Slaughterhouse fromJson(Map<String, dynamic> map) {
     return Slaughterhouse.all(
       id: map['id'],
       name: map['name'],

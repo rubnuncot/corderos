@@ -27,7 +27,7 @@ class Client extends ModelDao {
     'email': Constants.varchar["255"]!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'nif': nif,
@@ -36,9 +36,9 @@ class Client extends ModelDao {
     };
   }
 
-  factory Client.fromRawJson(String str) => Client.fromMap(json.decode(str));
+  factory Client.fromRawJson(String str) => Client.fromJson(json.decode(str));
 
-  static Client fromMap(Map<String, dynamic> map) {
+  static Client fromJson(Map<String, dynamic> map) {
     return Client.all(
       id: map['id'],
       nif: map['nif'],

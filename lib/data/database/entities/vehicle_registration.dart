@@ -19,7 +19,7 @@ class VehicleRegistration extends ModelDao {
     'deliveryTicketId': Constants.bigint,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'deliveryTicketId': deliveryTicket,
@@ -27,9 +27,9 @@ class VehicleRegistration extends ModelDao {
   }
 
   factory VehicleRegistration.fromRawJson(String str) =>
-      VehicleRegistration.fromMap(json.decode(str));
+      VehicleRegistration.fromJson(json.decode(str));
 
-  static VehicleRegistration fromMap(Map<String, dynamic> map) {
+  static VehicleRegistration fromJson(Map<String, dynamic> map) {
     return VehicleRegistration.all(
       id: map['id'],
       deliveryTicket: map['deliveryTicket'],

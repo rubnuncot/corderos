@@ -28,7 +28,7 @@ class ClientDeliveryNote extends ModelDao {
     'productId': Constants.bigint,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'idDeliveryNote': idDeliveryNote,
       'date': date?.toString(),
@@ -38,9 +38,9 @@ class ClientDeliveryNote extends ModelDao {
   }
 
   factory ClientDeliveryNote.fromRawJson(String str) =>
-      ClientDeliveryNote.fromMap(json.decode(str));
+      ClientDeliveryNote.fromJson(json.decode(str));
 
-  static ClientDeliveryNote fromMap(Map<String, dynamic> map) {
+  static ClientDeliveryNote fromJson(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
       idDeliveryNote: map['idDeliveryNote'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,

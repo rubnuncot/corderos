@@ -40,7 +40,7 @@ class ProductTicket extends ModelDao {
     'losses': Constants.bigint,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'idTicket': idTicket,
@@ -54,9 +54,9 @@ class ProductTicket extends ModelDao {
   }
 
   factory ProductTicket.fromRawJson(String str) =>
-      ProductTicket.fromMap(json.decode(str));
+      ProductTicket.fromJson(json.decode(str));
 
-  static ProductTicket fromMap(Map<String, dynamic> map) {
+  static ProductTicket fromJson(Map<String, dynamic> map) {
     return ProductTicket.all(
       id: map['id'],
       idTicket: map['idTicket'],

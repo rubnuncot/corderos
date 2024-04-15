@@ -24,7 +24,7 @@ class Classification extends ModelDao {
     'product_id': Constants.bigint,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
@@ -33,9 +33,9 @@ class Classification extends ModelDao {
   }
 
   factory Classification.fromRawJson(String str) =>
-      Classification.fromMap(json.decode(str));
+      Classification.fromJson(json.decode(str));
 
-  static Classification fromMap(Map<String, dynamic> map) {
+  static Classification fromJson(Map<String, dynamic> map) {
     return Classification.all(
       id: map['id'],
       name: map['name'],

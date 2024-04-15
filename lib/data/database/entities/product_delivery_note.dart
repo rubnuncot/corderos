@@ -34,7 +34,7 @@ class ProductDeliveryNote extends ModelDao {
     'kilograms': Constants.decimal['9,2']!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'idDeliveryNote': idDeliveryNote,
@@ -46,9 +46,9 @@ class ProductDeliveryNote extends ModelDao {
   }
 
   factory ProductDeliveryNote.fromRawJson(String str) =>
-      ProductDeliveryNote.fromMap(json.decode(str));
+      ProductDeliveryNote.fromJson(json.decode(str));
 
-  static ProductDeliveryNote fromMap(Map<String, dynamic> map) {
+  static ProductDeliveryNote fromJson(Map<String, dynamic> map) {
     return ProductDeliveryNote.all(
       id: map['id'],
       idDeliveryNote: map['idDeliveryNote'],

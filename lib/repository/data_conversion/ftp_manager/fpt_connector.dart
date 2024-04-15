@@ -1,21 +1,62 @@
+import 'package:corderos_app/!helpers/log_helper.dart';
+import 'package:ftpconnect/ftpconnect.dart';
+
+import '../../../data/preferences/preferences.dart';
+
 class FtpConnector {
+  Map<String, dynamic> data = {};
 
-  //? Todos estos métodos son "async".
+  late FTPConnect connection;
 
-  //TODO: Crear un método privado que obtenga los datos de conexión al FTP
-  /*
-  ! Este método debe ser privado porque solo se tiene que poder usar desde
-  ! esta clase ya que nos vamos a conectar a las preferencias para obtener
-  ! los datos necesarios para la conexión al fpt.
-  */
+  FtpConnector._privateConstructor();
 
-  //TODO: Crear un método que se conecte al FTP
-  /*
-  ! Este método tiene que conectarse al ftp y devolver un objeto que nos
-  ! permita recibir y enviar datos.
+  static final FtpConnector _instance = FtpConnector._privateConstructor();
 
-  ? Este método debe contener un atributo que se llame "default", el cual
-  ? será para saber si estamos conectando al ftp de actualizaciones o al
-  ? ftp de donde sacaremos los datos.
-  */
+  static FtpConnector get instance => _instance;
+
+  Future<void> _getFtpConnectionData() async {
+    for (var key in ['host', 'port', 'username', 'password', 'path']) {
+      data[key] = await Preferences.getValue(key);
+    }
+  }
+
+  Future<dynamic> ftpConnection({bool isDefault = true}) async {
+    await _getFtpConnectionData();
+
+    String path = data['path'];
+
+    connection = FTPConnect(
+      data['host'],
+      port: data['port'],
+      user: data['username'],
+      pass: data['password'],
+    );
+
+    if (isDefault) {
+      connection = FTPConnect(
+        '2.139.233.108',
+        port: 50025,
+        user: 'practicas',
+        pass: 'practicas-250',
+      );
+      path = '/corderos';
+    }
+
+    try {
+      if (await connection.connect()) {
+        connection.changeDirectory(path);
+        return connection;
+      }
+      throw Exception('FTP connection error');
+    } catch (e) {
+      LogHelper.logger.d('Error de conexión FTP en ftp_connector.dart: $e');
+      return ;
+    }
+  }
+
+  Future<void> closeConnection() async {
+    if (!await connection.disconnect()) {
+      throw Exception('Error closing FTP connection');
+    }
+  }
 }

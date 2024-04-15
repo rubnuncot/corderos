@@ -28,7 +28,7 @@ class Performance extends ModelDao {
     'performance': Constants.bigint,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'idProduct': idProduct,
@@ -38,9 +38,9 @@ class Performance extends ModelDao {
   }
 
   factory Performance.fromRawJson(String str) =>
-      Performance.fromMap(json.decode(str));
+      Performance.fromJson(json.decode(str));
 
-  static Performance fromMap(Map<String, dynamic> map) {
+  static Performance fromJson(Map<String, dynamic> map) {
     return Performance.all(
       id: map['id'],
       idProduct: map['idProduct'],

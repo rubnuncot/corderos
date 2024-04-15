@@ -20,7 +20,7 @@ class Rancher extends ModelDao {
     'name': Constants.varchar["255"]!,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'nif': nif,
@@ -29,9 +29,9 @@ class Rancher extends ModelDao {
   }
 
   factory Rancher.fromRawJson(String str) =>
-      Rancher.fromMap(json.decode(str));
+      Rancher.fromJson(json.decode(str));
 
-  static Rancher fromMap(Map<String, dynamic> map) {
+  static Rancher fromJson(Map<String, dynamic> map) {
     return Rancher.all(
       id: map['id'],
       nif: map['nif'],

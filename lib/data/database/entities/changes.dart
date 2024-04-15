@@ -22,7 +22,7 @@ class Changes extends ModelDao {
     'isRead': Constants.boolean,
   };
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'date': date.toString(),
@@ -31,9 +31,9 @@ class Changes extends ModelDao {
     };
   }
 
-  factory Changes.fromRawJson(String str) => Changes.fromMap(json.decode(str));
+  factory Changes.fromRawJson(String str) => Changes.fromJson(json.decode(str));
 
-  static Changes fromMap(Map<String, dynamic> map) {
+  static Changes fromJson(Map<String, dynamic> map) {
     return Changes.all(
       id: map['id'],
       date: map['date'],
