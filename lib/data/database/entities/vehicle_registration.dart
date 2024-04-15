@@ -7,7 +7,7 @@ import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 @reflector
 class VehicleRegistration extends ModelDao {
   String? id;
-  String? deliveryTicket;
+  int? deliveryTicket;
 
   VehicleRegistration();
 
@@ -16,7 +16,7 @@ class VehicleRegistration extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'deliveryTicketId': Constants.varchar['4']!,
+    'deliveryTicketId': Constants.bigint,
   };
 
   Map<String, dynamic> toMap() {

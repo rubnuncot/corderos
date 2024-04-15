@@ -1,35 +1,54 @@
-/*
- !En esta clase vamos a hacer las peticiones necesarias a la base de datos
+import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:meta/meta.dart';
+import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
+import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
 
- * Esta clase debe de tener los métodos necesarios para hacer las peticiones.
- * Voy a explicarlo más detalladamente dentro de la clase para que se entienda
- * cuáles son los métodos necesarios.
-*/
+class DatabaseRepository {
 
-class DatabaseRepository{
+  final daoConnector = const Dao();
+  static final _ftpData = [];
 
-  //TODO: Crear los métodos necesarios para hacer las peticiones a la base de datos
-  /*
-  ! En esta clase vamos a obtener los datos de la base de datos para escribir
-  ! los ficheros que irán al FTP.
-  */
+  Future<List> getFTPData() async {
+    List result = [];
+    try {
+      for (dynamic table in _ftpData) {
+        return await table.select(sqlBuilder: SqlBuilder()
+            .querySelect(fields: ['*'])
+            .queryFrom(table: table.getTableName(table))
+        );
+      }
+    } catch (e) {
+      LogHelper.logger.e('Error en getFTPData: $e');
+    }
+    return result;
+  }
 
-  //TODO: Crear los métodos necesarios para insertar los datos en la base de datos
-  /*
-  ! Esta clase va a recibir una lista donde vendrán los datos que
-  ! vamos a insertar en la base de datos.
+  Future<int> insertData(List list) async {
+    try {
+      return await daoConnector.batchInsertOrUpdate(objects: list);
+    } catch (e) {
+      LogHelper.logger.e('Error en insertData: $e');
+      return -1;
+    }
+  }
 
-  * Lo que vamos a hacer es obtener TODOS los datos necesarios para escribir
-  * los ficheros que irán al FTP y guardarlos en un map.
-  */
+  Future getSingleData({ @required required dynamic entity }) async {
+    try {
+      return await entity.select(sqlBuilder: SqlBuilder()
+          .querySelect(fields: ['*'])
+          .queryFrom(table: entity.getTableName(entity))
+    );
+    }catch (e) {
+    LogHelper.logger.e('Error en getSingleData: $e');
+    return -1;
+    }
+  }
 
-  //TODO: Crear los métodos necesarios para obtener los datos que vamos a mostrar en pantalla
-  /*
-  ! En este método vamos a obtener los datos que necesitemos para mostrar en
-  ! pantalla.
-
-  ? La diferencia con el método anterior es que aquí vamos a obtener sólo
-  ? los datos que vayamos a necesitar para mostrar en pantalla, es decir
-  ? datos de una sola tabla.
-  */
+  static Future<dynamic> getEntityById(dynamic entity, int id) async {
+    return await entity.select(sqlBuilder: SqlBuilder()
+        .querySelect(fields: ['*'])
+        .queryFrom(table: entity.getTableName(entity))
+        .queryWhere(conditions: ['id = $id'])
+    );
+  }
 }

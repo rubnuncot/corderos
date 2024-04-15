@@ -12,7 +12,7 @@ class DatabaseConfig {
       Driver,
       Product,
       Rancher,
-      DeliveryTicker
+      DeliveryTicket
     ]);
     Append.dbParameters(param: 'version', value: 1);
   }
