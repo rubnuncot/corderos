@@ -6,6 +6,7 @@ import '../data_conversion/!data_conversion.dart';
 
 class ClientDeliveryNoteModel {
   int? idDeliveryNote;
+  int? idClient;
   DateTime? date;
   SlaughterhouseModel? slaughterhouse;
   ProductModel? product;
@@ -14,6 +15,7 @@ class ClientDeliveryNoteModel {
 
   ClientDeliveryNoteModel.all({
     @required required this.idDeliveryNote,
+    @required required this.idClient,
     @required required this.date,
     @required required this.slaughterhouse,
     @required required this.product
@@ -21,6 +23,7 @@ class ClientDeliveryNoteModel {
 
   ClientDeliveryNoteModel.fromEntity(ClientDeliveryNote clientDeliveryNote) {
     idDeliveryNote = clientDeliveryNote.idDeliveryNote;
+    idClient = clientDeliveryNote.clientId;
     date = clientDeliveryNote.date;
     slaughterhouse = SlaughterhouseModel.fromEntity(DatabaseRepository.getEntityById(Slaughterhouse(), clientDeliveryNote.slaughterhouseId!) as Slaughterhouse);
     product = ProductModel.fromEntity(DatabaseRepository.getEntityById(Product(), clientDeliveryNote.productId!) as Product);
@@ -29,6 +32,7 @@ class ClientDeliveryNoteModel {
   ClientDeliveryNote toEntity() {
     return ClientDeliveryNote.all(
       idDeliveryNote: idDeliveryNote,
+      clientId: idClient,
       date: date,
       slaughterhouseId: slaughterhouse!.id,
       productId: product!.id,

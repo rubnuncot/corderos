@@ -8,6 +8,7 @@ import '!!model_dao.dart';
 @reflector
 class Client extends ModelDao {
   int? id;
+  String? code;
   String? nif;
   String? name;
   String? email;
@@ -16,12 +17,14 @@ class Client extends ModelDao {
 
   Client.all(
       {@required required this.id,
+        @required required this.code,
       @required required this.nif,
       @required required this.name,
       @required required this.email});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'code': Constants.varchar["255"]!,
     'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
     'email': Constants.varchar["255"]!,
@@ -30,6 +33,7 @@ class Client extends ModelDao {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'code': code,
       'nif': nif,
       'name': name,
       'email': email,
@@ -38,9 +42,10 @@ class Client extends ModelDao {
 
   factory Client.fromRawJson(String str) => Client.fromJson(json.decode(str));
 
-  static Client fromJson(Map<String, dynamic> map) {
+  factory Client.fromJson(Map<String, dynamic> map) {
     return Client.all(
       id: map['id'],
+      code: map['code'],
       nif: map['nif'],
       name: map['name'],
       email: map['email'],
@@ -71,6 +76,7 @@ class Client extends ModelDao {
 
     return other is Client &&
         other.id == id &&
+        other.code == code &&
         other.nif == nif &&
         other.name == name &&
         other.email == email;
@@ -78,5 +84,10 @@ class Client extends ModelDao {
 
   @override
   int get hashCode =>
-      id.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
+      id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
+  
+  @override
+  String toString() {
+    return '$code\t$nif\t$name\t$email';
+  }
 }

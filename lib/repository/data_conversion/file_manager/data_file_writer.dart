@@ -12,27 +12,36 @@
  !se necesita más funcionalidad se debe crear una clase nueva.
 */
 
-import '../../../data/!data.dart';
+import 'dart:io';
 
-class DataFileWriter{
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:path_provider/path_provider.dart';
 
-  Map<dynamic, String> files = {
-    Driver(): 'conductores.txt',
-    VehicleRegistration(): 'matriculas.txt',
-    Rancher(): 'ganaderos.txt',
-    Slaughterhouse(): 'mataderos.txt',
-    Client(): 'clientes.txt',
-    Product(): 'productos.txt',
-    Classification(): 'clasifiaciones.txt',
-    Performance(): 'rendimientos.txt'
-  };
+class DataFileWriter {
+  DatabaseRepository repository = DatabaseRepository();
 
-  //TODO: Crear un método que escriba los ficheros que vamos a enviar.
-  /*
-  ! Este método debe leer de la base de datos los datos que vamos a enviar
-  ! al ftp y escribirlos en un fichero.
+  Future<List<File>> writeFile() async {
+    List<File> files = [];
+    Directory dir = await getApplicationDocumentsDirectory();
+    Map<String, List> data = await repository
+        .getFTPData(); //! Key: productticket.txt | value: ProductTicket
+    for (String key in data.keys) {
+      String dataString;
+      String fileName = key;
 
-  * Este fichero que vamos a escribir NO lo vamos a enviar directamente al ftp
-  * sino que lo vamos a devolver para que el repositorio del ftp lo envíe.
-  */
+      /*
+      ! dataKey --> es una lista de objetos
+      ! Se recorre esa lista de objetos y se añaden a otra lista ejecutando
+      ! el toString de cada uno de esos modelos. Por úlitmo se juntan todos
+      ! esos strings separandolos por saltos de línea.
+       */
+      dataString =
+          data[key]!.map((object) => object.toString()).toList().join('\n');
+
+      File file = File('${dir.path}/$fileName');
+      file.writeAsStringSync(dataString);
+      files.add(file);
+    }
+    return files;
+  }
 }

@@ -48,7 +48,7 @@ class ProductDeliveryNote extends ModelDao {
   factory ProductDeliveryNote.fromRawJson(String str) =>
       ProductDeliveryNote.fromJson(json.decode(str));
 
-  static ProductDeliveryNote fromJson(Map<String, dynamic> map) {
+  factory ProductDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ProductDeliveryNote.all(
       id: map['id'],
       idDeliveryNote: map['idDeliveryNote'],
@@ -68,11 +68,19 @@ class ProductDeliveryNote extends ModelDao {
     _names.elementAt(1)
   ];
 
+  static final List<String> _exception = [];
+
+  static final List<String> _foreign = [];
+
+  static List<String> get foreign => _foreign;
+
   static List<String> get primary => _primary;
 
   static Map<String, String> get fields => _fields;
 
   static Iterable<String> get names => _names;
+
+  static List<String> get exception => _exception;
 
   @override
   bool operator ==(Object other) {
@@ -95,5 +103,10 @@ class ProductDeliveryNote extends ModelDao {
         nameClassification.hashCode ^
         units.hashCode ^
         kilograms.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'L$nameClassification\t$units\t$kilograms';
   }
 }

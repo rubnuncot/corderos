@@ -8,14 +8,16 @@ import '!!model_dao.dart';
 @reflector
 class Rancher extends ModelDao {
   int? id;
+  String? code;
   String? nif;
   String? name;
 
   Rancher();
-  Rancher.all({@required required this.id, @required required this.nif, @required required this.name});
+  Rancher.all({@required required this.id, @required required this.code ,@required required this.nif, @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'code': Constants.varchar["255"]!,
     'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
   };
@@ -23,6 +25,7 @@ class Rancher extends ModelDao {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'code': code,
       'nif': nif,
       'name': name,
     };
@@ -31,9 +34,10 @@ class Rancher extends ModelDao {
   factory Rancher.fromRawJson(String str) =>
       Rancher.fromJson(json.decode(str));
 
-  static Rancher fromJson(Map<String, dynamic> map) {
+  factory Rancher.fromJson(Map<String, dynamic> map) {
     return Rancher.all(
       id: map['id'],
+      code: map['code'],
       nif: map['nif'],
       name: map['name'],
     );
@@ -63,10 +67,16 @@ class Rancher extends ModelDao {
 
     return other is Rancher &&
         other.id == id &&
+        other.code == code &&
         other.nif == nif &&
         other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ nif.hashCode ^ name.hashCode;
+  int get hashCode => id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
+
+  @override
+  String toString() {
+    return '$code\t$nif\t$name';
+  }
 }

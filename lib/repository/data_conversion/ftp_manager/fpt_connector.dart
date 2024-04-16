@@ -34,10 +34,10 @@ class FtpConnector {
 
     if (isDefault) {
       connection = FTPConnect(
-        '2.139.233.108',
-        port: 50025,
-        user: 'practicas',
-        pass: 'practicas-250',
+        '82.223.98.115',
+        port: 21,
+        user: 'android',
+        pass: 'Android2023/*-',
       );
       path = '/corderos';
     }

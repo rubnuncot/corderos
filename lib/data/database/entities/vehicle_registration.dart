@@ -7,21 +7,26 @@ import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 @reflector
 class VehicleRegistration extends ModelDao {
   String? id;
+  String? vehicleRegistration;
   int? deliveryTicket;
 
   VehicleRegistration();
 
   VehicleRegistration.all(
-      {@required required this.id, @required required this.deliveryTicket});
+      {@required required this.id,
+        @required required this.vehicleRegistration,
+        @required required this.deliveryTicket});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'vehicleRegistration': Constants.varchar["255"]!,
     'deliveryTicketId': Constants.bigint,
   };
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'vehicleRegistration': vehicleRegistration,
       'deliveryTicketId': deliveryTicket,
     };
   }
@@ -29,9 +34,10 @@ class VehicleRegistration extends ModelDao {
   factory VehicleRegistration.fromRawJson(String str) =>
       VehicleRegistration.fromJson(json.decode(str));
 
-  static VehicleRegistration fromJson(Map<String, dynamic> map) {
+  factory VehicleRegistration.fromJson(Map<String, dynamic> map) {
     return VehicleRegistration.all(
       id: map['id'],
+      vehicleRegistration: map['vehicleRegistration'],
       deliveryTicket: map['deliveryTicket'],
     );
   }
@@ -50,4 +56,9 @@ class VehicleRegistration extends ModelDao {
   static List<String> get primary => _primary;
 
   static List<String> get exception => _exception;
+
+  @override
+  String toString() {
+    return '$vehicleRegistration\t$deliveryTicket';
+  }
 }
