@@ -33,7 +33,7 @@ class Changes extends ModelDao {
 
   factory Changes.fromRawJson(String str) => Changes.fromJson(json.decode(str));
 
-  static Changes fromJson(Map<String, dynamic> map) {
+  factory Changes.fromJson(Map<String, dynamic> map) {
     return Changes.all(
       id: map['id'],
       date: map['date'],
@@ -74,4 +74,9 @@ class Changes extends ModelDao {
   @override
   int get hashCode =>
       id.hashCode ^ isRead.hashCode ^ date.hashCode ^ tableChanged.hashCode;
+
+  @override
+  String toString() {
+    return '$isRead\t$date\t$tableChanged';
+  }
 }

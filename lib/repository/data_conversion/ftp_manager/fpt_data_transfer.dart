@@ -58,10 +58,13 @@ class FtpDataTransfer {
     ftp.closeConnection();
   }
 
-//TODO: Implementar un método que envíe los ficheros al FTP
-/*
-  ! Este método tiene que enviar los ficheros al ftp, estos ficheros siempre
-  ! van a ser los mismos, los cuales los vamos a recibir desde el repositorio.
-  ! (data_file_writer.dart)
-  */
+  Future<void> sendFilesToFTP() async {
+    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
+    DataFileWriter dataFileWriter = DataFileWriter();
+    List<File> files = await dataFileWriter.writeFile();
+
+    for (var file in files) {
+      await ftpConnect.uploadFile(file);
+    }
+  }
 }

@@ -40,7 +40,7 @@ class Performance extends ModelDao {
   factory Performance.fromRawJson(String str) =>
       Performance.fromJson(json.decode(str));
 
-  static Performance fromJson(Map<String, dynamic> map) {
+  factory Performance.fromJson(Map<String, dynamic> map) {
     return Performance.all(
       id: map['id'],
       idProduct: map['idProduct'],
@@ -84,4 +84,9 @@ class Performance extends ModelDao {
       idProduct.hashCode ^
       idClassification.hashCode ^
       performance.hashCode;
+
+    @override
+  String toString() {
+    return '$idProduct\t$idClassification\t$performance';
+  }
 }

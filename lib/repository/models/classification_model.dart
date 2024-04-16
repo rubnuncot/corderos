@@ -16,6 +16,7 @@ import 'package:meta/meta.dart';
 
 class ClassificationModel {
   int? id;
+  String? code;
   String? name;
   ProductModel? product;
 
@@ -23,6 +24,7 @@ class ClassificationModel {
 
   ClassificationModel.all({
     @required required this.id,
+    @required required this.code,
     @required required this.name,
     @required required this.product,
   });
@@ -30,6 +32,7 @@ class ClassificationModel {
   ClassificationModel.fromEntity(Classification classification) {
     id = classification.id;
     name = classification.name;
+    code = classification.code;
     product = ProductModel.fromEntity(
         DatabaseRepository.getEntityById(Product(), classification.productId!)
             as Product);
@@ -38,6 +41,7 @@ class ClassificationModel {
   Classification toEntity() {
     return Classification.all(
       id: id,
+      code: code,
       name: name,
       productId: product!.id,
     );

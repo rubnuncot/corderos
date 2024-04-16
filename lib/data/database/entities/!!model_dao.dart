@@ -1,5 +1,6 @@
-import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
+import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
+@reflector
 class ModelDao extends Dao {
   ModelDao() : super();
 

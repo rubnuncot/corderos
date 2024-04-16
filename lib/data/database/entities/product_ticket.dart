@@ -56,7 +56,7 @@ class ProductTicket extends ModelDao {
   factory ProductTicket.fromRawJson(String str) =>
       ProductTicket.fromJson(json.decode(str));
 
-  static ProductTicket fromJson(Map<String, dynamic> map) {
+  factory ProductTicket.fromJson(Map<String, dynamic> map) {
     return ProductTicket.all(
       id: map['id'],
       idTicket: map['idTicket'],
@@ -116,5 +116,10 @@ class ProductTicket extends ModelDao {
         weight.hashCode ^
         idPerformance.hashCode ^
         losses.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'L\t$nameClassification\t$numAnimals\t$weight\t$idPerformance\t$losses';
   }
 }

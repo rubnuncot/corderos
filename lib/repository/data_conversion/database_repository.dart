@@ -1,4 +1,6 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/data/!data.dart';
+import 'package:corderos_app/data/database/entities/product_delivery_note.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
@@ -6,16 +8,34 @@ import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart'
 class DatabaseRepository {
 
   final daoConnector = const Dao();
-  static final _ftpData = [];
+  static final _ftpData = {
+    ClientDeliveryNote: ClientDeliveryNote(),
+    DeliveryTicket: DeliveryTicket(),
+    ProductTicket: ProductTicket(),
+    ProductDeliveryNote: ProductDeliveryNote(),
+  };
 
-  Future<List> getFTPData() async {
-    List result = [];
+  /*
+  * await dao.select<Product>(
+                      sqlBuilder: SqlBuilder()
+                          .querySelect(fields: ['*']).queryFrom(
+                              table: product.getTableName(product)),
+                      model: product,
+                      print: true,
+                    );
+  * */
+  Future<Map<String, List>> getFTPData() async {
+    Map<String, List> result = {};
     try {
-      for (dynamic table in _ftpData) {
-        return await table.select(sqlBuilder: SqlBuilder()
+      for (dynamic table in _ftpData.keys) {
+        dynamic value = _ftpData[table];
+        String tableName = value.getTableName(value);
+        result.addAll({'${tableName.substring(0, tableName.length -1)}.txt' : await value.select(sqlBuilder: SqlBuilder()
             .querySelect(fields: ['*'])
-            .queryFrom(table: table.getTableName(table))
-        );
+            .queryFrom(table: tableName),
+          model: value,
+          print: true,
+        )});
       }
     } catch (e) {
       LogHelper.logger.e('Error en getFTPData: $e');

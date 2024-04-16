@@ -2,9 +2,11 @@ import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
 
 import '../../data/!data.dart';
 
@@ -32,11 +34,24 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 CustomButton(
                   text: 'Cargar',
-                  onPressed: () {
+                  onPressed: () async {
                     //navigator.push(const BurdenScreen(), 1, 'Carga');
-                    Product product = Product.all(id: 0, name: 'Prueba');
-                    product.insert();
-                    LogHelper.logger.d(product.select(sqlBuilder: SqlBuilder().querySelect(fields: ['*']).queryFrom(table: product.getTableName(product))));
+
+                    DateTime now = DateTime.now();
+                    Dao dao = const Dao();
+                    DatabaseRepository db = DatabaseRepository();
+
+                    ClientDeliveryNote clientDeliveryNote = ClientDeliveryNote.all(idDeliveryNote: 1, date: now, slaughterhouseId: 12, productId: 520, clientId: 12);
+                    DeliveryTicket deliveryTicket = DeliveryTicket.all(id: 2, date: now, deliveryTicket: '123432', idDriver: 5, idProduct: 520, idRancher: 2, idSlaughterhouse: 12, idVehicleRegistration: 324, numTicket: 'A343', series: 'A20');
+                    ProductTicket productTicket = ProductTicket.all(id: 520, idTicket: 2, nameClassification: 'dad', idProduct: 500, idPerformance: 30, losses: 12, numAnimals: 500, weight: 87.4);
+                    ProductDeliveryNote productDeliveryNote = ProductDeliveryNote.all(id: 520, idProduct: 520, idDeliveryNote: 4, kilograms: 59.3, nameClassification: 'Cordero', units: 10);
+                    List list = [clientDeliveryNote, deliveryTicket, productTicket, productDeliveryNote];
+
+                    await dao.batchInsertOrUpdate(objects: list);
+                    await db.getFTPData();
+
+                    FtpDataTransfer ftpDataTransfer = FtpDataTransfer();
+                    ftpDataTransfer.sendFilesToFTP();
                   },
                   textColor: Theme.of(context).primaryColor,
                 ),

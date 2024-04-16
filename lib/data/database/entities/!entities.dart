@@ -1,3 +1,4 @@
+export 'package:corderos_app/data/database/entities/product_delivery_note.dart';
 export 'package:corderos_app/data/database/entities/product_ticket.dart';
 export 'package:corderos_app/data/database/entities/client_delivery_note.dart';
 export 'package:corderos_app/data/database/entities/performance.dart';

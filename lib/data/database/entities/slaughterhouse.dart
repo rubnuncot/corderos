@@ -6,21 +6,28 @@ import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 import '!!model_dao.dart';
 
 @reflector
-class Slaughterhouse extends ModelDao{
+class Slaughterhouse extends ModelDao {
   int? id;
+  String? code;
   String? name;
 
   Slaughterhouse();
-  Slaughterhouse.all({@required required this.id, @required required this.name});
+
+  Slaughterhouse.all(
+      {@required required this.id,
+        @required required this.code,
+        @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'code': Constants.varchar["255"]!,
     'name': Constants.varchar["255"]!,
   };
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'code': code,
       'name': name,
     };
   }
@@ -28,9 +35,10 @@ class Slaughterhouse extends ModelDao{
   factory Slaughterhouse.fromRawJson(String str) =>
       Slaughterhouse.fromJson(json.decode(str));
 
-  static Slaughterhouse fromJson(Map<String, dynamic> map) {
+  factory Slaughterhouse.fromJson(Map<String, dynamic> map) {
     return Slaughterhouse.all(
       id: map['id'],
+      code: map['code'],
       name: map['name'],
     );
   }
@@ -57,11 +65,17 @@ class Slaughterhouse extends ModelDao{
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Slaughterhouse &&
-        other.id == id &&
-        other.name == name;
+    return other is Slaughterhouse
+        && other.id == id
+        && other.code == code
+        && other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode;
+  int get hashCode => id.hashCode ^ code.hashCode ^ name.hashCode;
+
+  @override
+  String toString() {
+    return '$code\t$name';
+  }
 }

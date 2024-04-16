@@ -9,6 +9,7 @@ import '!!model_dao.dart';
 class ClientDeliveryNote extends ModelDao {
   int? idDeliveryNote;
   DateTime? date;
+  int? clientId;
   int? slaughterhouseId;
   int? productId;
 
@@ -17,6 +18,7 @@ class ClientDeliveryNote extends ModelDao {
   ClientDeliveryNote.all({
     @required required this.idDeliveryNote,
     @required required this.date,
+    @required required this.clientId,
     @required required this.slaughterhouseId,
     @required required this.productId,
   });
@@ -24,6 +26,7 @@ class ClientDeliveryNote extends ModelDao {
   static final Map<String, String> _fields = {
     'idDeliveryNote': Constants.bigint,
     'date': Constants.datetime,
+    'clientId': Constants.bigint,
     'slaughterhouseId': Constants.bigint,
     'productId': Constants.bigint,
   };
@@ -32,6 +35,7 @@ class ClientDeliveryNote extends ModelDao {
     return {
       'idDeliveryNote': idDeliveryNote,
       'date': date?.toString(),
+      'clientId': clientId,
       'slaughterhouseId': slaughterhouseId,
       'productId': productId,
     };
@@ -40,10 +44,11 @@ class ClientDeliveryNote extends ModelDao {
   factory ClientDeliveryNote.fromRawJson(String str) =>
       ClientDeliveryNote.fromJson(json.decode(str));
 
-  static ClientDeliveryNote fromJson(Map<String, dynamic> map) {
+  factory ClientDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
       idDeliveryNote: map['idDeliveryNote'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
+      clientId: map['clientId'],
       slaughterhouseId: map['slaughterhouseId'],
       productId: map['productId'],
     );
@@ -53,7 +58,15 @@ class ClientDeliveryNote extends ModelDao {
 
   static final List<String> _primary = [_names.elementAt(0)];
 
+  static final List<String> _exception = [];
+
+  static final List<String> _foreign = [];
+
   static List<String> get primary => _primary;
+
+  static List<String> get foreign => _foreign;
+
+  static List<String> get exception => _exception;
 
   static Map<String, dynamic> get fields => _fields;
 
@@ -66,6 +79,7 @@ class ClientDeliveryNote extends ModelDao {
     return other is ClientDeliveryNote &&
         other.idDeliveryNote == idDeliveryNote &&
         other.date == date &&
+        other.clientId == clientId &&
         other.slaughterhouseId == slaughterhouseId &&
         other.productId == productId;
   }
@@ -74,7 +88,13 @@ class ClientDeliveryNote extends ModelDao {
   int get hashCode {
     return idDeliveryNote.hashCode ^
     date.hashCode ^
+    clientId.hashCode ^
     slaughterhouseId.hashCode ^
     productId.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'C\t$date\t$clientId\t$slaughterhouseId\t$productId';
   }
 }

@@ -8,14 +8,21 @@ import '!!model_dao.dart';
 @reflector
 class Driver extends ModelDao {
   int? id;
+  String? code;
   String? nif;
   String? name;
 
   Driver();
-  Driver.all({@required required this.id, @required required this.nif, @required required this.name});
+
+  Driver.all(
+      {@required required this.id,
+      @required required this.code,
+      @required required this.nif,
+      @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'code': Constants.varchar["255"]!,
     'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
   };
@@ -23,17 +30,18 @@ class Driver extends ModelDao {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'code': code,
       'nif': nif,
       'name': name,
     };
   }
 
-  factory Driver.fromRawJson(String str) =>
-      Driver.fromJson(json.decode(str));
+  factory Driver.fromRawJson(String str) => Driver.fromJson(json.decode(str));
 
-  static Driver fromJson(Map<String, dynamic> map) {
+  factory Driver.fromJson(Map<String, dynamic> map) {
     return Driver.all(
       id: map['id'],
+      code: map['code'],
       nif: map['nif'],
       name: map['name'],
     );
@@ -63,10 +71,16 @@ class Driver extends ModelDao {
 
     return other is Driver &&
         other.id == id &&
+        other.code == code &&
         other.nif == nif &&
         other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ nif.hashCode ^ name.hashCode;
+  int get hashCode => id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
+
+  @override
+  String toString() {
+    return '$code\t$nif\t$name';
+  }
 }
