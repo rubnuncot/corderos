@@ -57,7 +57,7 @@ dependencies:
   zoom_tap_animation: ^1.1.0
   animated_custom_dropdown: ^3.0.0
   logger: ^2.2.0
-  ftpconnect: ^2.0.7
+  ftpconnect: ^2.0.5
   path_provider: ^2.1.3
   package_info_plus: ^7.0.0
   open_file: ^3.3.2

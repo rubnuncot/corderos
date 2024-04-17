@@ -36,7 +36,7 @@ class DataFileReader {
 
         if (await storedFile.exists()) {
           String data = await storedFile.readAsString();
-          List<String> lines = data.split(";");
+          List<String> lines = data.split("\n");
           var classMirror = reflector.reflectType(
               file.runtimeType) as ClassMirror;
 
@@ -44,18 +44,21 @@ class DataFileReader {
               'names') as Iterable<String>;
           List<String> listNames = names.toList();
 
-          Map<Symbol, String> constructor = {};
-          int index = 0;
-          for (var line in lines) {
-            constructor.addAll({
-              Symbol(listNames[index]): line
-            });
+          for(var x in lines) {
+            Map<Symbol, String> constructor = {};
+            int index = 0;
+            List<String> line = x.split(';');
+            for (var value in line) {
+              constructor.addAll({
+                Symbol(listNames[index]): value
+              });
+            }
+
+            var instanceMirror = classMirror.newInstance(
+                'all', [], constructor) as ModelDao;
+
+            instanceMirror.insert();
           }
-
-          var instanceMirror = classMirror.newInstance(
-              'all', [], constructor) as ModelDao;
-
-          instanceMirror.insert();
         } else {
           LogHelper.logger.d('File $storedFile does not exist');
         }
