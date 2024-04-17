@@ -7,8 +7,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FtpDataTransfer {
+  ///Se almacena en una variable la instancia de la clase FTPConnector
   FtpConnector ftp = FtpConnector.instance;
 
+  ///Lista de archivos .txt que se van a descargar
   List<String> files = [
     'conductores.txt',
     'matriculas.txt',
@@ -20,6 +22,35 @@ class FtpDataTransfer {
     'rendimientos.txt'
   ];
 
+  /// ### `checkVersion`
+  ///
+  /// Método que comprueba la versión actual de la aplicación comparando
+  /// el valor de la versión actual con el valor de la versión que se almacena
+  /// en el archivo version.txt.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Retorno:**
+  /// - Devuelve true en caso de que la versión almacenada en el archivo version.txt
+  /// sea mayor a la versión actual de la aplicación.
+  ///
+  ///
+  /// **Resumen del Funcionamiento:**
+  ///
+  /// Se establece una conexión con el servidor FTP con valores por defecto
+  /// y se comprueba el PackageInfo. Se almacena el archivo de version.txt en
+  /// la variable version, se descarga el archivo, se lee y finalmente se cierra
+  /// la conexión. Una vez cerrada, en caso de que la versión almacenada en el archivo
+  /// version.txt sea mayor a la versión actual de la aplicación se retorna true, y sino
+  /// se retorna false.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Ejemplo de Uso:**
+  ///
+  /// ```dart
+  /// if (await ftpDataTransfer.checkVersion()) {
+  /// ```
   Future<bool> checkVersion() async {
     FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -33,6 +64,36 @@ class FtpDataTransfer {
 
     return int.parse(versionFile) > int.parse(packageInfo.buildNumber);
   }
+
+  /// ### `getFtpData`
+  ///
+  /// Método que obtiene los datos que se encuentran en los archivos .txt del FTP
+  /// del path especificado.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Retorno:**
+  /// - Devuelve true en caso de exito a la hora de descargar los archivos desde
+  /// el FTP. En caso de que no existan archivos.txt en el path especificado, devuelve
+  /// false junto con un mensaje de error en el log.
+  ///
+  /// **Resumen del Funcionamiento:**
+  ///
+  /// Se establece una conexión con el servidor FTP con el atributo [isDefault] = false.
+  /// Se recorre la lista de archivos.txt a descargar y se almacenan en la variable
+  /// [storedFile] el archivo de su respectiva ruta (${directory.path}/${file})) para
+  /// posteriormente descargarse una a una. El directorio se obtiene a través del método
+  /// [getApplicationDocumentsDirectory();] procedente del paquete pathProvider .En caso
+  /// de completar el total de descargas, el método devuelve true. En caso de que no existan
+  /// archivos.txt en el path devuelve false y un mensaje de error en el log.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Ejemplo de Uso:**
+  ///
+  /// ```dart
+  /// await ftpDataTransfer.getFtpData();
+  /// ```
 
   Future<bool> getFtpData() async {
     FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: false);
@@ -58,6 +119,26 @@ class FtpDataTransfer {
     ftp.closeConnection();
   }
 
+  /// ### `sendFilesToFTP()`
+  ///
+  ///
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Retorno:**
+  /// -
+  ///
+  /// **Resumen del Funcionamiento:**
+  ///
+  ///
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Ejemplo de Uso:**
+  ///
+  /// ```dart
+  ///
+  /// ```
   Future<void> sendFilesToFTP() async {
     FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
     DataFileWriter dataFileWriter = DataFileWriter();

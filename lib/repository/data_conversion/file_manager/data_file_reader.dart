@@ -11,6 +11,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:reflectable/mirrors.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
+/// DataFileReader --> clase que gestiona la lectura de ficheros procedentes
+/// del directorio del FTP, y la descargas del Apk.
+
 class DataFileReader {
 
   FtpDataTransfer ftpDataTransfer = FtpDataTransfer();
@@ -26,11 +29,12 @@ class DataFileReader {
     Performance(): 'rendimientos.txt'
   };
 
+
   Future<void> readFile() async {
     Directory directory = await getApplicationDocumentsDirectory();
 
     try {
-      ftpDataTransfer.getFtpData();
+      await ftpDataTransfer.getFtpData();
       for (dynamic file in files.keys) {
         File storedFile = File("${directory.path}/${files[file]}");
 
