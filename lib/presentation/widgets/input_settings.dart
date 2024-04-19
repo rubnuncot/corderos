@@ -6,16 +6,21 @@ import '../../repository/!repository.dart';
 
 class InputSettings extends StatefulWidget {
   final String label;
-  final String preferenceKey;
+  final String? preferenceKey;
   final bool isPassword;
   final bool isNumeric;
+  final bool isEditable;
+  final String valueNonEditable;
 
   const InputSettings(
       {super.key,
       required this.label,
-      required this.preferenceKey,
+       this.preferenceKey,
       this.isPassword = false,
-      required this.isNumeric});
+      required this.isNumeric,
+         this.isEditable = true,
+        this.valueNonEditable = ''
+      });
 
   @override
   InputSettingsState createState() => InputSettingsState();
@@ -28,6 +33,8 @@ class InputSettingsState extends State<InputSettings>
   late Animation<double> _opacityAnimation, _scaleAnimation;
   late FocusNode _focusNode;
   late bool obscureText;
+  late bool isEditable;
+  late String valueNonEditable;
   late IconData iconData;
   bool editError = false;
 
@@ -46,6 +53,10 @@ class InputSettingsState extends State<InputSettings>
     _animationController.forward(from: 0.0);
     obscureText = widget.isPassword;
     iconData = Icons.visibility;
+    isEditable = widget.isEditable;
+    if (!isEditable) {
+      valueNonEditable = widget.valueNonEditable;
+    }
     getPreferenceValue();
   }
 
@@ -58,8 +69,14 @@ class InputSettingsState extends State<InputSettings>
   }
 
   getPreferenceValue() async {
-    dynamic value = await Preferences.getValue(widget.preferenceKey);
-    _controller.text = value.toString();
+
+    if(!widget.isEditable) {
+      _controller.text = valueNonEditable;
+    } else {
+      dynamic value = await Preferences.getValue(widget.preferenceKey!);
+      _controller.text = value.toString();
+    }
+
   }
 
   @override
@@ -109,6 +126,7 @@ class InputSettingsState extends State<InputSettings>
                   ],
                 ),
                 child: TextFormField(
+                  enabled: isEditable ? true : false,
                   focusNode: _focusNode,
                   controller: _controller,
                   obscureText: obscureText,
@@ -148,11 +166,14 @@ class InputSettingsState extends State<InputSettings>
                   cursorColor: appColors?['hintInputColor'],
                   onFieldSubmitted: (newValue) async {
                       try {
-                        await Preferences.setValue(
-                            widget.preferenceKey, widget.preferenceKey == 'port'
-                            ? int.parse(newValue == '' ? '0' : newValue)
-                            : newValue
-                        );
+
+                        if(widget.preferenceKey != null) {
+                          await Preferences.setValue(
+                              widget.preferenceKey!, widget.preferenceKey == 'port'
+                              ? int.parse(newValue == '' ? '0' : newValue)
+                              : newValue
+                          );
+                        }
                       } catch (e) {
                         editError = true;
                     }

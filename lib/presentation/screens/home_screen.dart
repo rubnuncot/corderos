@@ -1,14 +1,9 @@
-import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
-
-import '../../data/!data.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String name = "Inicio";
@@ -17,8 +12,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigator = context.read<NavigatorBloc>();
     final openPanel = context.read<OpenPanelBloc>();
+    const labelStyle = TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
     return Scaffold(
       body: Padding(
@@ -28,8 +23,12 @@ class HomeScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Text('Conductor', style: labelStyle),
+                const SizedBox(height: 8),
                 const NewDropDown(listIndex: 1),
                 const SizedBox(height: 20),
+                const Text('Matrícula', style: labelStyle),
+                const SizedBox(height: 8),
                 const NewDropDown(listIndex: 2),
                 const SizedBox(height: 20),
                 CustomButton(
