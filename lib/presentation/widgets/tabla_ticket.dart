@@ -1,6 +1,11 @@
-import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'dart:async';
+
+import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/presentation/!presentation.dart';
+import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
+import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TablaTicket extends StatefulWidget {
   const TablaTicket({Key? key}) : super(key: key);
@@ -10,211 +15,90 @@ class TablaTicket extends StatefulWidget {
 }
 
 class _TablaTicketState extends State<TablaTicket> {
-
-  final DatabaseRepository db = DatabaseRepository();
-  final List<FilaTabla> filas = [];
+  DatabaseBloc? databaseBloc;
+  bool isLoading = false;
+  StreamSubscription? databaseBlocSubscription;
 
   @override
   void initState() {
     super.initState();
-    filas.add(FilaTabla(
-      numeroCorderos: 0, //
-      clase: '', //
-      kgs: 0.0,
-      rendimiento: 0.0,
-      color: '',
-    ));
-  }
-
-  void addFila() {
-    setState(() {
-      filas.add(FilaTabla());
+    databaseBloc = context.read<DatabaseBloc>();
+    databaseBlocSubscription = databaseBloc!.stream.listen((state) {
+      setState(() {
+        isLoading = state is DatabaseLoading;
+        if (state is DatabaseSuccess) {
+          LogHelper.logger.d(state.message);
+          LogHelper.logger.f(state.data.toString());
+        } else if (state is DatabaseError) {
+          LogHelper.logger.d(state.message);
+        }
+      });
     });
-  }
-
-  void removeFila(int index) {
-    setState(() {
-      filas.removeAt(index);
-    });
-  }
-
-  Future<void> editValue(String title, dynamic currentValue, Function(dynamic) onSubmitted, {bool isDropdown = false}) async {
-    if (!isDropdown) {
-      TextEditingController _controller = TextEditingController(text: currentValue.toString());
-      return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Editar $title'),
-            content: TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(hintText: title),
-              onSubmitted: (_) {
-                Navigator.of(context).pop();
-              },
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancelar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text('Guardar'),
-                onPressed: () {
-                  onSubmitted(_controller.text);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      double selectedValue = currentValue.toDouble();
-      return showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                title: Text('Editar $title'),
-                content: DropdownButton<double>(
-                  value: selectedValue,
-                  items: List.generate(21, (index) {
-                    return DropdownMenuItem<double>(
-                      value: index.toDouble(),
-                      child: Text(index.toString()),
-                    );
-                  }),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => selectedValue = value); // Actualizamos el estado localmente
-                    }
-                  },
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('Cancelar'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Guardar'),
-                    onPressed: () {
-                      onSubmitted(selectedValue); // Usamos el valor actualizado
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    //! Fecha con formato europeo
+    String formattedDate =
+        "${DateTime
+        .now()
+        .day
+        .toString()
+        .padLeft(2, '0')}/${DateTime
+        .now()
+        .month
+        .toString()
+        .padLeft(2, '0')}/${DateTime
+        .now()
+        .year}";
+    final appColors = AppColors(context: context).getColors();
+
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                child: DataTable(
-                  headingRowColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return Colors.blue[200];
-                    }
-                    return Colors.green[200];
-                  }),
-                  columns: const [
-                    DataColumn(label: Text('Nº Corderos', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Clase', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Kgs.', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Rendimiento', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Color', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Eliminar', style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                  rows: List<DataRow>.generate(
-                    filas.length,
-                        (index) => DataRow(
-                          cells: [
-                            DataCell(
-                              Text(filas[index].numeroCorderos.toString()),
-                              onTap: () => editValue('Nº Corderos', filas[index].numeroCorderos, (newValue) {
-                                setState(() => filas[index].numeroCorderos = int.tryParse(newValue) ?? filas[index].numeroCorderos);
-                              }),
-                            ),
-                            DataCell(
-                              Text(filas[index].clase),
-                              onTap: () => editValue('Clase', filas[index].clase, (newValue) {
-                                setState(() => filas[index].clase = newValue);
-                              }),
-                            ),
-                            DataCell(
-                              Text(filas[index].kgs.toString()),
-                              onTap: () => editValue('Kgs.', filas[index].kgs, (newValue) {
-                                setState(() => filas[index].kgs = double.tryParse(newValue) ?? filas[index].kgs);
-                              }),
-                            ),
-                            DataCell(
-                              Text(filas[index].rendimiento.toString()),
-                              onTap: () => editValue('Rendimiento', filas[index].rendimiento, (newValue) {
-                                setState(() => filas[index].rendimiento = newValue);
-                              }, isDropdown: true),
-                            ),
-                            DataCell(
-                              Text(filas[index].color),
-                              onTap: () => editValue('Color', filas[index].color, (newValue) {
-                                setState(() => filas[index].color = newValue);
-                              }),
-                            ),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(FontAwesomeIcons.trashCan, color: Colors.red),
-                                onPressed: () => removeFila(index),
-                              ),
-                            ),
-                          ],
-                    ),
-                  ),
-                ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: InputSettings(
+                        label: 'Fecha',
+                        isNumeric: false,
+                        isEditable: false,
+                        valueNonEditable: formattedDate,
+                      )),
+                  const SizedBox(width: 16.0),
+                  const Expanded(child: NewDropDown(listIndex: 1))
+                ],
               ),
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addFila,
-        backgroundColor:  Theme.of(context).primaryColor,
-        child: const Icon(FontAwesomeIcons.plus, color: Colors.white),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(child: NewDropDown(listIndex: 1)),
+                  SizedBox(width: 16.0),
+                  Expanded(child: NewDropDown(listIndex: 1))
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(child: NewDropDown(listIndex: 1)),
+                  SizedBox(width: 16.0),
+                  Expanded(child: NewDropDown(listIndex: 1))
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-}
-
-class FilaTabla {
-  int numeroCorderos;
-  String clase;
-  double kgs;
-  double rendimiento;
-  String color;
-
-  FilaTabla({
-    this.numeroCorderos = 0,
-    this.clase = '',
-    this.kgs = 0.0,
-    this.rendimiento = 0.0,
-    this.color = '',
-  });
 }

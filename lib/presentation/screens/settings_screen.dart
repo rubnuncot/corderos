@@ -29,6 +29,7 @@ class SettingsScreen extends StatelessWidget {
                 label: settings.keys.toList()[index],
                 preferenceKey: settings.values.toList()[index],
                 isPassword: settings.values.toList()[index] == 'password',
+                isEditable: true,
               );
             },
           )
