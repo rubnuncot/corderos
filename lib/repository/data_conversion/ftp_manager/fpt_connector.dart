@@ -91,7 +91,8 @@ class FtpConnector {
 
     try {
       if (await connection.connect()) {
-        connection.changeDirectory(path);
+        await connection.changeDirectory(path);
+        LogHelper.logger.d(await connection.currentDirectory());
         return connection;
       }
       throw Exception('FTP connection error');

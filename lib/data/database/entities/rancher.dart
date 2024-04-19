@@ -13,13 +13,18 @@ class Rancher extends ModelDao {
   String? name;
 
   Rancher();
-  Rancher.all({@required required this.id, @required required this.code ,@required required this.nif, @required required this.name});
+
+  Rancher.all(
+      {@required required this.id,
+      @required required this.code,
+      @required required this.nif,
+      @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'code': Constants.varchar["255"]!,
-    'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
+    'nif': Constants.varchar["10"]!,
   };
 
   Map<String, dynamic> toJson() {
@@ -31,8 +36,7 @@ class Rancher extends ModelDao {
     };
   }
 
-  factory Rancher.fromRawJson(String str) =>
-      Rancher.fromJson(json.decode(str));
+  factory Rancher.fromRawJson(String str) => Rancher.fromJson(json.decode(str));
 
   factory Rancher.fromJson(Map<String, dynamic> map) {
     return Rancher.all(
@@ -73,7 +77,8 @@ class Rancher extends ModelDao {
   }
 
   @override
-  int get hashCode => id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
+  int get hashCode =>
+      id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
 
   @override
   String toString() {

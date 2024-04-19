@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
-import '!!model_dao.dart';
+import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 
 @reflector
 class Driver extends ModelDao {
@@ -23,8 +23,8 @@ class Driver extends ModelDao {
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'code': Constants.varchar["255"]!,
-    'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
+    'nif': Constants.varchar["10"]!,
   };
 
   Map<String, dynamic> toJson() {

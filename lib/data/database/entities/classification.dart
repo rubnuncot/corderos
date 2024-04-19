@@ -22,17 +22,17 @@ class Classification extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'productId': Constants.bigint,
     'code': Constants.varchar["255"]!,
     'name': Constants.varchar["255"]!,
-    'product_id': Constants.bigint,
   };
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'productId': productId,
       'code': code,
       'name': name,
-      'product_id': productId,
     };
   }
 
@@ -44,7 +44,7 @@ class Classification extends ModelDao {
       id: map['id'],
       code: map['code'],
       name: map['name'],
-      productId: map['product_id'],
+      productId: map['productId'],
     );
   }
 

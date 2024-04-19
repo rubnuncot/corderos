@@ -25,8 +25,8 @@ class Client extends ModelDao {
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'code': Constants.varchar["255"]!,
-    'nif': Constants.varchar["10"]!,
     'name': Constants.varchar["255"]!,
+    'nif': Constants.varchar["10"]!,
     'email': Constants.varchar["255"]!,
   };
 
