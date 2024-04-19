@@ -12,12 +12,24 @@ class Preferences {
     'name': 'none',
     'vehicle_registration': 'none',
     'slaughterhouse': 1,
-    'host': 'none',
-    'port': 21,
-    'username': 'none',
-    'password': 'none',
-    'path': 'none',
+    'host': '81.42.222.136',
+    'port': 3021,
+    'username': 'tablet',
+    'password': 'tablet2014*',
+    'path': '/GestionC',
     'theme': true, // true = light, false = dark
+    'last_classifications_id': 1,
+    'last_clients_id': 1,
+    'last_client_delivery_notes_id': 1,
+    'last_delivery_tickets_id': 1,
+    'last_drivers_id': 1,
+    'last_performances_id': 1,
+    'last_products_id': 1,
+    'last_product_delivery_notes_id': 1,
+    'last_product_tickets_id': 1,
+    'last_ranchers_id': 1,
+    'last_slaughterhouses_id': 1,
+    'last_vehicleregistrations_id': 1,
   };
 
   static Future<dynamic> getValue(String key) async {
@@ -26,6 +38,18 @@ class Preferences {
         : throw Exception(
             'The key $key is not defined as User Preferences variable. Cannot get value.');
   }
+
+  static Future<Map<String, dynamic>> getLastPreferenceValues() async {
+    Map<String, dynamic> lastValues = {};
+
+    await Future.forEach(_userPreferences.keys, (key) async {
+      dynamic value = _prefs.get(key) ?? _userPreferences[key];
+      lastValues[key] = value;
+    });
+
+    return lastValues;
+  }
+
 
   static Future<void> setValue(String key, dynamic value) async {
     _userPreferences.containsKey(key)
@@ -76,7 +100,8 @@ class Preferences {
   static Future<T> _convertValue<T>(dynamic key, {dynamic value = ''}) async {
     late dynamic returnValue;
 
-    switch (value == '' ? _userPreferences[key].runtimeType : value.runtimeType) {
+    switch (
+        value == '' ? _userPreferences[key].runtimeType : value.runtimeType) {
       case String:
         returnValue = value != ''
             ? await _prefs.setString(key, value) as T

@@ -8,8 +8,6 @@ import '!!model_dao.dart';
 @reflector
 class DeliveryTicket extends ModelDao {
   int? id;
-  String? numTicket;
-  String? series;
   String? deliveryTicket;
   DateTime? date;
   int? idDriver;
@@ -22,8 +20,6 @@ class DeliveryTicket extends ModelDao {
 
   DeliveryTicket.all({
     @required required this.id,
-    @required required this.numTicket,
-    @required required this.series,
     @required required this.deliveryTicket,
     @required required this.date,
     @required required this.idDriver,
@@ -35,22 +31,18 @@ class DeliveryTicket extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'numTicket': Constants.bigint,
-    'series': Constants.varchar['4']!,
-    'deliveryTicket': Constants.varchar['255']!,
     'date': Constants.datetime,
     'idDriver': Constants.bigint,
     'idVehicleRegistration': Constants.bigint,
     'idSlaughterhouse': Constants.bigint,
     'idRancher': Constants.bigint,
     'idProduct': Constants.bigint,
+    'deliveryTicket': Constants.varchar['255']!,
   };
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'numTicket': numTicket,
-      'series': series,
       'deliveryTicket': deliveryTicket,
       'date': date?.toString(),
       'idDriver': idDriver,
@@ -67,8 +59,6 @@ class DeliveryTicket extends ModelDao {
   factory DeliveryTicket.fromJson(Map<String, dynamic> map) {
     return DeliveryTicket.all(
       id: map['id'],
-      numTicket: map['numTicket'],
-      series: map['series'],
       deliveryTicket: map['deliveryTicket'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       idDriver: map['idDriver'],
@@ -83,8 +73,7 @@ class DeliveryTicket extends ModelDao {
 
   static final List<String> _primary = [
     _names.elementAt(0),
-    _names.elementAt(1),
-    _names.elementAt(2)
+    _names.elementAt(7),
   ];
 
   static final List<String> _exception = [];
@@ -107,8 +96,6 @@ class DeliveryTicket extends ModelDao {
 
     return other is DeliveryTicket &&
         other.id == id &&
-        other.numTicket == numTicket &&
-        other.series == series &&
         other.deliveryTicket == deliveryTicket &&
         other.date == date &&
         other.idDriver == idDriver &&
@@ -121,8 +108,6 @@ class DeliveryTicket extends ModelDao {
   @override
   int get hashCode {
     return id.hashCode ^
-        numTicket.hashCode ^
-        series.hashCode ^
         deliveryTicket.hashCode ^
         date.hashCode ^
         idDriver.hashCode ^

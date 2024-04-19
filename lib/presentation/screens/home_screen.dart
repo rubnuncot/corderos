@@ -37,21 +37,8 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () async {
                     //navigator.push(const BurdenScreen(), 1, 'Carga');
 
-                    DateTime now = DateTime.now();
-                    Dao dao = const Dao();
-                    DatabaseRepository db = DatabaseRepository();
-
-                    ClientDeliveryNote clientDeliveryNote = ClientDeliveryNote.all(idDeliveryNote: 1, date: now, slaughterhouseId: 12, productId: 520, clientId: 12);
-                    DeliveryTicket deliveryTicket = DeliveryTicket.all(id: 2, date: now, deliveryTicket: '123432', idDriver: 5, idProduct: 520, idRancher: 2, idSlaughterhouse: 12, idVehicleRegistration: 324, numTicket: 'A343', series: 'A20');
-                    ProductTicket productTicket = ProductTicket.all(id: 520, idTicket: 2, nameClassification: 'dad', idProduct: 500, idPerformance: 30, losses: 12, numAnimals: 500, weight: 87.4);
-                    ProductDeliveryNote productDeliveryNote = ProductDeliveryNote.all(id: 520, idProduct: 520, idDeliveryNote: 4, kilograms: 59.3, nameClassification: 'Cordero', units: 10);
-                    List list = [clientDeliveryNote, deliveryTicket, productTicket, productDeliveryNote];
-
-                    await dao.batchInsertOrUpdate(objects: list);
-                    await db.getFTPData();
-
-                    FtpDataTransfer ftpDataTransfer = FtpDataTransfer();
-                    ftpDataTransfer.sendFilesToFTP();
+                    DataFileReader dataFileReader = DataFileReader();
+                    await dataFileReader.readFile();
                   },
                   textColor: Theme.of(context).primaryColor,
                 ),

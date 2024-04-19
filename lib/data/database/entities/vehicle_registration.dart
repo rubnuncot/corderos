@@ -2,32 +2,33 @@ import 'dart:convert';
 
 import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:meta/meta.dart';
-import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
+import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
+import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 
 @reflector
 class VehicleRegistration extends ModelDao {
-  String? id;
-  String? vehicleRegistration;
-  int? deliveryTicket;
+  int? id;
+  String? vehicleRegistrationNum;
+  String? deliveryTicket;
 
   VehicleRegistration();
 
   VehicleRegistration.all(
       {@required required this.id,
-        @required required this.vehicleRegistration,
-        @required required this.deliveryTicket});
+      @required required this.vehicleRegistrationNum,
+      @required required this.deliveryTicket});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'vehicleRegistration': Constants.varchar["255"]!,
-    'deliveryTicketId': Constants.bigint,
+    'vehicleRegistrationNum': Constants.varchar["255"]!,
+    'deliveryTicket': Constants.varchar["255"]!,
   };
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'vehicleRegistration': vehicleRegistration,
-      'deliveryTicketId': deliveryTicket,
+      'vehicleRegistrationNum': vehicleRegistrationNum,
+      'deliveryTicket': deliveryTicket,
     };
   }
 
@@ -37,7 +38,7 @@ class VehicleRegistration extends ModelDao {
   factory VehicleRegistration.fromJson(Map<String, dynamic> map) {
     return VehicleRegistration.all(
       id: map['id'],
-      vehicleRegistration: map['vehicleRegistration'],
+      vehicleRegistrationNum: map['vehicleRegistrationNum'],
       deliveryTicket: map['deliveryTicket'],
     );
   }
@@ -59,6 +60,6 @@ class VehicleRegistration extends ModelDao {
 
   @override
   String toString() {
-    return '$vehicleRegistration\t$deliveryTicket';
+    return '$vehicleRegistrationNum\t$deliveryTicket';
   }
 }

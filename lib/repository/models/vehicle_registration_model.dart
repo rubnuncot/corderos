@@ -5,21 +5,21 @@ import 'package:corderos_app/repository/models/!models.dart';
 import 'package:meta/meta.dart';
 
 class VehicleRegistrationModel {
-  String? id;
+  String? vehicleRegistrationNum;
   DeliveryTicketModel? clientDeliveryNote;
 
   VehicleRegistrationModel();
 
   VehicleRegistrationModel.all({
-    @required required this.id,
+    @required required this.vehicleRegistrationNum,
     @required required this.clientDeliveryNote,
   });
 
-  VehicleRegistrationModel.fromEntity(VehicleRegistration vehicleRegistration) {
-    id = vehicleRegistration.id;
+  VehicleRegistrationModel.fromEntity(VehicleRegistration vehicleRegistrationEntity) {
+    vehicleRegistrationNum = vehicleRegistrationEntity.vehicleRegistrationNum;
     clientDeliveryNote = DeliveryTicketModel.fromEntity(
         DatabaseRepository.getEntityById(
-                DeliveryTicket(), vehicleRegistration.deliveryTicket!)
+                DeliveryTicket(), vehicleRegistrationEntity.id!)
             as DeliveryTicket);
   }
 }

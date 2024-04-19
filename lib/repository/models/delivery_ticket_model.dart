@@ -6,8 +6,6 @@ import '!models.dart';
 import '../../data/!data.dart';
 
 class DeliveryTicketModel {
-  String? numTicket;
-  String? series;
   String? deliveryTicket;
   DateTime? date;
   DriverModel? driver;
@@ -19,8 +17,6 @@ class DeliveryTicketModel {
   DeliveryTicketModel();
 
   DeliveryTicketModel.all({
-    @required required this.numTicket,
-    @required required this.series,
     @required required this.deliveryTicket,
     @required required this.date,
     @required required this.driver,
@@ -31,8 +27,6 @@ class DeliveryTicketModel {
   });
 
   DeliveryTicketModel.fromEntity(DeliveryTicket deliveryTicketEntity) {
-    numTicket = deliveryTicketEntity.numTicket;
-    series = deliveryTicketEntity.series;
     deliveryTicket = deliveryTicketEntity.deliveryTicket;
     date = deliveryTicketEntity.date;
 

@@ -18,7 +18,7 @@ class FtpDataTransfer {
     'mataderos.txt',
     'clientes.txt',
     'productos.txt',
-    'clasifiaciones.txt',
+    'clasificaciones.txt',
     'rendimientos.txt'
   ];
 
@@ -111,6 +111,31 @@ class FtpDataTransfer {
     }
   }
 
+  /// ### `downloadApk`
+  ///
+  /// Método encargado de descargar la app-release.apk.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Resumen del Funcionamiento:**
+  ///
+  /// Este método comienza instanciando una conexión con el parámetro
+  /// [isDefault] = true, además de una variable [directory] con
+  /// los directorios de documentos de la aplicación actual a través
+  /// del método [getApplicationDocumentsDirectory()] procedente del
+  /// paquete pathProvider. Se declara la variable [apk] con la ruta de
+  /// la app-release.apk y se descarga la app-release.apk a través del
+  /// método [downloadFile()] del paquete FTPConnect. Finalmente se cierra
+  /// la conexión con el FTP.
+  ///
+  /// ----------------------------------------------------------------
+  ///
+  /// **Ejemplo de Uso:**
+  ///
+  /// ```dart
+  /// ftpDataTransfer.downloadApk();
+  /// ```
+
   Future<void> downloadApk () async {
     FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
     Directory directory = await getApplicationDocumentsDirectory();
@@ -121,23 +146,27 @@ class FtpDataTransfer {
 
   /// ### `sendFilesToFTP()`
   ///
-  ///
+  /// Método encargado de enviar los archivos.txt, los cuáles son
+  /// escritos por el método [writeFile()], al FTP a través de una
+  /// conexión.
   ///
   /// ----------------------------------------------------------------
   ///
-  /// **Retorno:**
-  /// -
-  ///
   /// **Resumen del Funcionamiento:**
   ///
-  ///
+  /// Comienza con la instancia de una conexión con el servidor FTP y
+  /// de un DataFileWriter mediante el cuál podremos acceder al método
+  /// [writeFile()] que crea y escribe los archivos.txt. Posteriormente
+  /// se almacenan en una lista y se recorren uno a uno para ir subiéndolos
+  /// al FTP.
   ///
   /// ----------------------------------------------------------------
   ///
   /// **Ejemplo de Uso:**
   ///
   /// ```dart
-  ///
+  /// FtpDataTransfer ftpDataTransfer = FtpDataTransfer();
+  /// ftpDataTransfer.sendFilesToFTP();
   /// ```
   Future<void> sendFilesToFTP() async {
     FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
