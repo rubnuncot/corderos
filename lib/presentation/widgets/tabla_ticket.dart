@@ -1,3 +1,4 @@
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,14 +10,16 @@ class TablaTicket extends StatefulWidget {
 }
 
 class _TablaTicketState extends State<TablaTicket> {
+
+  final DatabaseRepository db = DatabaseRepository();
   final List<FilaTabla> filas = [];
 
   @override
   void initState() {
     super.initState();
     filas.add(FilaTabla(
-      numeroCorderos: 0,
-      clase: '',
+      numeroCorderos: 0, //
+      clase: '', //
       kgs: 0.0,
       rendimiento: 0.0,
       color: '',
@@ -127,11 +130,11 @@ class _TablaTicketState extends State<TablaTicket> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minWidth: constraints.maxWidth),
                 child: DataTable(
-                  headingRowColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-                    if (states.contains(MaterialState.selected)) {
-                      return Colors.blue[200]; // Color cuando está seleccionado (opcional)
+                  headingRowColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return Colors.blue[200];
                     }
-                    return Colors.green[200]; // Color predeterminado
+                    return Colors.green[200];
                   }),
                   columns: const [
                     DataColumn(label: Text('Nº Corderos', style: TextStyle(fontWeight: FontWeight.bold))),

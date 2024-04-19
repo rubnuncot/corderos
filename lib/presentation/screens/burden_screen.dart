@@ -1,3 +1,5 @@
+import 'package:corderos_app/presentation/widgets/!widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BurdenScreen extends StatelessWidget {
@@ -7,9 +9,8 @@ class BurdenScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return const Center(
-      child: Text('BurdenScreen')
+      child: TablaTicket(),
     );
   }
 }
