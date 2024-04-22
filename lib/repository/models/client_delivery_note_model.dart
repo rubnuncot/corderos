@@ -26,7 +26,7 @@ class ClientDeliveryNoteModel {
     idClient = clientDeliveryNote.clientId;
     date = clientDeliveryNote.date;
     slaughterhouse = SlaughterhouseModel.fromEntity(DatabaseRepository.getEntityById(Slaughterhouse(), clientDeliveryNote.slaughterhouseId!) as Slaughterhouse);
-    product = ProductModel.fromEntity(DatabaseRepository.getEntityById(Product(), clientDeliveryNote.productId!) as Product);
+    product = ProductModel.fromEntity(DatabaseRepository.getEntityById(Product(), clientDeliveryNote.idProduct!) as Product);
   }
 
   ClientDeliveryNote toEntity() {
@@ -35,7 +35,7 @@ class ClientDeliveryNoteModel {
       clientId: idClient,
       date: date,
       slaughterhouseId: slaughterhouse!.id,
-      productId: product!.id,
+      idProduct: product!.id,
     );
   }
 }

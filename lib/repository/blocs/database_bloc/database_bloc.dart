@@ -29,18 +29,13 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "nif LIKE '%${event.search}%'",
             and
           ],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "nif_${event.nif}": ["nif LIKE '%${event.search}%'", and],
-          "code_${event.code}": ["code = '%${event.search}%'", and]
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "nif_${event.nif}": ["nif LIKE '%${event.nif}%'", and],
+          "code_${event.code}": ["code = '%${event.code}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         drivers = whereClause.isEmpty
             ? await driver.selectAll() as List<Driver>
             : await driver.select(
@@ -74,17 +69,12 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "deliveryTicket LIKE '%${event.search}%'",
             and
           ],
-          "vehicleRegistrationNum${event.vehicleRegistrationNum}": ["vehicleRegistrationNum LIKE '%${event.search}%'", and],
-          "deliveryTicket${event.deliveryTicket}": ["deliveryTicket LIKE '%${event.search}%'", and],
+          "vehicleRegistrationNum_${event.vehicleRegistrationNum}": ["vehicleRegistrationNum LIKE '%${event.vehicleRegistrationNum}%'", and],
+          "deliveryTicket_${event.deliveryTicket}": ["deliveryTicket LIKE '%${event.deliveryTicket}%'", and],
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         vehicleRegistrations = whereClause.isEmpty
             ? await vehicleRegistration.selectAll() as List<VehicleRegistration>
             : await vehicleRegistration.select(
@@ -119,18 +109,13 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "productId LIKE '%${event.search}%'",
             and
           ],
-          "code_${event.code}": ["code = '%${event.search}%'", and],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "productId_${event.productId}": ["productId LIKE '%${event.search}%'", and]
+          "code_${event.code}": ["code = '%${event.code}%'", and],
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "productId_${event.productId}": ["productId = '%${event.productId}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         classifications = whereClause.isEmpty
             ? await classification.selectAll() as List<Classification>
             : await classification.select(
@@ -167,19 +152,14 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "email LIKE '%${event.search}%'",
             and
           ],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "nif_${event.nif}": ["nif LIKE '%${event.search}%'", and],
-          "code_${event.code}": ["code = '%${event.search}%'", and],
-          "email_${event.email}": ["email LIKE '%${event.search}%'", and]
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "nif_${event.nif}": ["nif LIKE '%${event.nif}%'", and],
+          "code_${event.code}": ["code = '%${event.code}%'", and],
+          "email_${event.email}": ["email LIKE '%${event.email}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         clients = whereClause.isEmpty
             ? await client.selectAll() as List<Client>
             : await client.select(
@@ -220,21 +200,16 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "idProduct LIKE '%${event.search}%'",
             and,
           ],
-          "deliveryTicket${event.deliveryTicket}": ["deliveryTicket LIKE '%${event.search}%'", and],
-          "idDriver${event.idDriver}": ["idDriver LIKE '%${event.search}%'", and],
-          "idVehicleRegistration${event.idVehicleRegistration}": ["idVehicleRegistration LIKE '%${event.search}%'", and],
-          "idSlaughterhouse${event.idSlaughterhouse}": ["idSlaughterhouse LIKE '%${event.search}%'", and],
-          "idRancher${event.idRancher}": ["idRancher LIKE '%${event.search}%'", and],
-          "idProduct${event.idProduct}": ["idProduct LIKE '%${event.search}%'", and],
+          "deliveryTicket_${event.deliveryTicket}": ["deliveryTicket LIKE '%${event.deliveryTicket}%'", and],
+          "idDriver_${event.idDriver}": ["idDriver = '%${event.idDriver}%'", and],
+          "idVehicleRegistration_${event.idVehicleRegistration}": ["idVehicleRegistration = '%${event.idVehicleRegistration}%'", and],
+          "idSlaughterhouse_${event.idSlaughterhouse}": ["idSlaughterhouse = '%${event.idSlaughterhouse}%'", and],
+          "idRancher_${event.idRancher}": ["idRancher = '%${event.idRancher}%'", and],
+          "idProduct_${event.idProduct}": ["idProduct = '%${event.idProduct}%'", and],
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         deliveryTickets = whereClause.isEmpty
             ? await deliveryTicket.selectAll() as List<DeliveryTicket>
             : await deliveryTicket.select(
@@ -269,18 +244,13 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "performance LIKE '%${event.search}%'",
             and
           ],
-          "idProduct_${event.idProduct}": ["idProduct LIKE '%${event.search}%'", and],
-          "idClassification_${event.idClassification}": ["idClassification LIKE '%${event.search}%'", and],
-          "performance_${event.performance}": ["performance = '%${event.search}%'", and]
+          "idProduct_${event.idProduct}": ["idProduct LIKE '%${event.idProduct}%'", and],
+          "idClassification_${event.idClassification}": ["idClassification LIKE '%${event.idClassification}%'", and],
+          "performance_${event.performance}": ["performance = '%${event.performance}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         performances = whereClause.isEmpty
             ? await performance.selectAll() as List<Performance>
             : await performance.select(
@@ -313,17 +283,12 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "name LIKE '%${event.search}%'",
             and
           ],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "code_${event.code}": ["code = '%${event.search}%'", and]
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "code_${event.code}": ["code = '%${event.code}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         products = whereClause.isEmpty
             ? await product.selectAll() as List<Product>
             : await product.select(
@@ -358,18 +323,13 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "nif LIKE '%${event.search}%'",
             and
           ],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "nif_${event.nif}": ["nif LIKE '%${event.search}%'", and],
-          "code_${event.code}": ["code = '%${event.search}%'", and]
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "nif_${event.nif}": ["nif LIKE '%${event.nif}%'", and],
+          "code_${event.code}": ["code = '%${event.code}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         ranchers = whereClause.isEmpty
             ? await rancher.selectAll() as List<Rancher>
             : await rancher.select(
@@ -402,17 +362,12 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "name LIKE '%${event.search}%'",
             and
           ],
-          "name_${event.name}": ["name LIKE '%${event.search}%'", and],
-          "code_${event.code}": ["code = '%${event.search}%'", and]
+          "name_${event.name}": ["name LIKE '%${event.name}%'", and],
+          "code_${event.code}": ["code = '%${event.code}%'", and]
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         slaughters = whereClause.isEmpty
             ? await slaughterhouse.selectAll() as List<Slaughterhouse>
             : await slaughterhouse.select(
@@ -453,20 +408,15 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
             "kilograms LIKE '%${event.search}%'",
             and,
           ],
-          "idDeliveryNote${event.idDeliveryNote}": ["idDeliveryNote LIKE '%${event.search}%'", and],
-          "idProduct${event.idProduct}": ["idProduct LIKE '%${event.search}%'", and],
-          "nameClassification${event.nameClassification}": ["nameClassification LIKE '%${event.search}%'", and],
-          "units${event.units}": ["units LIKE '%${event.search}%'", and],
-          "kilograms${event.kilograms}": ["kilograms LIKE '%${event.search}%'", and],
+          "idDeliveryNote_${event.idDeliveryNote}": ["idDeliveryNote = '%${event.idDeliveryNote}%'", and],
+          "idProduct_${event.idProduct}": ["idProduct LIKE '%${event.idProduct}%'", and],
+          "nameClassification_${event.nameClassification}": ["nameClassification LIKE '%${event.nameClassification}%'", and],
+          "units_${event.units}": ["units LIKE '%${event.units}%'", and],
+          "kilograms_${event.kilograms}": ["kilograms LIKE '%${event.kilograms}%'", and],
         };
 
-        for (String key in eventData.keys) {
-          if (key.contains("none")) {
-            whereClause.addAll(eventData[key]!);
-          }
-        }
+        getConditions(eventData);
 
-        whereClause.removeLast();
         productDeliveryNotes = whereClause.isEmpty
             ? await productDeliveryNote.selectAll() as List<ProductDeliveryNote>
             : await productDeliveryNote.select(
@@ -484,14 +434,113 @@ class DatabaseBloc extends Bloc<DatabaseEvent, DatabaseState> {
 
     on<GetClientDeliveryNotes>((event, emit) async {
       emit(DatabaseLoading());
-      await Future.delayed(const Duration(seconds: 2));
-      emit(DatabaseSuccess('', []));
+      try {
+        String or = SqlBuilder.constOperators['or']!;
+        String and = SqlBuilder.constOperators['and']!;
+
+        ClientDeliveryNote clientDeliveryNote = ClientDeliveryNote();
+        List<String> whereClause = [];
+        List<ClientDeliveryNote> clientsDeliveryNotes = [];
+
+        Map<String, Iterable<String>> eventData = {
+          "search_${event.search}": [
+            "idDeliveryNote LIKE '%${event.search}%'",
+            or,
+            "idProduct LIKE '%${event.search}%'",
+            or,
+            "nameClassification LIKE '%${event.search}%'",
+            or,
+            "idSlaughterhouse LIKE '%${event.search}%'",
+            or,
+            "units LIKE '%${event.search}%'",
+            or,
+            "kilograms LIKE '%${event.search}%'",
+            and,
+          ],
+          "idDeliveryNote_${event.clientId}": ["idDeliveryNote LIKE '%${event.clientId}%'", and],
+          "idProduct_${event.productId}": ["idProduct LIKE '%${event.productId}%'", and],
+          "idProduct_${event.slaughterhouseId}": ["idProduct LIKE '%${event.slaughterhouseId}%'", and],
+        };
+
+        getConditions(eventData);
+
+        clientsDeliveryNotes = whereClause.isEmpty
+            ? await clientDeliveryNote.selectAll() as List<ClientDeliveryNote>
+            : await clientDeliveryNote.select(
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(table: clientDeliveryNote.getTableName(clientDeliveryNote))
+                .queryWhere(conditions: whereClause)) as List<ClientDeliveryNote>;
+
+        emit(
+            DatabaseSuccess('Albarán de productos obtenidos correctamente.', [clientsDeliveryNotes]));
+      } catch (e) {
+        emit(DatabaseError(e.toString()));
+      }
     });
 
     on<GetProductTickets>((event, emit) async {
       emit(DatabaseLoading());
-      await Future.delayed(const Duration(seconds: 2));
-      emit(DatabaseSuccess('', []));
+      try {
+        String or = SqlBuilder.constOperators['or']!;
+        String and = SqlBuilder.constOperators['and']!;
+
+        ProductDeliveryNote productDeliveryNote = ProductDeliveryNote();
+        List<String> whereClause = [];
+        List<ProductDeliveryNote> productsDeliveryNotes = [];
+
+        Map<String, Iterable<String>> eventData = {
+          "search_${event.search}": [
+            "idDeliveryNote LIKE '%${event.search}%'",
+            or,
+            "idProduct LIKE '%${event.search}%'",
+            or,
+            "nameClassification LIKE '%${event.search}%'",
+            or,
+            "idSlaughterhouse LIKE '%${event.search}%'",
+            or,
+            "units LIKE '%${event.search}%'",
+            or,
+            "kilograms LIKE '%${event.search}%'",
+            and,
+          ],
+          "idDeliveryNote_${event.idPerformance}": ["idDeliveryNote LIKE '%${event.idPerformance}%'", and],
+          "idProduct_${event.idProduct}": ["idProduct LIKE '%${event.idProduct}%'", and],
+          "idProduct_${event.idTicket}": ["idProduct LIKE '%${event.idTicket}%'", and],
+          "idProduct_${event.losses}": ["idProduct LIKE '%${event.losses}%'", and],
+          "idProduct_${event.nameClassification}": ["idProduct LIKE '%${event.nameClassification}%'", and],
+          "idProduct_${event.numAnimals}": ["idProduct LIKE '%${event.numAnimals}%'", and],
+          "idProduct_${event.weight}": ["idProduct LIKE '%${event.weight}%'", and],
+        };
+
+        getConditions(eventData);
+
+        productsDeliveryNotes = whereClause.isEmpty
+            ? await productDeliveryNote.selectAll() as List<ProductDeliveryNote>
+            : await productDeliveryNote.select(
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(table: productDeliveryNote.getTableName(productDeliveryNote))
+                .queryWhere(conditions: whereClause)) as List<ProductDeliveryNote>;
+
+        emit(
+            DatabaseSuccess('Albarán de productos obtenidos correctamente.', [productsDeliveryNotes]));
+      } catch (e) {
+        emit(DatabaseError(e.toString()));
+      }
     });
+  }
+
+  List<String> getConditions(Map<String, Iterable<String>> eventData) {
+    List<String> conditions = [];
+    for (String key in eventData.keys) {
+      if (key.contains("none")) {
+        for(var condition in eventData[key]!){
+          conditions.add(condition);
+        }
+      }
+    }
+    conditions.removeLast();
+    return conditions;
   }
 }

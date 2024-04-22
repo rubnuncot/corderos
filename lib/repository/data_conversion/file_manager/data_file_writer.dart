@@ -19,9 +19,18 @@ class DataFileWriter {
   /// - Devuelve una lista de archivos de tipo File.
   ///
   /// **Resumen del Funcionamiento:**
+  /// ! Hay que obtener las listas que vienen e identificarlas para generar las
+  /// ! lineas de cada uno de los archivos.
   ///
+  /// ! Las keys que contienen product en sus nombres, son las listas de líneas.
   ///
+  /// ! Un ejemplo de lo que tendría que quedar.
   ///
+  /// ! C lo que sea siendo la línea de la cabecera.
+  /// ! L lo que sea la línea de los datos que coincidan con el idProducto y
+  /// ! el id de la tabla que sea...
+  ///
+  /// ? Borrar las líneas en rojo que no son documentación.
   /// ----------------------------------------------------------------
   ///
   /// **Ejemplo de Uso:**
@@ -34,9 +43,25 @@ class DataFileWriter {
     Directory dir = await getApplicationDocumentsDirectory();
     Map<String, List> data = await repository
         .getFTPData(); //! Key: productticket.txt | value: ProductTicket()
+
+    Map<String, List> subData = {};
+
+    for(var line in data.keys){
+      if(line.contains('product')){
+        subData.addAll({line : data[line]!});
+      }
+    }
+
     for (String key in data.keys) {
       String dataString;
       String fileName = key;
+
+      if(!key.contains('product')){
+        for(var data in data[key]!){
+          var idProduct = data.idProduct;
+
+        }
+      }
 
       /*
       ! dataKey --> es una lista de objetos

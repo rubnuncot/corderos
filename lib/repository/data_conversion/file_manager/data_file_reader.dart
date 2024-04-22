@@ -89,21 +89,25 @@ class DataFileReader {
               Map<Symbol, dynamic> constructor = {};
               int index = 0;
               List<String> line = x.split(';');
-              if (line.length == names.length-1) {
+              if (line.length == names.length - 1) {
                 constructor.addAll({Symbol(listNames[0]): lastId});
                 index++;
                 for (var value in line) {
                   constructor.addAll({
                     Symbol(listNames[index]):
-                    _castElements(listNames[index], value, fields)
+                        _castElements(listNames[index], value, fields)
                   });
                   index++;
                 }
                 lastId++;
                 LogHelper.logger.d(constructor);
-                var instanceMirror = classMirror.newInstance('all', [], constructor) as ModelDao;
+                var instanceMirror =
+                    classMirror.newInstance('all', [], constructor) as ModelDao;
 
-                instanceMirror.insert();
+                await instanceMirror.truncate();
+                if (await instanceMirror.existsInDatabase()) {
+                  instanceMirror.insert();
+                }
               }
             }
           }
