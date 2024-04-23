@@ -373,18 +373,13 @@ final _data = <r.Reflectable, r.ReflectorData>{
             {},
             {
               r'': (bool b) => () => b ? prefix4.ClientDeliveryNote() : null,
-              r'all': (bool b) => (
-                      {idDeliveryNote,
-                      date,
-                      clientId,
-                      slaughterhouseId,
-                      productId}) =>
-                  b
+              r'all': (bool b) =>
+                  ({id, date, clientId, slaughterhouseId, idProduct}) => b
                       ? prefix4.ClientDeliveryNote.all(
                           clientId: clientId,
                           date: date,
-                          idDeliveryNote: idDeliveryNote,
-                          idProduct: productId,
+                          id: id,
+                          idProduct: idProduct,
                           slaughterhouseId: slaughterhouseId)
                       : null,
               r'fromRawJson': (bool b) => (str) =>
@@ -1216,15 +1211,15 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'losses', 67239941, 2,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
-        r.VariableMirrorImpl(r'idDeliveryNote', 67239941, 3,
-            const prefix0.MyReflectable(), -1, -1, -1, null, null),
+        r.VariableMirrorImpl(r'id', 67239941, 3, const prefix0.MyReflectable(),
+            -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'date', 67239941, 3,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'clientId', 67239941, 3,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'slaughterhouseId', 67239941, 3,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
-        r.VariableMirrorImpl(r'productId', 67239941, 3,
+        r.VariableMirrorImpl(r'idProduct', 67239941, 3,
             const prefix0.MyReflectable(), -1, -1, -1, null, null),
         r.VariableMirrorImpl(r'id', 67239941, 4, const prefix0.MyReflectable(),
             -1, -1, -1, null, null),
@@ -2174,18 +2169,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'other', 134348806, 136,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
-        r.ParameterMirrorImpl(
-            r'idDeliveryNote',
-            67249158,
-            155,
-            const prefix0.MyReflectable(),
-            -1,
-            -1,
-            -1,
-            null,
-            null,
-            null,
-            #idDeliveryNote),
+        r.ParameterMirrorImpl(r'id', 67249158, 155,
+            const prefix0.MyReflectable(), -1, -1, -1, null, null, null, #id),
         r.ParameterMirrorImpl(r'date', 67249158, 155,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, #date),
         r.ParameterMirrorImpl(
@@ -2213,7 +2198,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             #slaughterhouseId),
         r.ParameterMirrorImpl(
-            r'productId',
+            r'idProduct',
             67249158,
             155,
             const prefix0.MyReflectable(),
@@ -2223,12 +2208,12 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             null,
             null,
-            #productId),
+            #idProduct),
         r.ParameterMirrorImpl(r'str', 134348806, 156,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'map', 151126022, 157,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
-        r.ParameterMirrorImpl(r'_idDeliveryNote', 67240038, 139,
+        r.ParameterMirrorImpl(r'_id', 67240038, 139,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_date', 67240038, 141,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
@@ -2236,7 +2221,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'_slaughterhouseId', 67240038, 145,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
-        r.ParameterMirrorImpl(r'_productId', 67240038, 147,
+        r.ParameterMirrorImpl(r'_idProduct', 67240038, 147,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
         r.ParameterMirrorImpl(r'other', 134348806, 159,
             const prefix0.MyReflectable(), -1, -1, -1, null, null, null, null),
@@ -2631,11 +2616,11 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'date': (dynamic instance) => instance.date,
         r'clientId': (dynamic instance) => instance.clientId,
         r'slaughterhouseId': (dynamic instance) => instance.slaughterhouseId,
-        r'productId': (dynamic instance) => instance.idProduct,
         r'idClassification': (dynamic instance) => instance.idClassification,
         r'performance': (dynamic instance) => instance.performance,
         r'code': (dynamic instance) => instance.code,
         r'name': (dynamic instance) => instance.name,
+        r'productId': (dynamic instance) => instance.productId,
         r'nif': (dynamic instance) => instance.nif,
         r'email': (dynamic instance) => instance.email,
         r'deliveryTicket': (dynamic instance) => instance.deliveryTicket,
@@ -2667,13 +2652,13 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'clientId=': (dynamic instance, value) => instance.clientId = value,
         r'slaughterhouseId=': (dynamic instance, value) =>
             instance.slaughterhouseId = value,
-        r'productId=': (dynamic instance, value) => instance.idProduct = value,
         r'idClassification=': (dynamic instance, value) =>
             instance.idClassification = value,
         r'performance=': (dynamic instance, value) =>
             instance.performance = value,
         r'code=': (dynamic instance, value) => instance.code = value,
         r'name=': (dynamic instance, value) => instance.name = value,
+        r'productId=': (dynamic instance, value) => instance.productId = value,
         r'nif=': (dynamic instance, value) => instance.nif = value,
         r'email=': (dynamic instance, value) => instance.email = value,
         r'deliveryTicket=': (dynamic instance, value) =>

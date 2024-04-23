@@ -44,37 +44,43 @@ class DataFileWriter {
     Map<String, List> data = await repository
         .getFTPData(); //! Key: productticket.txt | value: ProductTicket()
 
-    Map<String, List> subData = {};
+    Map<String, List> productData = {};
+    Map<String, List> restData = {};
 
     for(var line in data.keys){
       if(line.contains('product')){
-        subData.addAll({line : data[line]!});
+        productData.addAll({line : data[line]!});
+      } else {
+        restData.addAll({line : data[line]!});
       }
     }
 
-    for (String key in data.keys) {
-      String dataString;
-      String fileName = key;
+    for(var key in restData.keys){
+      var dataString = "";
+      var fileName = key;
 
-      if(!key.contains('product')){
-        for(var data in data[key]!){
-          var idProduct = data.idProduct;
-
-        }
+      if(key.contains('delivery')){
+        dataString = _getDataString(restData, key, dataString, productData, 'product_deliverynote.txt');
+      } else {
+        dataString = _getDataString(restData, key, dataString, productData, 'product_ticket.txt');
       }
-
-      /*
-      ! dataKey --> es una lista de objetos
-      ! Se recorre esa lista de objetos y se añaden a otra lista ejecutando
-      ! el toString de cada uno de esos modelos. Por úlitmo se juntan todos
-      ! esos strings separandolos por saltos de línea.
-       */
-      dataString = data[key]!.map((object) => object.toString()).toList().join('\n');
 
       File file = File('${dir.path}/$fileName');
       file.writeAsStringSync(dataString);
       files.add(file);
     }
     return files;
+  }
+
+  String _getDataString(Map<String, List<dynamic>> restData, String key, String dataString, Map<String, List<dynamic>> productData, String productTicketKey) {
+    for(var data in restData[key]!){
+      dataString += 'C\t${data.toString()}\n';
+      for(var product in productData[productTicketKey]!){
+        if(product.id == data.id){
+          dataString += 'L\t${product.toString()}\n';
+        }
+      }
+    }
+    return dataString;
   }
 }

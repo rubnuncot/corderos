@@ -7,7 +7,7 @@ import '!!model_dao.dart';
 
 @reflector
 class ClientDeliveryNote extends ModelDao {
-  int? idDeliveryNote;
+  int? id;
   DateTime? date;
   int? clientId;
   int? slaughterhouseId;
@@ -16,7 +16,7 @@ class ClientDeliveryNote extends ModelDao {
   ClientDeliveryNote();
 
   ClientDeliveryNote.all({
-    @required required this.idDeliveryNote,
+    @required required this.id,
     @required required this.date,
     @required required this.clientId,
     @required required this.slaughterhouseId,
@@ -24,7 +24,7 @@ class ClientDeliveryNote extends ModelDao {
   });
 
   static final Map<String, String> _fields = {
-    'idDeliveryNote': Constants.bigint,
+    'id': Constants.bigint,
     'date': Constants.datetime,
     'clientId': Constants.bigint,
     'slaughterhouseId': Constants.bigint,
@@ -33,7 +33,7 @@ class ClientDeliveryNote extends ModelDao {
 
   Map<String, dynamic> toJson() {
     return {
-      'idDeliveryNote': idDeliveryNote,
+      'id': id,
       'date': date?.toString(),
       'clientId': clientId,
       'slaughterhouseId': slaughterhouseId,
@@ -46,7 +46,7 @@ class ClientDeliveryNote extends ModelDao {
 
   factory ClientDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
-      idDeliveryNote: map['idDeliveryNote'],
+      id: map['id'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       clientId: map['clientId'],
       slaughterhouseId: map['slaughterhouseId'],
@@ -77,7 +77,7 @@ class ClientDeliveryNote extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ClientDeliveryNote &&
-        other.idDeliveryNote == idDeliveryNote &&
+        other.id == id &&
         other.date == date &&
         other.clientId == clientId &&
         other.slaughterhouseId == slaughterhouseId &&
@@ -86,7 +86,7 @@ class ClientDeliveryNote extends ModelDao {
 
   @override
   int get hashCode {
-    return idDeliveryNote.hashCode ^
+    return id.hashCode ^
     date.hashCode ^
     clientId.hashCode ^
     slaughterhouseId.hashCode ^
@@ -95,6 +95,6 @@ class ClientDeliveryNote extends ModelDao {
 
   @override
   String toString() {
-    return 'C\t$date\t$clientId\t$slaughterhouseId\t$idProduct';
+    return '$date\t$clientId\t$slaughterhouseId\t$idProduct';
   }
 }

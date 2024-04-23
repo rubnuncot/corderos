@@ -22,7 +22,7 @@ class ClientDeliveryNoteModel {
   });
 
   ClientDeliveryNoteModel.fromEntity(ClientDeliveryNote clientDeliveryNote) {
-    idDeliveryNote = clientDeliveryNote.idDeliveryNote;
+    idDeliveryNote = clientDeliveryNote.id;
     idClient = clientDeliveryNote.clientId;
     date = clientDeliveryNote.date;
     slaughterhouse = SlaughterhouseModel.fromEntity(DatabaseRepository.getEntityById(Slaughterhouse(), clientDeliveryNote.slaughterhouseId!) as Slaughterhouse);
@@ -31,7 +31,7 @@ class ClientDeliveryNoteModel {
 
   ClientDeliveryNote toEntity() {
     return ClientDeliveryNote.all(
-      idDeliveryNote: idDeliveryNote,
+      id: idDeliveryNote,
       clientId: idClient,
       date: date,
       slaughterhouseId: slaughterhouse!.id,
