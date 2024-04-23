@@ -17,8 +17,8 @@ class Classification extends ModelDao {
   Classification.all(
       {@required required this.id,
         @required required this.code,
-      @required required this.name,
-      @required required this.productId});
+        @required required this.name,
+        @required required this.productId});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -82,6 +82,6 @@ class Classification extends ModelDao {
 
   @override
   String toString() {
-    return '$code\t$name\t$productId)';
+    return '$code\t$name\t$productId';
   }
 }

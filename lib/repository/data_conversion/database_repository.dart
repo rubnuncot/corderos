@@ -1,12 +1,10 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
-import 'package:corderos_app/data/database/entities/product_delivery_note.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/database/database/dao_connector.dart';
 
 class DatabaseRepository {
-
   final daoConnector = const Dao();
   static final _ftpData = {
     ClientDeliveryNote: ClientDeliveryNote(),
@@ -15,15 +13,6 @@ class DatabaseRepository {
     ProductDeliveryNote: ProductDeliveryNote(),
   };
 
-  /*
-  * await dao.select<Product>(
-                      sqlBuilder: SqlBuilder()
-                          .querySelect(fields: ['*']).queryFrom(
-                              table: product.getTableName(product)),
-                      model: product,
-                      print: true,
-                    );
-  * */
   Future<Map<String, List>> getFTPData() async {
     Map<String, List> result = {};
     var contain = 'product';
@@ -57,23 +46,22 @@ class DatabaseRepository {
     }
   }
 
-  Future getSingleData({ @required required dynamic entity }) async {
+  Future getSingleData({@required required dynamic entity}) async {
     try {
-      return await entity.select(sqlBuilder: SqlBuilder()
-          .querySelect(fields: ['*'])
-          .queryFrom(table: entity.getTableName(entity))
-    );
-    }catch (e) {
-    LogHelper.logger.e('Error en getSingleData: $e');
-    return -1;
+      return await entity.select(
+          sqlBuilder: SqlBuilder().querySelect(fields: ['*']).queryFrom(
+              table: entity.getTableName(entity)));
+    } catch (e) {
+      LogHelper.logger.e('Error en getSingleData: $e');
+      return -1;
     }
   }
 
   static Future<dynamic> getEntityById(dynamic entity, int id) async {
-    return await entity.select(sqlBuilder: SqlBuilder()
-        .querySelect(fields: ['*'])
-        .queryFrom(table: entity.getTableName(entity))
-        .queryWhere(conditions: ['id = $id'])
-    );
+    return await entity.select(
+        sqlBuilder: SqlBuilder()
+            .querySelect(fields: ['*'])
+            .queryFrom(table: entity.getTableName(entity))
+            .queryWhere(conditions: ['id = $id']));
   }
 }

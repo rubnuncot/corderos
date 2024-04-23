@@ -11,7 +11,7 @@ class ClientDeliveryNote extends ModelDao {
   DateTime? date;
   int? clientId;
   int? slaughterhouseId;
-  int? productId;
+  int? idProduct;
 
   ClientDeliveryNote();
 
@@ -20,7 +20,7 @@ class ClientDeliveryNote extends ModelDao {
     @required required this.date,
     @required required this.clientId,
     @required required this.slaughterhouseId,
-    @required required this.productId,
+    @required required this.idProduct,
   });
 
   static final Map<String, String> _fields = {
@@ -28,7 +28,7 @@ class ClientDeliveryNote extends ModelDao {
     'date': Constants.datetime,
     'clientId': Constants.bigint,
     'slaughterhouseId': Constants.bigint,
-    'productId': Constants.bigint,
+    'idProduct': Constants.bigint,
   };
 
   Map<String, dynamic> toJson() {
@@ -37,7 +37,7 @@ class ClientDeliveryNote extends ModelDao {
       'date': date?.toString(),
       'clientId': clientId,
       'slaughterhouseId': slaughterhouseId,
-      'productId': productId,
+      'idProduct': idProduct,
     };
   }
 
@@ -50,7 +50,7 @@ class ClientDeliveryNote extends ModelDao {
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       clientId: map['clientId'],
       slaughterhouseId: map['slaughterhouseId'],
-      productId: map['productId'],
+      idProduct: map['idProduct'],
     );
   }
 
@@ -81,7 +81,7 @@ class ClientDeliveryNote extends ModelDao {
         other.date == date &&
         other.clientId == clientId &&
         other.slaughterhouseId == slaughterhouseId &&
-        other.productId == productId;
+        other.idProduct == idProduct;
   }
 
   @override
@@ -90,11 +90,11 @@ class ClientDeliveryNote extends ModelDao {
     date.hashCode ^
     clientId.hashCode ^
     slaughterhouseId.hashCode ^
-    productId.hashCode;
+    idProduct.hashCode;
   }
 
   @override
   String toString() {
-    return '$date\t$clientId\t$slaughterhouseId\t$productId';
+    return 'C\t$date\t$clientId\t$slaughterhouseId\t$idProduct';
   }
 }
