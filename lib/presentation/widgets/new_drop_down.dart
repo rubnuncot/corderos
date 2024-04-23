@@ -6,10 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/!repository.dart';
 
 class NewDropDown extends StatelessWidget {
-
   final int listIndex;
+  final String? labelText;
 
-  const NewDropDown({super.key, @required required this.listIndex});
+  const NewDropDown({
+    super.key,
+    required this.listIndex,
+    this.labelText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,28 +23,39 @@ class NewDropDown extends StatelessWidget {
 
     final list = dropdownBloc.values[listIndex];
 
-    return CustomDropdown<String>(
-      hintText: 'Select job role',
-      items: list,
-      decoration: CustomDropdownDecoration(
-          closedFillColor: appColors?['buttonBackgroundNeuColor'],
-          expandedFillColor: appColors?['buttonBackgroundNeuColor'],
-          closedShadow: [
-            BoxShadow(
-              color: appColors?['buttonBackgroundNeuGradientColor'],
-              blurRadius: 5,
-              offset: const Offset(-1, 0),
-            ),
-            BoxShadow(
-              color: appColors?['buttonBackgroundNeuGradientSecondColor'],
-              blurRadius: 2,
-              offset: const Offset(3, 1),
-            ),
-          ]),
-      initialItem: list![dropdownState.index],
-      onChanged: (value) async {
-        await dropdownBloc.changeValue(listIndex, value);
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if(labelText != null)
+          Text(labelText!, style: TextStyle(fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color:
+              appColors?['labelInputColor'])),
+        const SizedBox(height: 8),
+        CustomDropdown<String>(
+          hintText: 'Select job role',
+          items: list,
+          decoration: CustomDropdownDecoration(
+              closedFillColor: appColors?['buttonBackgroundNeuColor'],
+              expandedFillColor: appColors?['buttonBackgroundNeuColor'],
+              closedShadow: [
+                BoxShadow(
+                  color: appColors?['buttonBackgroundNeuGradientColor'],
+                  blurRadius: 5,
+                  offset: const Offset(-1, 0),
+                ),
+                BoxShadow(
+                  color: appColors?['buttonBackgroundNeuGradientSecondColor'],
+                  blurRadius: 2,
+                  offset: const Offset(3, 1),
+                ),
+              ]),
+          initialItem: list![dropdownState.index],
+          onChanged: (value) async {
+            await dropdownBloc.changeValue(listIndex, value);
+          },
+        ),
+      ],
     );
   }
 }

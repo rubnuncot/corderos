@@ -26,11 +26,16 @@ class DatabaseRepository {
   * */
   Future<Map<String, List>> getFTPData() async {
     Map<String, List> result = {};
+    var contain = 'product';
+
     try {
       for (dynamic table in _ftpData.keys) {
         dynamic value = _ftpData[table];
         String tableName = value.getTableName(value);
-        result.addAll({'${tableName.substring(0, tableName.length -1)}.txt' : await value.select(sqlBuilder: SqlBuilder()
+        result.addAll({tableName.contains(contain)
+            ? '${contain}_${tableName.substring(contain.length, tableName.length -1)}.txt'
+            : '${tableName.substring(0, tableName.length -1)}.txt'
+            : await value.select(sqlBuilder: SqlBuilder()
             .querySelect(fields: ['*'])
             .queryFrom(table: tableName),
           model: value,

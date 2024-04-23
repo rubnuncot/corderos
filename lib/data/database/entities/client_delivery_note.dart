@@ -95,6 +95,6 @@ class ClientDeliveryNote extends ModelDao {
 
   @override
   String toString() {
-    return 'C\t$date\t$clientId\t$slaughterhouseId\t$productId';
+    return '$date\t$clientId\t$slaughterhouseId\t$productId';
   }
 }

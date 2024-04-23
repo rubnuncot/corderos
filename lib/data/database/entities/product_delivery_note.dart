@@ -107,6 +107,6 @@ class ProductDeliveryNote extends ModelDao {
 
   @override
   String toString() {
-    return 'L$nameClassification\t$units\t$kilograms';
+    return '$nameClassification\t$units\t$kilograms';
   }
 }

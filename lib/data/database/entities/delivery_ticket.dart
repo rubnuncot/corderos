@@ -119,6 +119,6 @@ class DeliveryTicket extends ModelDao {
 
   @override
   String toString() {
-    return 'C$date\t$idDriver\t$idVehicleRegistration\t$idSlaughterhouse\t$idRancher\t$idProduct';
+    return '$date\t$idDriver\t$idVehicleRegistration\t$idSlaughterhouse\t$idRancher\t$idProduct';
   }
 }
