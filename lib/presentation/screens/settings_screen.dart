@@ -14,7 +14,8 @@ class SettingsScreen extends StatelessWidget {
       'Puerto': 'port',
       'Nombre de Usuario': 'username',
       'Contraseña': 'password',
-      'Ruta FTP': 'path'
+      'Ruta FTP': 'path',
+      'Ruta Envío FTP': 'sendPath'
     };
 
     return Center(

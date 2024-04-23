@@ -17,6 +17,7 @@ class Preferences {
     'username': 'tablet',
     'password': 'tablet2014*',
     'path': '/GestionC',
+    'sendPath': '/PDAC',
     'theme': true, // true = light, false = dark
     'last_classifications_id': 1,
     'last_clients_id': 1,

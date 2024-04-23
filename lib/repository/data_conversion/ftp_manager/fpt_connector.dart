@@ -33,7 +33,7 @@ class FtpConnector {
   /// await _getFtpConnectionData();
   /// ```
   Future<void> _getFtpConnectionData() async {
-    for (var key in ['host', 'port', 'username', 'password', 'path']) {
+    for (var key in ['host', 'port', 'username', 'password', 'path', 'sendPath']) {
       ftpConnectionData[key] = await Preferences.getValue(key);
     }
   }
@@ -67,10 +67,10 @@ class FtpConnector {
   /// FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
   /// ```
 
-  Future<dynamic> ftpConnection({bool isDefault = true}) async {
+  Future<dynamic> ftpConnection({bool isDefault = true, bool send = false}) async {
     await _getFtpConnectionData();
 
-    String path = ftpConnectionData['path'];
+    String path = send ? ftpConnectionData['sendPath'] : ftpConnectionData['path'];
 
     connection = FTPConnect(
       ftpConnectionData['host'],

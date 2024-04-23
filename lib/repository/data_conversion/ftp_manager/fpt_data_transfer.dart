@@ -169,7 +169,7 @@ class FtpDataTransfer {
   /// ftpDataTransfer.sendFilesToFTP();
   /// ```
   Future<void> sendFilesToFTP() async {
-    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
+    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: false, send: true);
     DataFileWriter dataFileWriter = DataFileWriter();
     List<File> files = await dataFileWriter.writeFile();
 

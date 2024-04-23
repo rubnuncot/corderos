@@ -120,6 +120,6 @@ class ProductTicket extends ModelDao {
 
   @override
   String toString() {
-    return 'L\t$nameClassification\t$numAnimals\t$weight\t$idPerformance\t$losses';
+    return '$nameClassification\t$numAnimals\t$weight\t$idPerformance\t$losses';
   }
 }

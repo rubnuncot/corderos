@@ -4,25 +4,26 @@ class AppTheme {
   // Tema claro
   static final ThemeData lightTheme = ThemeData.light().copyWith(
       colorScheme: const ColorScheme.light(
-        primary: Color(0xFF5E56E7),
-        // Violeta suave
-        onPrimary: Color(0xFFEEEEEF),
-        // Contraste para texto/iconos sobre el primario
-        secondary: Color(0xff33b46c),
-        // Verde menta
-        onSecondary: Colors.white,
-        // Contraste para texto/iconos sobre el secundario
-        surface: Color(0xFFDBDBE1),
-        // Fondo general claro
-        onSurface: Color(0xff398357),
-        // Texto general sobre fondo claro
-        error: Color(0xffb0eeaa),
-        // Rojo error
-        onError: Colors.black,
-        // Contraste para texto/iconos sobre el error
-        inversePrimary:
-            Color(0xff3f3c3c), // Color primario inverso para ciertos controles
-      ),
+          primary: Color(0xFF5E56E7),
+          // Violeta suave
+          onPrimary: Color(0xFFEEEEEF),
+          // Contraste para texto/iconos sobre el primario
+          secondary: Color(0xff33b46c),
+          // Verde menta
+          onSecondary: Colors.white,
+          // Contraste para texto/iconos sobre el secundario
+          surface: Color(0xFFDBDBE1),
+          // Fondo general claro
+          onSurface: Color(0xff398357),
+          // Texto general sobre fondo claro
+          error: Color(0xffb0eeaa),
+          // Rojo error
+          onError: Colors.black,
+          // Contraste para texto/iconos sobre el error
+          inversePrimary: Color(0xff3f3c3c),
+          // Color primario inverso para ciertos controles
+          onTertiary: Colors.black,
+          shadow: Colors.black),
       scaffoldBackgroundColor: const Color(0xFFF0F0F6),
       cardColor: const Color(0xFFFFFFFF),
       textTheme: const TextTheme(
@@ -42,25 +43,28 @@ class AppTheme {
   // Tema oscuro
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xffbb86fc),
-        // Violeta
-        onPrimary: Color(0xFF232222),
-        // Contraste para texto/iconos sobre el primario
-        secondary: Color(0xff03dac6),
-        // Verde menta
-        onSecondary: Colors.black,
-        // Contraste para texto/iconos sobre el secundario
-        surface: Color(0xFF232222),
-        // Fondo general oscuro
-        onSurface: Color(0xff03dac6),
-        // Texto general sobre fondo oscuro
-        error: Color(0xff99e7df),
-        // Rojo error
-        onError: Colors.black,
-        // Contraste para texto/iconos sobre el error
-        inversePrimary:
-            Colors.white70, // Color primario inverso para ciertos controles
-      ),
+          primary: Color(0xffbb86fc),
+          // Violeta
+          onPrimary: Color(0xFF232222),
+          // Contraste para texto/iconos sobre el primario
+          secondary: Color(0xff03dac6),
+          // Verde menta
+          onSecondary: Colors.black,
+          // Contraste para texto/iconos sobre el secundario
+          surface: Color(0xFF232222),
+          // Fondo general oscuro
+          onSurface: Color(0xff03dac6),
+          // Texto general sobre fondo oscuro
+          error: Color(0xff99e7df),
+          // Rojo error
+          onError: Colors.white,
+          // Contraste para texto/iconos sobre el error
+          inversePrimary: Colors.white70,
+          // Color primario inverso para ciertos controles
+          onTertiary: Colors.white,
+          // Color
+
+          shadow: Colors.black),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.black,
         selectedItemColor: Color(0xFFA68AF5),
@@ -114,9 +118,21 @@ class AppColors {
       'textFieldBackgroundColor': Theme.of(context).colorScheme.surface,
       'buttonBorderColor': Theme.of(context).colorScheme.surface,
       'buttonBackgroundNeuColor': Theme.of(context).colorScheme.onPrimary,
-      'buttonBackgroundNeuGradientColor': Theme.of(context).colorScheme.secondary,
-      'buttonBackgroundNeuGradientSecondColor': Theme.of(context).colorScheme.error,
+      'buttonBackgroundNeuGradientColor':
+          Theme.of(context).colorScheme.secondary,
+      'buttonBackgroundNeuGradientSecondColor':
+          Theme.of(context).colorScheme.error,
       'buttonNavigationBackground': Theme.of(context).colorScheme.surface,
+      //! COLORES TABLA
+      'borderTableColor': Theme.of(context).colorScheme.shadow,
+      'headBoardTableColor': Theme.of(context).colorScheme.error, //ok
+      'titleTableColor': Theme.of(context).colorScheme.onSurface,
+      'backgroundValueColor': Theme.of(context).colorScheme.onPrimary, //ok
+      'valueTableColor': Theme.of(context).colorScheme.onTertiary,
+      //! COLORES DIALOG TABLA
+      'dialogTitleColor': Theme.of(context).colorScheme.onSurface,
+      'dialogHintColor': Theme.of(context).colorScheme.onError,
+      'updateDialogButtonColor': Theme.of(context).colorScheme.onSurface,
     });
     return colors;
   }
