@@ -2,9 +2,13 @@ import 'dart:io';
 
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:reflectable/reflectable.dart';
+import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
+
+import '../../!repository.dart';
+import '../../models/!!model_base.dart';
 
 class DataFileWriter {
-
   //Instancia del repositorio de la base de datos para acceder a sus métodos.
   DatabaseRepository repository = DatabaseRepository();
 
@@ -47,22 +51,24 @@ class DataFileWriter {
     Map<String, List> productData = {};
     Map<String, List> restData = {};
 
-    for(var line in data.keys){
-      if(line.contains('product')){
-        productData.addAll({line : data[line]!});
+    for (var line in data.keys) {
+      if (line.contains('product')) {
+        productData.addAll({line: data[line]!});
       } else {
-        restData.addAll({line : data[line]!});
+        restData.addAll({line: data[line]!});
       }
     }
 
-    for(var key in restData.keys){
+    for (var key in restData.keys) {
       var dataString = "";
       var fileName = key;
 
-      if(key.contains('delivery')){
-        dataString = _getDataString(restData, key, dataString, productData, 'product_deliverynote.txt');
+      if (key.contains('delivery')) {
+        dataString = await _getDataString(
+            restData, key, dataString, productData, 'product_deliverynote.txt');
       } else {
-        dataString = _getDataString(restData, key, dataString, productData, 'product_ticket.txt');
+        dataString = await _getDataString(
+            restData, key, dataString, productData, 'product_ticket.txt');
       }
 
       File file = File('${dir.path}/$fileName');
@@ -72,15 +78,42 @@ class DataFileWriter {
     return files;
   }
 
-  String _getDataString(Map<String, List<dynamic>> restData, String key, String dataString, Map<String, List<dynamic>> productData, String productTicketKey) {
-    for(var data in restData[key]!){
-      dataString += 'C\t${data.toString()}\n';
-      for(var product in productData[productTicketKey]!){
-        if(product.id == data.id){
-          dataString += 'L\t${product.toString()}\n';
+  Future <String> _getDataString(
+      Map<String, List<dynamic>> restData,
+      String key,
+      String dataString,
+      Map<String, List<dynamic>> productData,
+      String productTicketKey) async {
+    Map<String, dynamic> models = {
+      'product_ticket.txt': ProductTicketModel,
+      'product_deliverynote.txt': ProductDeliveryNoteModel,
+      'deliveryticket.txt': DeliveryTicketModel,
+      'clientdeliverynote.txt': ClientDeliveryNoteModel,
+    };
+
+    for (var data in restData[key]!) {
+      var classMirror = reflector.reflectType(models[key]) as ClassMirror;
+
+      var instanceMirrorRestData =
+          classMirror.newInstance('', []) as ModelBase;
+      await instanceMirrorRestData.fromEntity(data);
+
+      dataString += 'C\t${instanceMirrorRestData.toString()}';
+      for (var product in productData[productTicketKey]!) {
+        var classMirror =
+            reflector.reflectType(models[productTicketKey]) as ClassMirror;
+
+        var instanceMirrorProductData =
+            classMirror.newInstance('', []) as ModelBase;
+
+        await instanceMirrorProductData.fromEntity(product);
+
+        if (product.id == data.id) {
+          dataString += '\tL\t${instanceMirrorProductData.toString()}\n';
         }
       }
     }
+
     return dataString;
   }
 }

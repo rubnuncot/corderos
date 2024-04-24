@@ -1,8 +1,10 @@
 
 import 'package:corderos_app/data/!data.dart';
 import 'package:meta/meta.dart';
+import '!!model_base.dart';
+import '../../data/database/entities/!!model_dao.dart';
 
-class SlaughterhouseModel {
+class SlaughterhouseModel extends ModelBase{
   int? id;
   String? code;
   String? name;
@@ -15,7 +17,9 @@ class SlaughterhouseModel {
     @required required this.name
   });
 
-  SlaughterhouseModel.fromEntity(Slaughterhouse slaughterhouse) {
+  @override
+  Future<void> fromEntity(ModelDao entity) async{
+    final slaughterhouse = entity as Slaughterhouse;
     id = slaughterhouse.id;
     code = slaughterhouse.code;
     name = slaughterhouse.name;
@@ -23,7 +27,6 @@ class SlaughterhouseModel {
 
   Slaughterhouse toEntity() {
     return Slaughterhouse.all(
-      id: id,
       code: code,
       name: name,
     );

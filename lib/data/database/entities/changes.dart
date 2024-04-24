@@ -6,14 +6,13 @@ import '!!model_dao.dart';
 
 @reflector
 class Changes extends ModelDao {
-  int? id;
   DateTime? date;
   String? tableChanged;
   bool? isRead;
 
   Changes();
 
-  Changes.all({this.id, this.date, this.tableChanged, this.isRead});
+  Changes.all({this.date, this.tableChanged, this.isRead});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -35,7 +34,6 @@ class Changes extends ModelDao {
 
   factory Changes.fromJson(Map<String, dynamic> map) {
     return Changes.all(
-      id: map['id'],
       date: map['date'],
       tableChanged: map['tableChanged'],
       isRead: map['isRead'],
@@ -65,15 +63,13 @@ class Changes extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Changes &&
-        other.id == id &&
         other.isRead == isRead &&
         other.date == date &&
         other.tableChanged == tableChanged;
   }
 
   @override
-  int get hashCode =>
-      id.hashCode ^ isRead.hashCode ^ date.hashCode ^ tableChanged.hashCode;
+  int get hashCode => isRead.hashCode ^ date.hashCode ^ tableChanged.hashCode;
 
   @override
   String toString() {

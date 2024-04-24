@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class ProductTicket extends ModelDao {
-  int? id;
   int? idTicket;
   int? idProduct;
   String? nameClassification;
@@ -19,7 +18,6 @@ class ProductTicket extends ModelDao {
   ProductTicket();
 
   ProductTicket.all({
-    @required required this.id,
     @required required this.idTicket,
     @required required this.idProduct,
     @required required this.nameClassification,
@@ -58,7 +56,6 @@ class ProductTicket extends ModelDao {
 
   factory ProductTicket.fromJson(Map<String, dynamic> map) {
     return ProductTicket.all(
-      id: map['id'],
       idTicket: map['idTicket'],
       idProduct: map['idProduct'],
       nameClassification: map['nameClassification'],
@@ -96,7 +93,6 @@ class ProductTicket extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ProductTicket &&
-        other.id == id &&
         other.idTicket == idTicket &&
         other.idProduct == idProduct &&
         other.nameClassification == nameClassification &&
@@ -108,7 +104,7 @@ class ProductTicket extends ModelDao {
 
   @override
   int get hashCode {
-    return id.hashCode ^
+    return
         idTicket.hashCode ^
         idProduct.hashCode ^
         nameClassification.hashCode ^

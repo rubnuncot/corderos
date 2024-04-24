@@ -1,7 +1,10 @@
+import '!!model_base.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:meta/meta.dart';
 
-class ClientModel {
+import '../../data/database/entities/!!model_dao.dart';
+
+class ClientModel extends ModelBase{
   int? id;
   String? code;
   String? nif;
@@ -18,7 +21,9 @@ class ClientModel {
     @required required this.email
   });
 
-  ClientModel.fromEntity(Client client) {
+  @override
+  Future<void> fromEntity(ModelDao entity) async {
+    final client = entity as Client;
     id = client.id;
     code = client.code;
     nif = client.nif;
@@ -28,7 +33,6 @@ class ClientModel {
 
   Client toEntity() {
     return Client.all(
-      id: id,
       code: code,
       nif: nif,
       name: name,

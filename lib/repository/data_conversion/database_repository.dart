@@ -58,10 +58,13 @@ class DatabaseRepository {
   }
 
   static Future<dynamic> getEntityById(dynamic entity, int id) async {
-    return await entity.select(
+    dynamic res = await entity.select(
         sqlBuilder: SqlBuilder()
             .querySelect(fields: ['*'])
             .queryFrom(table: entity.getTableName(entity))
-            .queryWhere(conditions: ['id = $id']));
+            .queryWhere(conditions: ['id = $id']),
+      model: entity
+    );
+    return res.first;
   }
 }

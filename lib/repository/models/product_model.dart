@@ -1,10 +1,11 @@
+import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 
-import 'package:equatable/equatable.dart';
+import '!!model_base.dart';
 import 'package:meta/meta.dart';
 
 import '../../data/!data.dart';
 
-class ProductModel {
+class ProductModel extends ModelBase{
   int? id;
   String? code;
   String? name;
@@ -17,7 +18,9 @@ class ProductModel {
     @required required this.name,
   });
 
-  ProductModel.fromEntity(Product product) {
+  @override
+  Future<void> fromEntity(ModelDao entity) async {
+    final product = entity as Product;
     id = product.id;
     code = product.code;
     name = product.name;
@@ -25,7 +28,6 @@ class ProductModel {
 
   Product toEntity() {
     return Product.all(
-      id: id,
       code: code,
       name: name,
     );

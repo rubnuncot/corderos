@@ -7,12 +7,12 @@ import '!!model_dao.dart';
 
 @reflector
 class Product extends ModelDao {
-  int? id;
   String? code;
   String? name;
 
   Product();
-  Product.all({ @required required this.id, @required required this.code ,@required required this.name});
+
+  Product.all({@required required this.code, @required required this.name});
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -28,12 +28,10 @@ class Product extends ModelDao {
     };
   }
 
-  factory Product.fromRawJson(String str) =>
-      Product.fromJson(json.decode(str));
+  factory Product.fromRawJson(String str) => Product.fromJson(json.decode(str));
 
   factory Product.fromJson(Map<String, dynamic> map) {
     return Product.all(
-      id: map['id'],
       code: map['code'],
       name: map['name'],
     );
@@ -62,13 +60,12 @@ class Product extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Product &&
-        other.id == id &&
         other.code == code &&
         other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ code.hashCode ^ name.hashCode;
+  int get hashCode => code.hashCode ^ name.hashCode;
 
   @override
   String toString() {

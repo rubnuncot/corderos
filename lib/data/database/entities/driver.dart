@@ -7,7 +7,6 @@ import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 
 @reflector
 class Driver extends ModelDao {
-  int? id;
   String? code;
   String? nif;
   String? name;
@@ -15,7 +14,7 @@ class Driver extends ModelDao {
   Driver();
 
   Driver.all(
-      {@required required this.id,
+      {
       @required required this.code,
       @required required this.nif,
       @required required this.name});
@@ -40,7 +39,6 @@ class Driver extends ModelDao {
 
   factory Driver.fromJson(Map<String, dynamic> map) {
     return Driver.all(
-      id: map['id'],
       code: map['code'],
       nif: map['nif'],
       name: map['name'],
@@ -70,14 +68,13 @@ class Driver extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Driver &&
-        other.id == id &&
         other.code == code &&
         other.nif == nif &&
         other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
+  int get hashCode => code.hashCode ^ nif.hashCode ^ name.hashCode;
 
   @override
   String toString() {

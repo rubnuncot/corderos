@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class Rancher extends ModelDao {
-  int? id;
   String? code;
   String? nif;
   String? name;
@@ -15,7 +14,7 @@ class Rancher extends ModelDao {
   Rancher();
 
   Rancher.all(
-      {@required required this.id,
+      {
       @required required this.code,
       @required required this.nif,
       @required required this.name});
@@ -40,7 +39,6 @@ class Rancher extends ModelDao {
 
   factory Rancher.fromJson(Map<String, dynamic> map) {
     return Rancher.all(
-      id: map['id'],
       code: map['code'],
       nif: map['nif'],
       name: map['name'],
@@ -70,15 +68,13 @@ class Rancher extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Rancher &&
-        other.id == id &&
         other.code == code &&
         other.nif == nif &&
         other.name == name;
   }
 
   @override
-  int get hashCode =>
-      id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode;
+  int get hashCode => code.hashCode ^ nif.hashCode ^ name.hashCode;
 
   @override
   String toString() {

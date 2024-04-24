@@ -1,9 +1,10 @@
 
 import 'package:meta/meta.dart';
-
+import '!!model_base.dart';
 import '../../data/!data.dart';
+import '../../data/database/entities/!!model_dao.dart';
 
-class RancherModel {
+class RancherModel extends ModelBase{
   int? id;
   String? code;
   String? nif;
@@ -17,7 +18,9 @@ class RancherModel {
     @required required this.name
   });
 
-  RancherModel.fromEntity(Rancher rancher) {
+  @override
+  Future<void> fromEntity(ModelDao entity) async {
+    final rancher = entity as Rancher;
     id = rancher.id;
     code = rancher.code;
     nif = rancher.nif;
@@ -26,7 +29,6 @@ class RancherModel {
 
   Rancher toEntity() {
     return Rancher.all(
-      id: id,
       code: code,
       nif: nif,
       name: name,

@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class DeliveryTicket extends ModelDao {
-  int? id;
   String? deliveryTicket;
   DateTime? date;
   int? idDriver;
@@ -15,11 +14,12 @@ class DeliveryTicket extends ModelDao {
   int? idSlaughterhouse;
   int? idRancher;
   int? idProduct;
+  int? number;
 
   DeliveryTicket();
 
   DeliveryTicket.all({
-    @required required this.id,
+    @required required this.number,
     @required required this.deliveryTicket,
     @required required this.date,
     @required required this.idDriver,
@@ -31,6 +31,7 @@ class DeliveryTicket extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'number': Constants.integer,
     'date': Constants.datetime,
     'idDriver': Constants.bigint,
     'idVehicleRegistration': Constants.bigint,
@@ -43,6 +44,7 @@ class DeliveryTicket extends ModelDao {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'number': number,
       'deliveryTicket': deliveryTicket,
       'date': date?.toString(),
       'idDriver': idDriver,
@@ -58,7 +60,7 @@ class DeliveryTicket extends ModelDao {
 
   factory DeliveryTicket.fromJson(Map<String, dynamic> map) {
     return DeliveryTicket.all(
-      id: map['id'],
+      number: map['number'],
       deliveryTicket: map['deliveryTicket'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       idDriver: map['idDriver'],
@@ -95,8 +97,8 @@ class DeliveryTicket extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is DeliveryTicket &&
-        other.id == id &&
         other.deliveryTicket == deliveryTicket &&
+        other.number == number &&
         other.date == date &&
         other.idDriver == idDriver &&
         other.idVehicleRegistration == idVehicleRegistration &&
@@ -107,9 +109,10 @@ class DeliveryTicket extends ModelDao {
 
   @override
   int get hashCode {
-    return id.hashCode ^
+    return
         deliveryTicket.hashCode ^
-        date.hashCode ^
+        number.hashCode ^
+        number.hashCode ^
         idDriver.hashCode ^
         idVehicleRegistration.hashCode ^
         idSlaughterhouse.hashCode ^

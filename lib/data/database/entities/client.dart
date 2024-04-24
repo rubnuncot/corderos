@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class Client extends ModelDao {
-  int? id;
   String? code;
   String? nif;
   String? name;
@@ -16,7 +15,7 @@ class Client extends ModelDao {
   Client();
 
   Client.all(
-      {@required required this.id,
+      {
         @required required this.code,
       @required required this.nif,
       @required required this.name,
@@ -44,7 +43,6 @@ class Client extends ModelDao {
 
   factory Client.fromJson(Map<String, dynamic> map) {
     return Client.all(
-      id: map['id'],
       code: map['code'],
       nif: map['nif'],
       name: map['name'],
@@ -75,7 +73,6 @@ class Client extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Client &&
-        other.id == id &&
         other.code == code &&
         other.nif == nif &&
         other.name == name &&
@@ -83,8 +80,7 @@ class Client extends ModelDao {
   }
 
   @override
-  int get hashCode =>
-      id.hashCode ^ code.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
+  int get hashCode => code.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
   
   @override
   String toString() {

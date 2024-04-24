@@ -7,14 +7,13 @@ import '!!model_dao.dart';
 
 @reflector
 class Slaughterhouse extends ModelDao {
-  int? id;
   String? code;
   String? name;
 
   Slaughterhouse();
 
   Slaughterhouse.all(
-      {@required required this.id,
+      {
         @required required this.code,
         @required required this.name});
 
@@ -37,7 +36,6 @@ class Slaughterhouse extends ModelDao {
 
   factory Slaughterhouse.fromJson(Map<String, dynamic> map) {
     return Slaughterhouse.all(
-      id: map['id'],
       code: map['code'],
       name: map['name'],
     );
@@ -66,13 +64,12 @@ class Slaughterhouse extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Slaughterhouse
-        && other.id == id
         && other.code == code
         && other.name == name;
   }
 
   @override
-  int get hashCode => id.hashCode ^ code.hashCode ^ name.hashCode;
+  int get hashCode => code.hashCode ^ name.hashCode;
 
   @override
   String toString() {

@@ -1,12 +1,11 @@
 import 'package:corderos_app/data/!data.dart';
-import 'package:corderos_app/repository/!repository.dart';
-import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
-import 'package:corderos_app/repository/models/!models.dart';
 import 'package:meta/meta.dart';
+import '!!model_base.dart';
+import '../../data/database/entities/!!model_dao.dart';
 
-class VehicleRegistrationModel {
+class VehicleRegistrationModel extends ModelBase{
   String? vehicleRegistrationNum;
-  DeliveryTicketModel? clientDeliveryNote;
+  String? clientDeliveryNote;
 
   VehicleRegistrationModel();
 
@@ -15,11 +14,11 @@ class VehicleRegistrationModel {
     @required required this.clientDeliveryNote,
   });
 
-  VehicleRegistrationModel.fromEntity(VehicleRegistration vehicleRegistrationEntity) {
+  @override
+  Future<void> fromEntity(ModelDao entity) async {
+    final vehicleRegistrationEntity = entity as VehicleRegistration;
     vehicleRegistrationNum = vehicleRegistrationEntity.vehicleRegistrationNum;
-    clientDeliveryNote = DeliveryTicketModel.fromEntity(
-        DatabaseRepository.getEntityById(
-                DeliveryTicket(), vehicleRegistrationEntity.id!)
-            as DeliveryTicket);
+
+    clientDeliveryNote = vehicleRegistrationEntity.deliveryTicket;
   }
 }

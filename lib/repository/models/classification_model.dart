@@ -14,7 +14,10 @@ import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:corderos_app/repository/models/!models.dart';
 import 'package:meta/meta.dart';
 
-class ClassificationModel {
+import '!!model_base.dart';
+import '../../data/database/entities/!!model_dao.dart';
+
+class ClassificationModel extends ModelBase{
   int? id;
   String? code;
   String? name;
@@ -29,18 +32,22 @@ class ClassificationModel {
     @required required this.product,
   });
 
-  ClassificationModel.fromEntity(Classification classification) {
+
+  @override
+  Future<void> fromEntity(ModelDao entity) async {
+    Classification classification = entity as Classification;
     id = classification.id;
     name = classification.name;
     code = classification.code;
-    product = ProductModel.fromEntity(
+    ProductModel productModel = ProductModel();
+    await productModel.fromEntity(
         DatabaseRepository.getEntityById(Product(), classification.productId!)
             as Product);
+    product = productModel;
   }
 
   Classification toEntity() {
     return Classification.all(
-      id: id,
       code: code,
       name: name,
       productId: product!.id,

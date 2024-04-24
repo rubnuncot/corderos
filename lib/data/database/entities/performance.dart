@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class Performance extends ModelDao {
-    int? id;
     int? idProduct;
     int? idClassification;
     int? performance;
@@ -15,7 +14,6 @@ class Performance extends ModelDao {
     Performance();
 
     Performance.all({
-        @required required this.id,
         @required required this.idProduct,
         @required required this.idClassification,
         @required required this.performance
@@ -42,7 +40,6 @@ class Performance extends ModelDao {
 
   factory Performance.fromJson(Map<String, dynamic> map) {
     return Performance.all(
-      id: map['id'],
       idProduct: map['idProduct'],
       idClassification: map['idClassification'],
       performance: map['performance'],
@@ -72,7 +69,6 @@ class Performance extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Performance &&
-        other.id == id &&
         other.idProduct == idProduct &&
         other.idClassification == idClassification &&
         other.performance == performance;
@@ -80,7 +76,6 @@ class Performance extends ModelDao {
 
   @override
   int get hashCode =>
-      id.hashCode ^
       idProduct.hashCode ^
       idClassification.hashCode ^
       performance.hashCode;

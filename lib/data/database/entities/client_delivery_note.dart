@@ -7,16 +7,18 @@ import '!!model_dao.dart';
 
 @reflector
 class ClientDeliveryNote extends ModelDao {
-  int? id;
   DateTime? date;
   int? clientId;
   int? slaughterhouseId;
   int? idProduct;
+  String? series;
+  int? number;
 
   ClientDeliveryNote();
 
   ClientDeliveryNote.all({
-    @required required this.id,
+    @required required this.series,
+    @required required this.number,
     @required required this.date,
     @required required this.clientId,
     @required required this.slaughterhouseId,
@@ -25,6 +27,8 @@ class ClientDeliveryNote extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
+    'series': Constants.varchar['4']!,
+    'number': Constants.integer,
     'date': Constants.datetime,
     'clientId': Constants.bigint,
     'slaughterhouseId': Constants.bigint,
@@ -46,9 +50,10 @@ class ClientDeliveryNote extends ModelDao {
 
   factory ClientDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
-      id: map['id'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       clientId: map['clientId'],
+      number: map['number'],
+      series: map['series'],
       slaughterhouseId: map['slaughterhouseId'],
       idProduct: map['idProduct'],
     );
@@ -77,8 +82,9 @@ class ClientDeliveryNote extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ClientDeliveryNote &&
-        other.id == id &&
         other.date == date &&
+        other.series == series &&
+        other.number == number &&
         other.clientId == clientId &&
         other.slaughterhouseId == slaughterhouseId &&
         other.idProduct == idProduct;
@@ -86,9 +92,11 @@ class ClientDeliveryNote extends ModelDao {
 
   @override
   int get hashCode {
-    return id.hashCode ^
+    return
     date.hashCode ^
     clientId.hashCode ^
+    series.hashCode ^
+    number.hashCode ^
     slaughterhouseId.hashCode ^
     idProduct.hashCode;
   }

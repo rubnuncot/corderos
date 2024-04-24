@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class Classification extends ModelDao {
-  int? id;
   String? code;
   String? name;
   int? productId;
@@ -15,7 +14,7 @@ class Classification extends ModelDao {
   Classification();
 
   Classification.all(
-      {@required required this.id,
+      {
         @required required this.code,
         @required required this.name,
         @required required this.productId});
@@ -41,7 +40,6 @@ class Classification extends ModelDao {
 
   factory Classification.fromJson(Map<String, dynamic> map) {
     return Classification.all(
-      id: map['id'],
       code: map['code'],
       name: map['name'],
       productId: map['productId'],
@@ -71,14 +69,13 @@ class Classification extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is Classification &&
-        other.id == id &&
         other.code == code &&
         other.name == name &&
         other.productId == productId;
   }
 
   @override
-  int get hashCode => id.hashCode ^ code.hashCode ^ name.hashCode ^ productId.hashCode;
+  int get hashCode => code.hashCode ^ name.hashCode ^ productId.hashCode;
 
   @override
   String toString() {

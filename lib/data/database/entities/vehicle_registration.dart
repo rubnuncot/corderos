@@ -7,14 +7,13 @@ import 'package:sqflite_simple_dao_backend/database/params/constants.dart';
 
 @reflector
 class VehicleRegistration extends ModelDao {
-  int? id;
   String? vehicleRegistrationNum;
   String? deliveryTicket;
 
   VehicleRegistration();
 
   VehicleRegistration.all(
-      {@required required this.id,
+      {
       @required required this.vehicleRegistrationNum,
       @required required this.deliveryTicket});
 
@@ -37,7 +36,6 @@ class VehicleRegistration extends ModelDao {
 
   factory VehicleRegistration.fromJson(Map<String, dynamic> map) {
     return VehicleRegistration.all(
-      id: map['id'],
       vehicleRegistrationNum: map['vehicleRegistrationNum'],
       deliveryTicket: map['deliveryTicket'],
     );

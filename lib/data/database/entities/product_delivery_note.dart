@@ -7,7 +7,6 @@ import '!!model_dao.dart';
 
 @reflector
 class ProductDeliveryNote extends ModelDao {
-  int? id;
   int? idDeliveryNote;
   int? idProduct;
   String? nameClassification;
@@ -17,7 +16,6 @@ class ProductDeliveryNote extends ModelDao {
   ProductDeliveryNote();
 
   ProductDeliveryNote.all({
-    @required required this.id,
     @required required this.idDeliveryNote,
     @required required this.idProduct,
     @required required this.nameClassification,
@@ -50,7 +48,6 @@ class ProductDeliveryNote extends ModelDao {
 
   factory ProductDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ProductDeliveryNote.all(
-      id: map['id'],
       idDeliveryNote: map['idDeliveryNote'],
       idProduct: map['idProduct'],
       nameClassification: map['nameClassification'],
@@ -87,7 +84,6 @@ class ProductDeliveryNote extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ProductDeliveryNote &&
-        other.id == id &&
         other.idDeliveryNote == idDeliveryNote &&
         other.idProduct == idProduct &&
         other.nameClassification == nameClassification &&
@@ -97,7 +93,7 @@ class ProductDeliveryNote extends ModelDao {
 
   @override
   int get hashCode {
-    return id.hashCode ^
+    return
         idDeliveryNote.hashCode ^
         idProduct.hashCode ^
         nameClassification.hashCode ^
