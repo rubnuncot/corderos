@@ -14,10 +14,12 @@ class Classification extends ModelDao {
   Classification();
 
   Classification.all(
-      {
-        @required required this.code,
-        @required required this.name,
-        @required required this.productId});
+      {int? id,
+      @required required this.code,
+      @required required this.name,
+      @required required this.productId}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -40,6 +42,7 @@ class Classification extends ModelDao {
 
   factory Classification.fromJson(Map<String, dynamic> map) {
     return Classification.all(
+      id: map['id'],
       code: map['code'],
       name: map['name'],
       productId: map['productId'],

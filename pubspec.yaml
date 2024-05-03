@@ -62,6 +62,11 @@ dependencies:
   package_info_plus: ^7.0.0
   open_file: ^3.3.2
   permission_handler: ^11.3.1
+  esc_pos_printer: ^4.1.0
+  flutter_blue_plus: ^1.32.4
+  blue_thermal_printer: ^1.2.3
+  print_bluetooth_thermal: ^1.1.0
+  esc_pos_utils_plus: ^2.0.1+6
 dev_dependencies:
   flutter_test:
     sdk: flutter

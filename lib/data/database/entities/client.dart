@@ -15,17 +15,19 @@ class Client extends ModelDao {
   Client();
 
   Client.all(
-      {
-        @required required this.code,
+      {int? id,
+      @required required this.code,
       @required required this.nif,
       @required required this.name,
-      @required required this.email});
+      @required required this.email}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'code': Constants.varchar["255"]!,
-    'name': Constants.varchar["255"]!,
     'nif': Constants.varchar["10"]!,
+    'name': Constants.varchar["255"]!,
     'email': Constants.varchar["255"]!,
   };
 
@@ -43,6 +45,7 @@ class Client extends ModelDao {
 
   factory Client.fromJson(Map<String, dynamic> map) {
     return Client.all(
+      id: map['id'],
       code: map['code'],
       nif: map['nif'],
       name: map['name'],
@@ -80,8 +83,9 @@ class Client extends ModelDao {
   }
 
   @override
-  int get hashCode => code.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
-  
+  int get hashCode =>
+      code.hashCode ^ nif.hashCode ^ name.hashCode ^ email.hashCode;
+
   @override
   String toString() {
     return '$code\t$nif\t$name\t$email';

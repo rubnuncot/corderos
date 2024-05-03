@@ -13,9 +13,9 @@ class Slaughterhouse extends ModelDao {
   Slaughterhouse();
 
   Slaughterhouse.all(
-      {
-        @required required this.code,
-        @required required this.name});
+      {int? id, @required required this.code, @required required this.name}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -36,6 +36,7 @@ class Slaughterhouse extends ModelDao {
 
   factory Slaughterhouse.fromJson(Map<String, dynamic> map) {
     return Slaughterhouse.all(
+      id: map['id'],
       code: map['code'],
       name: map['name'],
     );
@@ -63,9 +64,7 @@ class Slaughterhouse extends ModelDao {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Slaughterhouse
-        && other.code == code
-        && other.name == name;
+    return other is Slaughterhouse && other.code == code && other.name == name;
   }
 
   @override

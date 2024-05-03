@@ -7,17 +7,19 @@ import '!!model_dao.dart';
 
 @reflector
 class Performance extends ModelDao {
-    int? idProduct;
-    int? idClassification;
-    int? performance;
+  int? idProduct;
+  int? idClassification;
+  int? performance;
 
-    Performance();
+  Performance();
 
-    Performance.all({
-        @required required this.idProduct,
-        @required required this.idClassification,
-        @required required this.performance
-    });
+  Performance.all(
+      {int? id,
+      @required required this.idProduct,
+      @required required this.idClassification,
+      @required required this.performance}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -40,6 +42,7 @@ class Performance extends ModelDao {
 
   factory Performance.fromJson(Map<String, dynamic> map) {
     return Performance.all(
+      id: map['id'],
       idProduct: map['idProduct'],
       idClassification: map['idClassification'],
       performance: map['performance'],
@@ -76,11 +79,9 @@ class Performance extends ModelDao {
 
   @override
   int get hashCode =>
-      idProduct.hashCode ^
-      idClassification.hashCode ^
-      performance.hashCode;
+      idProduct.hashCode ^ idClassification.hashCode ^ performance.hashCode;
 
-    @override
+  @override
   String toString() {
     return '$idProduct\t$idClassification\t$performance';
   }

@@ -12,7 +12,9 @@ class Changes extends ModelDao {
 
   Changes();
 
-  Changes.all({this.date, this.tableChanged, this.isRead});
+  Changes.all({int? id, this.date, this.tableChanged, this.isRead}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -34,6 +36,7 @@ class Changes extends ModelDao {
 
   factory Changes.fromJson(Map<String, dynamic> map) {
     return Changes.all(
+      id: map['id'],
       date: map['date'],
       tableChanged: map['tableChanged'],
       isRead: map['isRead'],

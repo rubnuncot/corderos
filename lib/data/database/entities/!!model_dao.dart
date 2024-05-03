@@ -1,4 +1,5 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
@@ -8,10 +9,26 @@ class ModelDao extends Dao {
 
   int? id;
 
+  ModelDao.all({@required required id});
+
   Future<int> insert() async {
-    List all = await selectAll();
-    id = all.last.id + 1;
+    List all = await selectAll<ModelDao>();
+    id = all.isEmpty ? 0 : all.last.id + 1;
     return await super.insertSingle(objectToInsert: this);
+  }
+
+  Future<int> listInsert(List<ModelDao> list) async {
+    if (list.isEmpty) return -1;
+    List<ModelDao> all = await selectAll<ModelDao>();
+
+    int nextId = all.isEmpty ? 0 : all.last.id! + 1;
+
+    for (var e in list) {
+      e.id = nextId++;
+      all.add(e);
+    }
+
+    return await super.batchInsert(objectsToInsert: list);
   }
 
   Future<int> update() async {
@@ -22,7 +39,7 @@ class ModelDao extends Dao {
     return await super.deleteSingle(objectToDelete: this);
   }
 
-  Future<List<ModelDao>> getData({
+  Future<List<T>> getData<T>({
     List<String> where = const [],
     List<String> orderBy = const [],
     int limit = -1,
@@ -42,16 +59,22 @@ class ModelDao extends Dao {
     if (limit != -1) {
       builder.queryLimit(limit: '$limit');
     }
-    return await super.select(sqlBuilder: builder, model: this);
+
+    return await super.select<T>(sqlBuilder: builder, model: this) as List<T>;
   }
 
-  Future<List<ModelDao>> selectAll() async {
-    return await getData();
+  Future<List<T>> selectAll<T>() async {
+    return await getData<T>();
   }
 
-  Future<bool> existsInDatabase() async {
+  Future<T> selectLast<T>() async {
+    List all = await selectAll<T>();
+    return all.last;
+  }
+
+  Future<bool> existsInDatabase<T>() async {
     try {
-      List all = await selectAll();
+      List all = await selectAll<T>();
       return all.contains(this);
     } catch (e) {
       LogHelper.logger.d(e);
@@ -60,7 +83,7 @@ class ModelDao extends Dao {
   }
 
   Future<int> truncate() async {
-    List all = await selectAll();
+    List all = await selectAll<ModelDao>();
     return super.batchDelete(objectsToDelete: all);
   }
 }

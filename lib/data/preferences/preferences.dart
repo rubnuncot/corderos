@@ -31,6 +31,8 @@ class Preferences {
     'last_ranchers_id': 1,
     'last_slaughterhouses_id': 1,
     'last_vehicleregistrations_id': 1,
+    'last_saved_ticket': 1,
+    'last_saved_tablet_id': 1,
   };
 
   static Future<dynamic> getValue(String key) async {

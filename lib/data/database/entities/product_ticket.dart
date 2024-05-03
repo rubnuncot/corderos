@@ -18,6 +18,7 @@ class ProductTicket extends ModelDao {
   ProductTicket();
 
   ProductTicket.all({
+    int? id,
     @required required this.idTicket,
     @required required this.idProduct,
     @required required this.nameClassification,
@@ -25,7 +26,9 @@ class ProductTicket extends ModelDao {
     @required required this.weight,
     @required required this.idPerformance,
     @required required this.losses,
-  });
+  }){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -56,6 +59,7 @@ class ProductTicket extends ModelDao {
 
   factory ProductTicket.fromJson(Map<String, dynamic> map) {
     return ProductTicket.all(
+      id: map['id'],
       idTicket: map['idTicket'],
       idProduct: map['idProduct'],
       nameClassification: map['nameClassification'],

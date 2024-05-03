@@ -17,13 +17,16 @@ class ClientDeliveryNote extends ModelDao {
   ClientDeliveryNote();
 
   ClientDeliveryNote.all({
+    int? id,
     @required required this.series,
     @required required this.number,
     @required required this.date,
     @required required this.clientId,
     @required required this.slaughterhouseId,
     @required required this.idProduct,
-  });
+  }){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -50,6 +53,7 @@ class ClientDeliveryNote extends ModelDao {
 
   factory ClientDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ClientDeliveryNote.all(
+      id: map['id'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,
       clientId: map['clientId'],
       number: map['number'],

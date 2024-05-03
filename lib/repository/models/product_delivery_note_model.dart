@@ -1,5 +1,6 @@
 import 'package:corderos_app/data/!data.dart';
-import 'package:corderos_app/data/database/entities/product_delivery_note.dart';
+import 'package:corderos_app/data/database/!database.dart';
+import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
@@ -13,9 +14,11 @@ class ProductDeliveryNoteModel extends ModelBase{
   int? id;
   DeliveryTicketModel? deliveryTicket;
   ProductModel? product;
+  ClassificationModel? classification;
   String? nameClassification;
   int? units;
   double? kilograms;
+  String? color;
 
   ProductDeliveryNoteModel();
 
@@ -23,18 +26,22 @@ class ProductDeliveryNoteModel extends ModelBase{
     @required required this.id,
     @required required this.deliveryTicket,
     @required required this.product,
+    @required required this.classification,
     @required required this.nameClassification,
     @required required this.units,
     @required required this.kilograms,
+    @required required this.color,
   });
 
   ProductDeliveryNote toEntity() {
     return ProductDeliveryNote.all(
       idDeliveryNote: deliveryTicket!.id,
       idProduct: product!.id,
+      idClassification: classification!.id,
       nameClassification: nameClassification,
       units: units,
       kilograms: kilograms,
+      color: color,
     );
   }
 
@@ -42,6 +49,7 @@ class ProductDeliveryNoteModel extends ModelBase{
   Future<void> fromEntity(ModelDao entity) async {
     ProductDeliveryNote productDeliveryNote = entity as ProductDeliveryNote;
     id = productDeliveryNote.id;
+
     DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
     await deliveryTicketModel.fromEntity(
         await DatabaseRepository.getEntityById(DeliveryTicket(), productDeliveryNote.idDeliveryNote!) as DeliveryTicket
@@ -54,13 +62,20 @@ class ProductDeliveryNoteModel extends ModelBase{
     );
     product = productModel;
 
+    ClassificationModel classificationModel = ClassificationModel();
+    await classificationModel.fromEntity(
+      await DatabaseRepository.getEntityById(Classification(), productDeliveryNote.idClassification!) as Classification
+    );
+    classification = classificationModel;
+
     nameClassification = productDeliveryNote.nameClassification;
     units = productDeliveryNote.units;
     kilograms = productDeliveryNote.kilograms;
+    color = productDeliveryNote.color;
   }
 
   @override
   String toString() {
-    return '${product!.name}\t$nameClassification\t$units\t$kilograms';
+    return '${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color';
   }
 }

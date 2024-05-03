@@ -31,6 +31,8 @@ class DataFileReader {
     Performance(): 'rendimientos.txt'
   };
 
+  final separator = ';';
+
   dynamic last_preferences_id = [];
 
   /// ### `readFile`
@@ -82,21 +84,25 @@ class DataFileReader {
           var tableName =
               instanceMirrorEmptyObject.getTableName(instanceMirrorEmptyObject);
 
+          await instanceMirrorEmptyObject.truncate();
+
           int lastId = await Preferences.getValue('last_${tableName}_id');
+
+          List<ModelDao> daoList = [];
 
           for (var x in lines) {
             if (x.isNotEmpty || x != '') {
               Map<Symbol, dynamic> constructor = {};
-              int index = 0;
-              List<String> line = x.split(';');
+              int index = 1;
+              List<String> line = x.split(separator);
               if (line.length == names.length - 1) {
-                constructor.addAll({Symbol(listNames[0]): lastId});
-                index++;
                 for (var value in line) {
-                  constructor.addAll({
-                    Symbol(listNames[index]):
-                        _castElements(listNames[index], value, fields)
-                  });
+                  if (listNames[index] != 'id') {
+                    constructor.addAll({
+                      Symbol(listNames[index]):
+                          _castElements(listNames[index], value, fields)
+                    });
+                  }
                   index++;
                 }
                 lastId++;
@@ -104,13 +110,16 @@ class DataFileReader {
                 var instanceMirror =
                     classMirror.newInstance('all', [], constructor) as ModelDao;
 
-                await instanceMirror.truncate();
-                if (await instanceMirror.existsInDatabase()) {
-                  instanceMirror.insert();
+                if (!await instanceMirror.existsInDatabase()) {
+                  daoList.add(instanceMirror);
                 }
               }
             }
           }
+
+          await instanceMirrorEmptyObject.listInsert(daoList);
+
+
           await Preferences.setValue('last_${tableName}_id', lastId);
         } else {
           LogHelper.logger.d('File $storedFile does not exist');

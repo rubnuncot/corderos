@@ -9,27 +9,36 @@ import '!!model_dao.dart';
 class ProductDeliveryNote extends ModelDao {
   int? idDeliveryNote;
   int? idProduct;
+  int? idClassification;
   String? nameClassification;
   int? units;
   double? kilograms;
+  String? color;
 
   ProductDeliveryNote();
 
   ProductDeliveryNote.all({
+    int? id,
     @required required this.idDeliveryNote,
     @required required this.idProduct,
+    @required required this.idClassification,
     @required required this.nameClassification,
     @required required this.units,
     @required required this.kilograms,
-  });
+    @required required this.color,
+  }){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'idDeliveryNote': Constants.bigint,
     'idProduct': Constants.bigint,
+    'idClassification': Constants.varchar['255']!,
     'nameClassification': Constants.varchar['255']!,
     'units': Constants.bigint,
     'kilograms': Constants.decimal['9,2']!,
+    'color': Constants.varchar['255']!,
   };
 
   Map<String, dynamic> toJson() {
@@ -37,9 +46,11 @@ class ProductDeliveryNote extends ModelDao {
       'id': id,
       'idDeliveryNote': idDeliveryNote,
       'idProduct': idProduct,
+      'idClassification': idClassification,
       'nameClassification': nameClassification,
       'units': units,
       'kilograms': kilograms,
+      'color': color,
     };
   }
 
@@ -48,13 +59,16 @@ class ProductDeliveryNote extends ModelDao {
 
   factory ProductDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ProductDeliveryNote.all(
+      id: map['id'],
       idDeliveryNote: map['idDeliveryNote'],
       idProduct: map['idProduct'],
+      idClassification: int.parse(map['idClassification']),
       nameClassification: map['nameClassification'],
       units: map['units'],
       kilograms: map['kilograms'] != null
           ? double.parse(map['kilograms'].toString())
           : null,
+      color: map['color'],
     );
   }
 
@@ -86,9 +100,11 @@ class ProductDeliveryNote extends ModelDao {
     return other is ProductDeliveryNote &&
         other.idDeliveryNote == idDeliveryNote &&
         other.idProduct == idProduct &&
+        other.idClassification == idClassification &&
         other.nameClassification == nameClassification &&
         other.units == units &&
-        other.kilograms == kilograms;
+        other.kilograms == kilograms &&
+        other.color == color;
   }
 
   @override
@@ -96,13 +112,15 @@ class ProductDeliveryNote extends ModelDao {
     return
         idDeliveryNote.hashCode ^
         idProduct.hashCode ^
+        idClassification.hashCode ^
         nameClassification.hashCode ^
         units.hashCode ^
-        kilograms.hashCode;
+        kilograms.hashCode ^
+        color.hashCode;
   }
 
   @override
   String toString() {
-    return '$nameClassification\t$units\t$kilograms';
+    return '$idClassification\t$nameClassification\t$units\t$kilograms\t$color';
   }
 }

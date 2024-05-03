@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reflectable/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
@@ -44,6 +45,8 @@ class DataFileWriter {
   /// ```
   Future<List<File>> writeFile() async {
     List<File> files = [];
+    String hoy =
+    Jiffy.parse(DateTime.now().toString()).format(pattern: 'dd-MM-yyyy');
     Directory dir = await getApplicationDocumentsDirectory();
     Map<String, List> data = await repository
         .getFTPData(); //! Key: productticket.txt | value: ProductTicket()
@@ -71,7 +74,7 @@ class DataFileWriter {
             restData, key, dataString, productData, 'product_ticket.txt');
       }
 
-      File file = File('${dir.path}/$fileName');
+      File file = File('${dir.path}/$fileName$hoy');
       file.writeAsStringSync(dataString);
       files.add(file);
     }
