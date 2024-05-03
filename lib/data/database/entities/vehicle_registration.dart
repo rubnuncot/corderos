@@ -13,9 +13,11 @@ class VehicleRegistration extends ModelDao {
   VehicleRegistration();
 
   VehicleRegistration.all(
-      {
+      {int? id,
       @required required this.vehicleRegistrationNum,
-      @required required this.deliveryTicket});
+      @required required this.deliveryTicket}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -36,6 +38,7 @@ class VehicleRegistration extends ModelDao {
 
   factory VehicleRegistration.fromJson(Map<String, dynamic> map) {
     return VehicleRegistration.all(
+      id: map['id'],
       vehicleRegistrationNum: map['vehicleRegistrationNum'],
       deliveryTicket: map['deliveryTicket'],
     );
@@ -55,6 +58,18 @@ class VehicleRegistration extends ModelDao {
   static List<String> get primary => _primary;
 
   static List<String> get exception => _exception;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is
+    VehicleRegistration && other.vehicleRegistrationNum == vehicleRegistrationNum
+        && other.deliveryTicket == deliveryTicket;
+  }
+
+  @override
+  int get hashCode => vehicleRegistrationNum.hashCode ^ deliveryTicket.hashCode;
 
   @override
   String toString() {

@@ -6,12 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/!repository.dart';
 
 class NewTableDropDown extends StatelessWidget {
-  final int listIndex;
+  final String mapKey;
 
   const NewTableDropDown({
-    Key? key,
-    required this.listIndex,
-  }) : super(key: key);
+    super.key,
+    required this.mapKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class NewTableDropDown extends StatelessWidget {
     final dropdownBloc = context.read<DropDownBloc>();
     final dropdownState = context.watch<DropDownBloc>().state;
 
-    final list = dropdownBloc.values[listIndex];
+    final list = dropdownBloc.values[mapKey];
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -36,9 +36,9 @@ class NewTableDropDown extends StatelessWidget {
               closedFillColor: appColors?['buttonBackgroundNeuColor'],
               expandedFillColor: appColors?['buttonBackgroundNeuColor'],
             ),
-            initialItem: list![dropdownState.index],
+            initialItem: dropdownState.selectedValues[mapKey],
             onChanged: (value) async {
-              await dropdownBloc.changeValue(listIndex, value);
+              await dropdownBloc.changeValue(mapKey, value);
             },
           ),
         ),

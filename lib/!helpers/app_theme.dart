@@ -133,6 +133,11 @@ class AppColors {
       'dialogTitleColor': Theme.of(context).colorScheme.onSurface,
       'dialogHintColor': Theme.of(context).colorScheme.onError,
       'updateDialogButtonColor': Theme.of(context).colorScheme.onSurface,
+      //! COLORES REPORT SCREEN
+      'headerBackgroundColor': Theme.of(context).colorScheme.secondary,
+      'fontHeaderColor': Theme.of(context).colorScheme.onSecondary,
+      'fontCardColor': Theme.of(context).colorScheme.secondary,
+      'iconCardColor': Theme.of(context).colorScheme.secondary,
     });
     return colors;
   }

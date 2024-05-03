@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  charset_converter
   dynamic_color
   permission_handler_windows
 )

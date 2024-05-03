@@ -1,10 +1,12 @@
 import 'package:corderos_app/data/database/entities/!!model_dao.dart';
+import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
 import '!!model_base.dart';
 import 'package:meta/meta.dart';
 
 import '../../data/!data.dart';
 
+@reflector
 class ProductModel extends ModelBase{
   int? id;
   String? code;

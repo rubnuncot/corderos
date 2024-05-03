@@ -15,7 +15,7 @@ class LoadingScreen extends StatelessWidget {
 
     Future<void> load() async {
       await themeBloc.preferencesTheme();
-      await dropDownBloc.getPreferenceValue();
+      await dropDownBloc.getData();
     }
 
     return FutureBuilder(

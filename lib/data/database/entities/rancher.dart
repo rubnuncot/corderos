@@ -14,16 +14,18 @@ class Rancher extends ModelDao {
   Rancher();
 
   Rancher.all(
-      {
+      {int? id,
       @required required this.code,
       @required required this.nif,
-      @required required this.name});
+      @required required this.name}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
     'code': Constants.varchar["255"]!,
-    'name': Constants.varchar["255"]!,
     'nif': Constants.varchar["10"]!,
+    'name': Constants.varchar["255"]!,
   };
 
   Map<String, dynamic> toJson() {
@@ -39,6 +41,7 @@ class Rancher extends ModelDao {
 
   factory Rancher.fromJson(Map<String, dynamic> map) {
     return Rancher.all(
+      id: map['id'],
       code: map['code'],
       nif: map['nif'],
       name: map['name'],

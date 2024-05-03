@@ -19,6 +19,7 @@ class DeliveryTicket extends ModelDao {
   DeliveryTicket();
 
   DeliveryTicket.all({
+    int? id,
     @required required this.number,
     @required required this.deliveryTicket,
     @required required this.date,
@@ -27,7 +28,9 @@ class DeliveryTicket extends ModelDao {
     @required required this.idSlaughterhouse,
     @required required this.idRancher,
     @required required this.idProduct,
-  });
+  }){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -60,6 +63,7 @@ class DeliveryTicket extends ModelDao {
 
   factory DeliveryTicket.fromJson(Map<String, dynamic> map) {
     return DeliveryTicket.all(
+      id: map['id'],
       number: map['number'],
       deliveryTicket: map['deliveryTicket'],
       date: map['date'] != null ? DateTime.parse(map['date']) : null,

@@ -1,9 +1,11 @@
 
 import 'package:corderos_app/data/!data.dart';
 import 'package:meta/meta.dart';
+import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import '!!model_base.dart';
 import '../../data/database/entities/!!model_dao.dart';
 
+@reflector
 class SlaughterhouseModel extends ModelBase{
   int? id;
   String? code;

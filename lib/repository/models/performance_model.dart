@@ -1,11 +1,13 @@
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:meta/meta.dart';
+import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
 import '!models.dart';
 import '!!model_base.dart';
 import '../../data/!data.dart';
 import '../../data/database/entities/!!model_dao.dart';
 
+@reflector
 class PerformanceModel extends ModelBase{
   int? id;
   ProductModel? product;
@@ -25,13 +27,13 @@ class PerformanceModel extends ModelBase{
     final performanceEntity = entity as Performance;
     id = performanceEntity.id;
     ProductModel productModel = ProductModel();
-    await productModel.fromEntity(DatabaseRepository.getEntityById(
+    await productModel.fromEntity(await DatabaseRepository.getEntityById(
         Product(), performanceEntity.idProduct!) as Product);
 
     product = productModel;
 
     ClassificationModel classificationModel = ClassificationModel();
-    await classificationModel.fromEntity(DatabaseRepository.getEntityById(
+    await classificationModel.fromEntity(await DatabaseRepository.getEntityById(
         Classification(), performanceEntity.idClassification!) as Classification);
 
     classification = classificationModel;

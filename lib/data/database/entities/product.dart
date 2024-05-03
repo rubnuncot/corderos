@@ -12,7 +12,10 @@ class Product extends ModelDao {
 
   Product();
 
-  Product.all({@required required this.code, @required required this.name});
+  Product.all(
+      {int? id, @required required this.code, @required required this.name}){
+    super.id = id;
+  }
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
@@ -32,6 +35,7 @@ class Product extends ModelDao {
 
   factory Product.fromJson(Map<String, dynamic> map) {
     return Product.all(
+      id: map['id'],
       code: map['code'],
       name: map['name'],
     );
@@ -59,9 +63,7 @@ class Product extends ModelDao {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Product &&
-        other.code == code &&
-        other.name == name;
+    return other is Product && other.code == code && other.name == name;
   }
 
   @override
