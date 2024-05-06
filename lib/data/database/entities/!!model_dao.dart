@@ -82,8 +82,8 @@ class ModelDao extends Dao {
     }
   }
 
-  Future<int> truncate() async {
-    List all = await selectAll<ModelDao>();
+  Future<int> truncate<T>() async {
+    List all = await selectAll<T>();
     return super.batchDelete(objectsToDelete: all);
   }
 }

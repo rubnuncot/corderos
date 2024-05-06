@@ -54,10 +54,12 @@ class IncrementTableIndex extends BurdenEvent {
 }
 
 class UploadData extends BurdenEvent {
+  BuildContext? context;
   DeliveryTicket? deliveryTicket;
   ProductDeliveryNote? productDeliveryNote;
 
   UploadData({
+    this.context,
     this.deliveryTicket,
     this.productDeliveryNote,
   });

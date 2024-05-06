@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 import '../../../data/database/entities/changes.dart';
@@ -44,7 +47,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
         emit(BurdenSuccess('Cambios de tabla obtenidos correctamente.',
             [changes], "GetChanges"));
       } catch (e) {
-        print(e);
+        LogHelper.logger.d(e);
+        emit(BurdenError(
+            'Ha ocurrido un error a la hora de obtener los cambios de tabla.'));
       }
     });
 
@@ -72,7 +77,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
         emit(BurdenSuccess('Albarán de productos obtenidos correctamente.',
             [productTickets], "GetProductTickets"));
       } catch (e) {
-        print(e);
+        LogHelper.logger.d(e);
+        emit(BurdenError(
+            'Ha ocurrido un error a la hora de obtener los albaranes de productos.'));
       }
     });
 
@@ -89,7 +96,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
             ],
             "GetTableIndex"));
       } catch (e) {
-        print(e);
+        LogHelper.logger.d(e);
+        emit(BurdenError(
+            'Ha ocurrido un error a la hora de obtener la última carga.'));
       }
     });
 
@@ -110,23 +119,46 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
             ],
             "IncrementTableIndex"));
       } catch (e) {
-        print(e);
+        LogHelper.logger.d(e);
+        emit(BurdenError(
+            'Ha ocurrido un error a la hora de crear una nueva carga.'));
       }
     });
 
     on<UploadData>((event, emit) async {
       emit(BurdenLoading());
-
       PrintHelper printHelper = PrintHelper();
 
+      Map<String, List<BluetoothInfo>> itemsMap =
+          await printHelper.getBluetooth();
+
       try {
-        event.deliveryTicket!.insert();
-        event.productDeliveryNote!.insert();
+        await event.deliveryTicket!.insert();
+        await event.productDeliveryNote!.insert();
+
+        await printHelper.print(event.context!, itemsMap.values.toList().first,
+            date: event.deliveryTicket!.date.toString(),
+            vehicleRegistrationNum: 'una cualquiera',
+            driver: 'uno cualquiera',
+            slaughterHouse: 'uno cualquiera',
+            rancher: 'uno cualquiera',
+            deliveryTicketNumber:
+                '${event.deliveryTicket!.deliveryTicket!} - ${event.deliveryTicket!.number}',
+            product: 'uno cualquiera',
+            number: '${event.productDeliveryNote!.units}',
+            classification: '${event.productDeliveryNote!.nameClassification}',
+            performance: '19',
+            kilograms: '${event.productDeliveryNote!.kilograms}',
+            color: '${event.productDeliveryNote!.color}');
 
         emit(BurdenSuccess(
-            'Carga guardada correctamente. Imprimiendo ticket...', [[200]],
+            'Carga guardada correctamente.',
+            [
+              [200]
+            ],
             "UploadData"));
       } catch (e) {
+        LogHelper.logger.d(e);
         emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.'));
       }
     });

@@ -84,7 +84,7 @@ class DataFileReader {
           var tableName =
               instanceMirrorEmptyObject.getTableName(instanceMirrorEmptyObject);
 
-          await instanceMirrorEmptyObject.truncate();
+          await instanceMirrorEmptyObject.truncate<ModelDao>();
 
           int lastId = await Preferences.getValue('last_${tableName}_id');
 

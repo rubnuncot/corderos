@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:corderos_app/!helpers/!helpers.dart';
-import 'package:corderos_app/!helpers/bluetooth_helper.dart';
-import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/presentation/widgets/bluetooth_list.dart';
@@ -11,10 +9,8 @@ import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/blocs/burden_bloc/burden_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:ftpconnect/ftpconnect.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class TablaTicket extends StatefulWidget {
@@ -49,22 +45,82 @@ class _TablaTicketState extends State<TablaTicket> {
           switch (state.event) {
             case "IncrementTableIndex":
             case "GetTableIndex":
-            _tableCount = state.data.first.first;
-            break;
+              _tableCount = state.data.first.first;
+              break;
           }
         }
       });
     });
     burdenBloc!.add(GetTableIndex());
-    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     tableItemDatabaseSubscription!.cancel();
-    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void endTicket(Map<String, dynamic> list) {
+    burdenBloc?.add(UploadData(
+        context: context,
+        deliveryTicket: DeliveryTicket.all(
+            deliveryTicket:
+                list[VehicleRegistrationModel().runtimeType.toString()]
+                    .vehicleRegistrationNum,
+            idProduct: list[ProductModel().runtimeType.toString()].id,
+            idRancher: list[RancherModel().runtimeType.toString()].id,
+            idSlaughterhouse:
+                list[SlaughterhouseModel().runtimeType.toString()].id,
+            idDriver: list[DriverModel().runtimeType.toString()].id,
+            idVehicleRegistration:
+                list[VehicleRegistrationModel().runtimeType.toString()].id,
+            date: DateTime.now(),
+            number: _tableCount,
+            id: _tableCount),
+        productDeliveryNote: ProductDeliveryNote.all(
+          idProduct: list[ProductModel().runtimeType.toString()].id,
+          nameClassification:
+              list[ClassificationModel().runtimeType.toString()].name,
+          units: _numeroCorderos,
+          kilograms: _kilogramos,
+          color: _color,
+          idDeliveryNote: _tableCount,
+          idClassification:
+              list[ClassificationModel().runtimeType.toString()].id,
+        )));
+
+    burdenBloc!.stream
+        .firstWhere((state) => state is BurdenSuccess || state is BurdenError)
+        .then((state) {
+      if (state is BurdenSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "¡Guardado!",
+              contentType: ContentType.success,
+              message: state.message,
+            ),
+          ),
+        );
+      } else if (state is BurdenError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "¡Error inesperado!",
+              contentType: ContentType.failure,
+              message: state.message,
+            ),
+          ),
+        );
+      }
+    });
   }
 
   void showEditDialog(
@@ -150,80 +206,6 @@ class _TablaTicketState extends State<TablaTicket> {
         );
       },
     );
-  }
-
-  void _scrollListener() {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double offsetThreshold = screenWidth * 0.2;
-    double closeOffsetThreshold = screenWidth * 0.2 + 5;
-
-    if (_scrollController.position.pixels >
-        _scrollController.position.maxScrollExtent + offsetThreshold) {
-      if (!dialogShown) {
-        dialogShown = true;
-        setState(() {
-          showDialog(
-            context: context,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                title: Text(
-                  'Crear nueva tabla',
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.05,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                content: Text(
-                  '¿Deseas añadir una nueva tabla?\nSe borrará la tabla actual.',
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.04,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text(
-                      'Cancelar',
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                      dialogShown = false;
-                    },
-                  ),
-                  TextButton(
-                    child: const Text(
-                      'Aceptar',
-                      style: TextStyle(
-                        color: Colors.green,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                      burdenBloc!.add(IncrementTableIndex());
-                      setState(() {
-                        dialogShown = false;
-                      });
-                    },
-                  ),
-                ],
-                backgroundColor: Colors.white,
-                elevation: screenWidth * 0.06,
-              );
-            },
-          );
-        });
-      }
-    } else if (_scrollController.position.pixels <
-        _scrollController.position.maxScrollExtent + closeOffsetThreshold) {
-      dialogShown = false;
-    }
   }
 
   Widget buildTableHeader(String text) {
@@ -341,68 +323,6 @@ class _TablaTicketState extends State<TablaTicket> {
     );
   }
 
-  //! Almacena los datos de la tabla en la base de datos.
-  Future<void> saveTableData() async {
-    final dropDownBloc = context.read<DropDownBloc>();
-    Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
-
-    burdenBloc?.add(UploadData(
-        deliveryTicket: DeliveryTicket.all(
-            deliveryTicket:
-            list[VehicleRegistrationModel().runtimeType.toString()]
-                .vehicleRegistrationNum,
-            idProduct: list[ProductModel().runtimeType.toString()].id,
-            idRancher: list[RancherModel().runtimeType.toString()].id,
-            idSlaughterhouse:
-            list[SlaughterhouseModel().runtimeType.toString()].id,
-            idDriver: list[DriverModel().runtimeType.toString()].id,
-            idVehicleRegistration:
-            list[VehicleRegistrationModel().runtimeType.toString()].id,
-            date: DateTime.now(),
-            number: _tableCount,
-            id: _tableCount),
-        productDeliveryNote: ProductDeliveryNote.all(
-          idProduct: list[ProductModel().runtimeType.toString()].id,
-          nameClassification:
-          list[ClassificationModel().runtimeType.toString()].name,
-          units: _numeroCorderos,
-          kilograms: _kilogramos,
-          color: _color,
-          idDeliveryNote: _tableCount,
-          idClassification: list[ClassificationModel().runtimeType.toString()].id,
-        )));
-
-    burdenBloc!.stream.firstWhere((state) => state is BurdenSuccess || state is BurdenError).then((state) {
-      if (state is BurdenSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.transparent,
-            content: AwesomeSnackbarContent(
-              title: "¡Guardado!",
-              contentType: ContentType.success,
-              message: state.message,
-            ),
-          ),
-        );
-      } else if (state is BurdenError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.transparent,
-            content: AwesomeSnackbarContent(
-              title: "¡Error inesperado!",
-              contentType: ContentType.failure,
-              message: state.message,
-            ),
-          ),
-        );
-      }
-    });
-  }
-
   //! Muestra el cuádro de diálogo de los dispositivos bluetooth
   Future<void> showBluetoothConnectionDialog(BuildContext context) async {
     showDialog(
@@ -426,33 +346,23 @@ class _TablaTicketState extends State<TablaTicket> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    PrintHelper printHelper = PrintHelper();
-    BluetoothHelper bluetoothHelper = BluetoothHelper();
     double tableWidth = MediaQuery.of(context).size.width * 0.945;
     final dropDownState = context.watch<DropDownBloc>().state;
 
     String formattedDate =
         "${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}/${DateTime.now().year}";
 
-    Future<void> saveAndPrint() async {
-      saveTableData();
-      printHelper.printTicket();
-      LogHelper.logger.d("Tabla insertada correctamente");
-    }
-
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width,
-                maxHeight: MediaQuery.of(context).size.height,
-              ),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight: MediaQuery.of(context).size.height,
+                ),
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
@@ -544,25 +454,20 @@ class _TablaTicketState extends State<TablaTicket> {
                   ],
                 ),
               ),
-          ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          final dropDownBloc = context.read<DropDownBloc>();
+          Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
 
-          if(await Permission.bluetooth.request().isGranted &&
+          if (await Permission.bluetooth.request().isGranted &&
               await Permission.bluetoothScan.request().isGranted &&
-              await Permission.location.request().isGranted) {
-            if (!bluetoothHelper.isConnected()) {
-              await showBluetoothConnectionDialog(context);
-            } else {
-              await saveTableData();
-              printHelper.printTicket();
-            }
-
-            if (bluetoothHelper.isConnected()) {
-              await saveAndPrint();
-            }
+              await Permission.location.request().isGranted &&
+              await Permission.bluetoothAdvertise.request().isGranted &&
+              await Permission.bluetoothConnect.request().isGranted) {
+            endTicket(list);
+            burdenBloc!.add(IncrementTableIndex());
           }
-
         },
         child: const Padding(
           padding: EdgeInsets.all(8.0),
@@ -575,7 +480,6 @@ class _TablaTicketState extends State<TablaTicket> {
               ]),
         ),
       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

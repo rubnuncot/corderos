@@ -33,6 +33,7 @@ class Preferences {
     'last_vehicleregistrations_id': 1,
     'last_saved_ticket': 1,
     'last_saved_tablet_id': 1,
+    'mac': 'none'
   };
 
   static Future<dynamic> getValue(String key) async {
@@ -63,40 +64,7 @@ class Preferences {
 
   static Future<void> restorePreferences() async {
     _userPreferences.forEach((key, value) async {
-      dynamic finalValue = 'none';
-      switch (key) {
-        case 'nif':
-          finalValue = 'none';
-          break;
-        case 'name':
-          finalValue = 'none';
-          break;
-        case 'vehicle_registration':
-          finalValue = 'none';
-          break;
-        case 'slaughterhouse':
-          finalValue = 1;
-          break;
-        case 'host':
-          finalValue = 'none';
-          break;
-        case 'port':
-          finalValue = 21;
-          break;
-        case 'username':
-          finalValue = 'none';
-          break;
-        case 'password':
-          finalValue = 'none';
-          break;
-        case 'path':
-          finalValue = 'name';
-          break;
-        case 'theme':
-          finalValue = true;
-          break;
-      }
-      await setValue(key, finalValue);
+      await setValue(key, value);
     });
   }
 
