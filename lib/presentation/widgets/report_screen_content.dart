@@ -1,3 +1,4 @@
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,14 +31,14 @@ class _ReportScreenContentState extends State<ReportScreenContent> {
   List<Map<String, dynamic>> realValues = [];
 
   @override
-  void initState() {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     reportBloc = context.read<ReportBloc>();
     reportState = context.watch<ReportBloc>().state;
-    super.initState();
   }
 
   Future<void> updateRealValues() async {
-    await reportBloc.getData();
+    await reportBloc.getDatabaseValues();
     realValues.add({'text': reportState.date});
     realValues.add({'text': reportState.slaughterhouseDestination});
     realValues.add({'text': reportState.totalUnits});
@@ -48,90 +49,92 @@ class _ReportScreenContentState extends State<ReportScreenContent> {
   Widget build(BuildContext context) {
     final appColors = AppColors(context: context).getColors();
 
-    Widget buildRow(Map<String, dynamic> rowData, Map<String, dynamic> realData) {
+    Widget buildRow(
+        Map<String, dynamic> rowData, Map<String, dynamic> realData) {
       return Column(
         children: [
           Row(
             children: [
-              Icon(rowData["icon"], size: iconSize, color: appColors?['iconCardColor']),
+              Icon(rowData["icon"],
+                  size: iconSize, color: appColors?['iconCardColor']),
               const SizedBox(width: 10.0),
-              Text(rowData["text"], style: TextStyle(fontSize: fontSize, fontWeight: bold)),
+              Text(rowData["text"],
+                  style: TextStyle(fontSize: fontSize, fontWeight: bold)),
               const SizedBox(width: 10.0),
             ],
           ),
           Row(
             children: [
               const Padding(padding: EdgeInsets.all(18.0)),
-              Text(realData["text"], style: TextStyle(fontSize: fontSize)),
+              Text(realData["text"].toString(),
+                  style: TextStyle(fontSize: fontSize)),
             ],
           )
         ],
       );
     }
 
-
     return FutureBuilder(
-      future: updateRealValues(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: appColors?['headerBackgroundColor'],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Matrícula: ${reportState.vehicleRegistration}",
-                      style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.bold,
-                          color: appColors?['fontHeaderColor']),
-                    ),
-                    Text(
-                      "Nombre: ${reportState.driver}",
-                      style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.bold,
-                          color: appColors?['fontHeaderColor']),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              Card(
-                elevation: 7.0,
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Padding(
+        future: updateRealValues(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
                   padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    color: appColors?['headerBackgroundColor'],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: rowValues.asMap().entries.map((entry) {
-                      final rowData = entry.value;
-                      final realData = realValues[entry.key];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildRow(rowData, realData),
-                          const SizedBox(height: 20.0),
-                        ],
-                      );
-                    }).toList(),
+                    children: [
+                      Text(
+                        "Matrícula: ${reportState.vehicleRegistration}",
+                        style: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: appColors?['fontHeaderColor']),
+                      ),
+                      Text(
+                        "Nombre: ${reportState.driver}",
+                        style: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: appColors?['fontHeaderColor']),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      }
-    );
+                const SizedBox(height: 20.0),
+                Card(
+                  elevation: 7.0,
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: rowValues.asMap().entries.map((entry) {
+                        final rowData = entry.value;
+                        final realData = realValues[entry.key];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildRow(rowData, realData),
+                            const SizedBox(height: 20.0),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 }
