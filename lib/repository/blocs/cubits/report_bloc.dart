@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
@@ -77,7 +78,7 @@ class ReportBloc extends Cubit<ReportState> {
   Future<void> _getReportDatabaseValues() async {
     DeliveryTicket deliveryTicket = DeliveryTicket();
     DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
-    deliveryTicketModel.fromEntity(await deliveryTicket.selectLast());
+    await deliveryTicketModel.fromEntity(await deliveryTicket.selectLast());
 
     databaseValues['slaughterhouseDestination'] =
         deliveryTicketModel.slaughterhouse!.name!;
@@ -85,7 +86,7 @@ class ReportBloc extends Cubit<ReportState> {
     databaseValues['rancher'] = deliveryTicketModel.rancher!.name!;
   }
 
-  Future<void> getData() async {
+  Future<void> getDatabaseValues() async {
     await _getDriverInfoFromPreferences();
     await _getReportDatabaseValues();
 
