@@ -5,8 +5,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class NavigatorBloc extends Cubit<NavigatorState> {
   NavigatorBloc() : super(NavigatorState());
 
-  void push(Widget screen, int index, name) {
-    emit(NavigatorState(screen: screen, index: index, name: name));
+  void push(Widget screen, int index, name, int lastIndex, String lastName,
+      Widget lastScreen) {
+    emit(NavigatorState(
+        screen: screen,
+        lastIndex: lastIndex,
+        index: index,
+        name: name,
+        lastName: lastName,
+        lastScreen: lastScreen));
+  }
+
+  void goBack() {
+    emit(NavigatorState(
+        screen: state.lastScreen,
+        index: state.lastIndex,
+        name: state.lastName));
   }
 
   void pop() {
@@ -16,10 +30,18 @@ class NavigatorBloc extends Cubit<NavigatorState> {
 
 class NavigatorState {
   Widget screen;
+  Widget? lastScreen;
+  final String lastName;
   final int index;
+  final int lastIndex;
   final String name;
 
-  NavigatorState({Widget? screen, this.index = 0, this.name = HomeScreen.name})
-      : screen = screen ?? HomeScreen();
+  NavigatorState(
+      {this.lastName = HomeScreen.name,
+      Widget? lastScreen,
+      Widget? screen,
+      this.lastIndex = 0,
+      this.index = 0,
+      this.name = HomeScreen.name})
+      : screen = screen ?? const HomeScreen();
 }
-

@@ -11,25 +11,16 @@ class Layout extends StatelessWidget {
   final Widget content;
   final String text;
 
-  const Layout(
-      {
-        super.key,
-        @required required this.content,
-        @required required this.text,
-      });
+  const Layout({
+    super.key,
+    @required required this.content,
+    @required required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
-
-    Map<String, dynamic> _theme = {
-      'primaryColor': Theme.of(context).primaryColor,
-      'iconTheme': Theme.of(context).iconTheme,
-      'textTheme': Theme.of(context).textTheme,
-      'dividerColor': Theme.of(context).dividerColor,
-    };
-
-    final Map<int, Widget> screens = {
-      0: HomeScreen(),
+      final Map<int, Widget> screens = {
+      0: const HomeScreen(),
       1: const BurdenScreen(),
       2: const TicketSelectionScreen(),
       3: const SettingsScreen(),
@@ -51,16 +42,18 @@ class Layout extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-              text,
-              style: TextStyle(
-                color: appThemes?['appBarTitle']
-              ),
+            text,
+            style: TextStyle(color: appThemes?['appBarTitle']),
+          ),
+          leading: IconButton(
+            icon: const Icon(FontAwesomeIcons.arrowLeft),
+            onPressed: () {
+              navigator.goBack();
+            },
           ),
           centerTitle: true,
           backgroundColor: appThemes?['appBarBackground'],
-          actions: const [
-            ThemeButton()
-          ],
+          actions: const [ThemeButton()],
         ),
         body: content,
         bottomNavigationBar: SalomonBottomBar(
@@ -69,7 +62,13 @@ class Layout extends StatelessWidget {
           selectedItemColor: appThemes?['selectedItemColor'],
           unselectedItemColor: appThemes?['unselectedItemColor'],
           onTap: (index) {
-            navigator.push(screens[index]!, index, names[index]!);
+            navigator.push(
+                screens[index]!,
+                index,
+                names[index]!,
+                navigatorState.index,
+                navigatorState.lastName,
+                navigatorState.screen);
           },
           items: [
             SalomonBottomBarItem(
