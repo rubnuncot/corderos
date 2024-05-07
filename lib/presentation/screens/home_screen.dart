@@ -8,6 +8,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HomeContent();
+    return const HomeContent();
   }
 }

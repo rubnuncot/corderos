@@ -34,12 +34,10 @@ class Panel extends StatelessWidget {
             Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => openPanel.closePanel(),
-                  ),
-                ],
+                leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => openPanel.closePanel(),
+                ),
                 backgroundColor: Colors.transparent,
               ),
               body: const Center(

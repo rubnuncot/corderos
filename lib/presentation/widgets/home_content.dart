@@ -36,11 +36,12 @@ class _HomeContentState extends State<HomeContent> {
     openPanel = context.read<OpenPanelBloc>();
     dropDownBloc = context.read<DropDownBloc>();
     navigatorBloc = context.read<NavigatorBloc>();
-    navigatorState = context.watch<NavigatorBloc>().state;
 
     _subscription = homeBloc!.stream.listen((event) {
       if (event is HomeSuccess) {
-        loading = false;
+        setState(() {
+          loading = false;
+        });
         SnackBar(
           elevation: 0,
           behavior: SnackBarBehavior.floating,
@@ -52,7 +53,9 @@ class _HomeContentState extends State<HomeContent> {
           ),
         );
       } else if(event is HomeError) {
-        loading = false;
+        setState(() {
+          loading = false;
+        });
         SnackBar(
           elevation: 0,
           behavior: SnackBarBehavior.floating,
@@ -64,7 +67,9 @@ class _HomeContentState extends State<HomeContent> {
           ),
         );
       } else {
-        loading = true;
+        setState(() {
+          loading = true;
+        });
       }
     });
   }
@@ -106,6 +111,7 @@ class _HomeContentState extends State<HomeContent> {
                         CustomButton(
                           text: 'Cargar',
                           onPressed: () async {
+                            navigatorState = context.watch<NavigatorBloc>().state;
                             navigatorBloc!.push(
                                 const BurdenScreen(),
                                 1,

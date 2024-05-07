@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
@@ -98,18 +97,29 @@ class ReportBloc extends Cubit<ReportState> {
     databaseValues['rancher'] = deliveryTicketModel.rancher!.name!;
   }
 
-  Future<void> getDatabaseValues() async {
-    await _getDriverInfoFromPreferences();
-    await _getReportDatabaseValues();
+  Future<bool> _isEmpty() async  {
+    List deliveryTickets = await DeliveryTicket().selectAll();
 
-    emit(ReportState.all(
-      state.date,
-      databaseValues['slaughterhouseDestination']!,
-      int.parse(databaseValues['totalUnits']!),
-      databaseValues['rancher']!,
-      databaseValues['driver']!,
-      databaseValues['vehicle_registration']!,
-    ));
+    return deliveryTickets.isEmpty;
+  }
+
+  Future<void> getDatabaseValues() async {
+
+    if(await _isEmpty()){
+      emit(ReportState());
+    } else {
+      await _getDriverInfoFromPreferences();
+      await _getReportDatabaseValues();
+
+      emit(ReportState.all(
+        state.date,
+        databaseValues['slaughterhouseDestination']!,
+        int.parse(databaseValues['totalUnits']!),
+        databaseValues['rancher']!,
+        databaseValues['driver']!,
+        databaseValues['vehicle_registration']!,
+      ));
+    }
   }
 }
 
