@@ -53,7 +53,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       }
     });
 
-    on<GetProductTickets>((event, emit) async {
+    on<GetProductTicketsBurden>((event, emit) async {
       emit(BurdenLoading());
 
       try {

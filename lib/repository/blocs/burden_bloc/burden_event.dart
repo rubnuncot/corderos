@@ -1,4 +1,3 @@
-
 part of 'burden_bloc.dart';
 
 abstract class BurdenEvent {}
@@ -19,7 +18,7 @@ class GetChanges extends BurdenEvent {
       : date = date ?? DateTime.now();
 }
 
-class GetProductTickets extends BurdenEvent {
+class GetProductTicketsBurden extends BurdenEvent {
   final int idTicket;
   final int idProduct;
   final String nameClassification;
@@ -27,7 +26,7 @@ class GetProductTickets extends BurdenEvent {
   final double weight;
   final int idPerformance;
 
-  GetProductTickets({
+  GetProductTicketsBurden({
     this.idTicket = 0,
     this.idProduct = 0,
     this.nameClassification = 'none',
