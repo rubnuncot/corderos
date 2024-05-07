@@ -5,6 +5,7 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/presentation/widgets/bluetooth_list.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
+import 'package:corderos_app/presentation/widgets/searchable_dropdown.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,14 +13,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class TablaTicket extends StatefulWidget {
-  const TablaTicket({super.key});
+class TableTicket extends StatefulWidget {
+  const TableTicket({super.key});
 
   @override
-  State<TablaTicket> createState() => _TablaTicketState();
+  State<TableTicket> createState() => _TableTicketState();
 }
 
-class _TablaTicketState extends State<TablaTicket> {
+class _TableTicketState extends State<TableTicket> {
   int _tableCount = 0;
   int _numeroCorderos = 0;
   double _kilogramos = 0.0;
@@ -345,7 +346,9 @@ class _TablaTicketState extends State<TablaTicket> {
   @override
   Widget build(BuildContext context) {
     double tableWidth = MediaQuery.of(context).size.width * 0.945;
+    final appColors = AppColors(context: context).getColors();
     final dropDownState = context.watch<DropDownBloc>().state;
+    final searchableDropdownBloc = context.read<SearchableDropdownBloc>();
 
     String formattedDate =
         "${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}/${DateTime.now().year}";
@@ -353,104 +356,134 @@ class _TablaTicketState extends State<TablaTicket> {
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width,
-                  maxHeight: MediaQuery.of(context).size.height,
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    //! FILA 1 - DESPLEGABLES
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InputSettings(
-                              label: 'Fecha',
-                              isNumeric: false,
-                              isEditable: false,
-                              valueNonEditable: formattedDate,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          const Expanded(
-                            child: NewDropDown(
-                              mapKey: 'vehicle_registration',
-                              labelText: 'Matrícula',
-                            ),
-                          ),
-                        ],
-                      ),
+          : Stack(
+            children: [
+              SingleChildScrollView(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width,
+                      maxHeight: MediaQuery.of(context).size.height,
                     ),
-                    //! FILA 2 - DESPLEGABLES
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: NewDropDown(
-                              mapKey: 'driver',
-                              labelText: 'Conductor',
-                            ),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        //! FILA 1 - DESPLEGABLES
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InputSettings(
+                                  label: 'Fecha',
+                                  animate: false,
+                                  isNumeric: false,
+                                  isEditable: false,
+                                  valueNonEditable: formattedDate,
+                                ),
+                              ),
+                              const SizedBox(width: 16.0),
+                              const Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'vehicle_registration',
+                                  labelText: 'Matrícula',
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    //! FILA 3 - DESPLEGABLES
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: NewDropDown(
-                              mapKey: 'slaughterhouse',
-                              labelText: 'Matadero',
-                            ),
+                        ),
+                        //! FILA 2 - DESPLEGABLES
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'driver',
+                                  labelText: 'Conductor',
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    //! FILA 4 - DESPLEGABLES
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: NewDropDown(
-                              mapKey: 'rancher',
-                              labelText: 'Ganadero',
-                            ),
+                        ),
+                        //! FILA 3 - DESPLEGABLES
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'slaughterhouse',
+                                  labelText: 'Matadero',
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 26.0),
+                        ),
+                        //! FILA 4 - DESPLEGABLES
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: Text(
+                                          'Ganadero',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: appColors?['labelInputColor'])),
+                                    ),
+                                    CustomButton(
+                                      text: dropDownState.selectedValues['rancher']!,
+                                      onPressed: () async {
+                                        searchableDropdownBloc.setItems(dropDownState.values['rancher']!);
+                                        searchableDropdownBloc.setHeight(screenHeight: MediaQuery.of(context).size.height);
+                                        setState(() {
 
-                    //! LISTA SCROLLEABLE DE TABLAS
-                    Expanded(
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(
-                            decelerationRate: ScrollDecelerationRate.normal),
-                        scrollDirection: Axis.horizontal,
-                        controller: _scrollController,
-                        itemCount: 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                              margin: const EdgeInsets.all(2.0),
-                              width: tableWidth - 12,
-                              child: Column(children: [
-                                buildTable(dropDownState, _tableCount + 1),
-                              ]));
-                        },
-                      ),
-                    )
-                  ],
+                                        });
+                                      },
+                                      textColor: appColors?['valueTableColor'],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 26.0),
+
+                        //! LISTA SCROLLEABLE DE TABLAS
+                        Expanded(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(
+                                decelerationRate: ScrollDecelerationRate.normal),
+                            scrollDirection: Axis.horizontal,
+                            controller: _scrollController,
+                            itemCount: 1,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                  margin: const EdgeInsets.all(2.0),
+                                  width: tableWidth - 12,
+                                  child: Column(children: [
+                                    buildTable(dropDownState, _tableCount + 1),
+                                  ]));
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
+              const SearchableDropdown(
+                dropdownValue: 'rancher',
+                titleText: 'Selecciona un ganadero',
               ),
-            ),
+            ],
+          ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final dropDownBloc = context.read<DropDownBloc>();
