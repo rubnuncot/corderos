@@ -52,20 +52,31 @@ class ReportBloc extends Cubit<ReportState> {
   Future<int> _getTotalUnits() async {
     int totalUnits = 0;
     DeliveryTicket deliveryTicket = DeliveryTicket();
-    String hoy =
-        Jiffy.parse(DateTime.now().toString()).format(pattern: 'dd-MM-yyyy');
-    List<ModelDao> data = await deliveryTicket
-        .getData(where: ['date', SqlBuilder.constOperators['equals']!, hoy]);
+    var seconds = "00:00:00.0000";
+    String today = '${DateTime.now().toString().split(" ")[0]} $seconds';
+    String tomorrow =
+        '${DateTime.now().add(const Duration(days: 1)).toString().split(" ")[0]} $seconds';
+    List<ModelDao> data = await deliveryTicket.getData(where: [
+      'date',
+      SqlBuilder.constOperators['greaterThan']!,
+      '"$today"',
+      SqlBuilder.constOperators['and']!,
+      'date',
+      SqlBuilder.constOperators['lessThan']!,
+      '"$tomorrow"'
+    ]);
     ProductDeliveryNote product = ProductDeliveryNote();
     List<ProductDeliveryNote> products = [];
 
     for (var ticket in data) {
       var productAux = await product.getData(where: [
-        'idDeliveryTicket',
+        'idDeliveryNote',
         SqlBuilder.constOperators['equals']!,
-        '${ticket.id}'
+        '"${ticket.id}"'
       ]);
-      products.add(productAux.first as ProductDeliveryNote);
+      if (productAux.isNotEmpty) {
+        products.add(productAux.first as ProductDeliveryNote);
+      }
     }
 
     for (var product in products) {
@@ -79,10 +90,11 @@ class ReportBloc extends Cubit<ReportState> {
     DeliveryTicket deliveryTicket = DeliveryTicket();
     DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
     await deliveryTicketModel.fromEntity(await deliveryTicket.selectLast());
+    var totalUnits = await _getTotalUnits();
 
     databaseValues['slaughterhouseDestination'] =
         deliveryTicketModel.slaughterhouse!.name!;
-    databaseValues['totalUnits'] = '${await _getTotalUnits()}';
+    databaseValues['totalUnits'] = '$totalUnits';
     databaseValues['rancher'] = deliveryTicketModel.rancher!.name!;
   }
 
@@ -90,11 +102,14 @@ class ReportBloc extends Cubit<ReportState> {
     await _getDriverInfoFromPreferences();
     await _getReportDatabaseValues();
 
-    emit(state.copyWith(
-        vehicleRegistration: databaseValues['vehicle_registration'],
-        driver: databaseValues['driver'],
-        slaughterhouseDestination: databaseValues['slaughterhouseDestination'],
-        totalUnits: int.parse(databaseValues['totalUnits']!)));
+    emit(ReportState.all(
+      state.date,
+      databaseValues['slaughterhouseDestination']!,
+      int.parse(databaseValues['totalUnits']!),
+      databaseValues['rancher']!,
+      databaseValues['driver']!,
+      databaseValues['vehicle_registration']!,
+    ));
   }
 }
 

@@ -36,6 +36,7 @@ class Layout extends StatelessWidget {
     };
 
     final navigator = context.read<NavigatorBloc>();
+    final reportBloc = context.read<ReportBloc>();
     final navigatorState = context.watch<NavigatorBloc>().state;
     final appThemes = AppColors(context: context).getColors();
 
@@ -61,7 +62,10 @@ class Layout extends StatelessWidget {
           backgroundColor: appThemes?['buttonNavigationBackground'],
           selectedItemColor: appThemes?['selectedItemColor'],
           unselectedItemColor: appThemes?['unselectedItemColor'],
-          onTap: (index) {
+          onTap: (index) async {
+            if(names[index] == ReportScreen.name){
+              await reportBloc.getDatabaseValues();
+            }
             navigator.push(
                 screens[index]!,
                 index,

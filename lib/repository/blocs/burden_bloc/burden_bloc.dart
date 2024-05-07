@@ -134,6 +134,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
       try {
         await event.deliveryTicket!.insert();
+        event.productDeliveryNote!.idDeliveryNote = event.deliveryTicket!.id;
         await event.productDeliveryNote!.insert();
 
         await printHelper.print(event.context!, itemsMap.values.toList().first,
