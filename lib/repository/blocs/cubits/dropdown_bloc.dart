@@ -21,7 +21,7 @@ class DropDownBloc extends Cubit<DropDownState> {
   };
 
   Future<void> changeValue(String key, String value) async {
-    if (values.containsKey(key) && values[key]!.contains(value)) {
+    if (values.containsKey(key) && preferencesKeys.containsKey(key)) {
       await Preferences.setValue(preferencesKeys[key]!, value);
     }
 
@@ -129,7 +129,7 @@ class DropDownBloc extends Cubit<DropDownState> {
   Future<void> _getPreferenceValue() async {
     for (var entry in preferencesKeys.entries) {
       final value = await Preferences.getValue(entry.value);
-      if (values[entry.key] != null && values[entry.key]!.contains(value)) {
+      if (values[entry.key] != null && preferencesKeys.containsKey(entry.key)) {
         state.selectedValues[entry.key] = value;
       }
     }
@@ -159,7 +159,6 @@ class DropDownBloc extends Cubit<DropDownState> {
 
     return returnedList;
   }
-
 
   Future<void> getData() async {
     await _getDatabaseValues();

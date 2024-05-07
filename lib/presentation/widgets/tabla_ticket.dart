@@ -85,7 +85,7 @@ class _TablaTicketState extends State<TablaTicket> {
           units: _numeroCorderos,
           kilograms: _kilogramos,
           color: _color,
-          idDeliveryNote: _tableCount,
+          idDeliveryNote: 0,
           idClassification:
               list[ClassificationModel().runtimeType.toString()].id,
         )));
@@ -215,12 +215,12 @@ class _TablaTicketState extends State<TablaTicket> {
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       color: appColors?['headBoardTableColor'],
       child: Center(
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.blueGrey[800],
-          ),
+        child: Text(text,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey[800]),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2
         ),
       ),
     );
@@ -248,9 +248,6 @@ class _TablaTicketState extends State<TablaTicket> {
 
     return Column(
       children: [
-        //!CONTADOR TABLA
-        Text('Tabla $tableIndex',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         //! PRIMERA TABLA
         Table(
           border:
