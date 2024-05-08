@@ -16,13 +16,6 @@ class NavigatorBloc extends Cubit<NavigatorState> {
         lastScreen: lastScreen));
   }
 
-  void goBack() {
-    emit(NavigatorState(
-        screen: state.lastScreen,
-        index: state.lastIndex,
-        name: state.lastName));
-  }
-
   void pop() {
     emit(NavigatorState());
   }

@@ -11,16 +11,17 @@ class InputSettings extends StatefulWidget {
   final bool isNumeric;
   final bool isEditable;
   final String valueNonEditable;
+  final bool animate;
 
   const InputSettings(
       {super.key,
       required this.label,
-       this.preferenceKey,
+      this.preferenceKey,
       this.isPassword = false,
       required this.isNumeric,
-         this.isEditable = true,
-        this.valueNonEditable = ''
-      });
+      this.isEditable = true,
+      this.valueNonEditable = '',
+      this.animate = true});
 
   @override
   InputSettingsState createState() => InputSettingsState();
@@ -43,14 +44,21 @@ class InputSettingsState extends State<InputSettings>
     super.initState();
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 750));
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
-    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _animationController, curve: Curves.easeOutBack));
-    _animationController.forward(from: 0.0);
+    if (widget.animate) {
+      _animationController = AnimationController(
+          vsync: this, duration: const Duration(milliseconds: 750));
+      _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+              parent: _animationController, curve: Curves.easeInOut));
+      _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
+          CurvedAnimation(
+              parent: _animationController, curve: Curves.easeOutBack));
+      _animationController.forward(from: 0.0);
+    } else {
+      _opacityAnimation =
+          const AlwaysStoppedAnimation(1.0); // Animación estática
+      _scaleAnimation = const AlwaysStoppedAnimation(1.0); // Animación estática
+    }
     obscureText = widget.isPassword;
     iconData = Icons.visibility;
     isEditable = widget.isEditable;
@@ -62,28 +70,27 @@ class InputSettingsState extends State<InputSettings>
 
   @override
   void dispose() {
-    _animationController.dispose();
+    if (widget.animate) {
+      _animationController.dispose();
+    }
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
   getPreferenceValue() async {
-
-    if(!widget.isEditable) {
+    if (!widget.isEditable) {
       _controller.text = valueNonEditable;
     } else {
       dynamic value = await Preferences.getValue(widget.preferenceKey!);
       _controller.text = value.toString();
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors(context: context).getColors();
     final themeBlocState = context.watch<ThemeBloc>().state;
-
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -96,27 +103,28 @@ class InputSettingsState extends State<InputSettings>
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 4.0, bottom: 8.0),
-                child: Text(
-                  widget.label,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          appColors?['labelInputColor'])
-                ),
+                child: Text(widget.label,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: appColors?['labelInputColor'])),
               ),
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      blurStyle: themeBlocState.isDarkTheme ? BlurStyle.inner : BlurStyle.normal,
+                      blurStyle: themeBlocState.isDarkTheme
+                          ? BlurStyle.inner
+                          : BlurStyle.normal,
                       color: appColors?['buttonShadowInput'],
-                      spreadRadius : 1,
+                      spreadRadius: 1,
                       blurRadius: 1,
-                      offset: themeBlocState.isDarkTheme ? const Offset(-1, -2) : const Offset(0, 3),
+                      offset: themeBlocState.isDarkTheme
+                          ? const Offset(-1, -2)
+                          : const Offset(0, 3),
                     ),
-                    if(themeBlocState.isDarkTheme)
+                    if (themeBlocState.isDarkTheme)
                       BoxShadow(
                         color: appColors?['secondShadowDarkMode'],
                         spreadRadius: 1,
@@ -165,17 +173,16 @@ class InputSettingsState extends State<InputSettings>
                   ),
                   cursorColor: appColors?['hintInputColor'],
                   onFieldSubmitted: (newValue) async {
-                      try {
-
-                        if(widget.preferenceKey != null) {
-                          await Preferences.setValue(
-                              widget.preferenceKey!, widget.preferenceKey == 'port'
-                              ? int.parse(newValue == '' ? '0' : newValue)
-                              : newValue
-                          );
-                        }
-                      } catch (e) {
-                        editError = true;
+                    try {
+                      if (widget.preferenceKey != null) {
+                        await Preferences.setValue(
+                            widget.preferenceKey!,
+                            widget.preferenceKey == 'port'
+                                ? int.parse(newValue == '' ? '0' : newValue)
+                                : newValue);
+                      }
+                    } catch (e) {
+                      editError = true;
                     }
                   },
                   onEditingComplete: () {

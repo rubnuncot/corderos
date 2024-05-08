@@ -1,4 +1,5 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data_conversion/!data_conversion.dart';
@@ -12,11 +13,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final FtpDataTransfer ftpDataTransfer = FtpDataTransfer();
     final DataFileReader dataFileReader = DataFileReader();
 
-    on<GetFtpData>((event, emit) {
+    on<GetFtpData>((event, emit) async {
       emit(HomeLoading());
 
       try {
-        dataFileReader.readFile();
+        await dataFileReader.readFile();
+        await event.dropDownBloc!.getData();
         emit(HomeSuccess('Datos recibidos correctamente', [], 'GetFtpData'));
       } catch (e) {
         LogHelper.logger.d(e);
@@ -26,7 +28,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     on<SendFiles>((event, emit) {
       emit(HomeLoading());
-
       try {
         ftpDataTransfer.sendFilesToFTP();
         emit(HomeSuccess('Datos enviados correctamente', [], 'SendFiles'));

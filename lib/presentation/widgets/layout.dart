@@ -49,7 +49,7 @@ class Layout extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(FontAwesomeIcons.arrowLeft),
             onPressed: () {
-              navigator.goBack();
+              navigator.pop();
             },
           ),
           centerTitle: true,

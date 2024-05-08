@@ -4,11 +4,11 @@ abstract class HomeEvent {}
 
 
 class GetFtpData extends HomeEvent {
-  final String tableChanged;
+  final DropDownBloc? dropDownBloc;
   final bool isRead;
 
   GetFtpData({
-    this.tableChanged = 'none',
+    this.dropDownBloc,
     this.isRead = false
   });
 }

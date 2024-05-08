@@ -1,3 +1,4 @@
+import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,10 @@ class Panel extends StatelessWidget {
   Widget build(BuildContext context) {
     final openPanel = context.read<OpenPanelBloc>();
     final openPanelState = context.watch<OpenPanelBloc>().state;
+
+    final screens = {
+      0 : const ClientList(),
+    };
 
     return AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -34,17 +39,13 @@ class Panel extends StatelessWidget {
             Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => openPanel.closePanel(),
-                  ),
-                ],
+                leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => openPanel.closePanel(),
+                ),
                 backgroundColor: Colors.transparent,
               ),
-              body: const Center(
-                child: Text('Panel'),
-              ),
+              body: screens[openPanelState.screen],
             ),
         ]));
   }
