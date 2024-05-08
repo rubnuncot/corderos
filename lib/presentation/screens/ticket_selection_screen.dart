@@ -7,6 +7,7 @@ class TicketSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-        child: Text('Ticket Selection Screen'));
+      child: Text("Tickets"),
+    );
   }
 }
