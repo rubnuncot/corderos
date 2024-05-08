@@ -57,6 +57,9 @@ class BlocsProviders extends StatelessWidget {
         BlocProvider(
           create: (context) => ClientBloc(),
         ),
+        BlocProvider(
+          create: (context) => TicketBloc(),
+        ),
       ],
       child: const MyApp(),
     );
