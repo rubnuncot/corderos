@@ -48,13 +48,15 @@ class InputSettingsState extends State<InputSettings>
       _animationController = AnimationController(
           vsync: this, duration: const Duration(milliseconds: 750));
       _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+          CurvedAnimation(
+              parent: _animationController, curve: Curves.easeInOut));
       _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
           CurvedAnimation(
               parent: _animationController, curve: Curves.easeOutBack));
       _animationController.forward(from: 0.0);
     } else {
-      _opacityAnimation = const AlwaysStoppedAnimation(1.0); // Animación estática
+      _opacityAnimation =
+          const AlwaysStoppedAnimation(1.0); // Animación estática
       _scaleAnimation = const AlwaysStoppedAnimation(1.0); // Animación estática
     }
     obscureText = widget.isPassword;
@@ -68,7 +70,9 @@ class InputSettingsState extends State<InputSettings>
 
   @override
   void dispose() {
-    _animationController.dispose();
+    if (widget.animate) {
+      _animationController.dispose();
+    }
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();

@@ -10,10 +10,15 @@ class OpenPanelBloc extends Cubit<OpenPanelState> {
   void closePanel() {
     emit(OpenPanelState(isOpen: false));
   }
+
+  void changeScreen(int screen) {
+    emit(OpenPanelState(isOpen: true, screen: screen));
+  }
 }
 
 class OpenPanelState {
   final bool isOpen;
+  final int screen;
 
-  OpenPanelState({this.isOpen = false});
+  OpenPanelState({this.isOpen = false, this.screen = 0});
 }

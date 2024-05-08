@@ -54,6 +54,9 @@ class BlocsProviders extends StatelessWidget {
         BlocProvider(
           create: (context) => SearchableDropdownBloc(),
         ),
+        BlocProvider(
+          create: (context) => ClientBloc(),
+        ),
       ],
       child: const MyApp(),
     );
