@@ -19,6 +19,7 @@ class ClientDeliveryNoteModel extends ModelBase {
   String? driverName;
   String? series;
   int? number;
+  bool? isSend;
 
   ClientDeliveryNoteModel();
 
@@ -39,6 +40,7 @@ class ClientDeliveryNoteModel extends ModelBase {
       date: date,
       slaughterhouseId: slaughterhouse!.id,
       idProduct: product!.id,
+      isSend: isSend?? false,
     );
   }
 
@@ -73,6 +75,7 @@ class ClientDeliveryNoteModel extends ModelBase {
 
     series = clientDeliveryNote.series;
     number = clientDeliveryNote.number;
+    isSend = clientDeliveryNote.isSend;
   }
 
   @override

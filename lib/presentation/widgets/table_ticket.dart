@@ -77,7 +77,7 @@ class _TableTicketState extends State<TableTicket> {
                 list[VehicleRegistrationModel().runtimeType.toString()].id,
             date: DateTime.now(),
             number: _tableCount,
-            id: _tableCount),
+            id: _tableCount, isSend: false),
         productDeliveryNote: ProductDeliveryNote.all(
           idProduct: list[ProductModel().runtimeType.toString()].id,
           nameClassification:

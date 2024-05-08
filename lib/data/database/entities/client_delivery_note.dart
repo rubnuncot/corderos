@@ -13,6 +13,7 @@ class ClientDeliveryNote extends ModelDao {
   int? idProduct;
   String? series;
   int? number;
+  bool? isSend;
 
   ClientDeliveryNote();
 
@@ -24,6 +25,7 @@ class ClientDeliveryNote extends ModelDao {
     @required required this.clientId,
     @required required this.slaughterhouseId,
     @required required this.idProduct,
+    @required required this.isSend,
   }){
     super.id = id;
   }
@@ -36,6 +38,7 @@ class ClientDeliveryNote extends ModelDao {
     'clientId': Constants.bigint,
     'slaughterhouseId': Constants.bigint,
     'idProduct': Constants.bigint,
+    'isSend': Constants.boolean,
   };
 
   Map<String, dynamic> toJson() {
@@ -45,6 +48,7 @@ class ClientDeliveryNote extends ModelDao {
       'clientId': clientId,
       'slaughterhouseId': slaughterhouseId,
       'idProduct': idProduct,
+      'isSend': isSend,
     };
   }
 
@@ -60,6 +64,7 @@ class ClientDeliveryNote extends ModelDao {
       series: map['series'],
       slaughterhouseId: map['slaughterhouseId'],
       idProduct: map['idProduct'],
+      isSend: map['isSend'],
     );
   }
 
@@ -91,7 +96,8 @@ class ClientDeliveryNote extends ModelDao {
         other.number == number &&
         other.clientId == clientId &&
         other.slaughterhouseId == slaughterhouseId &&
-        other.idProduct == idProduct;
+        other.idProduct == idProduct &&
+        other.isSend == isSend;
   }
 
   @override
@@ -102,7 +108,8 @@ class ClientDeliveryNote extends ModelDao {
     series.hashCode ^
     number.hashCode ^
     slaughterhouseId.hashCode ^
-    idProduct.hashCode;
+    idProduct.hashCode ^
+    isSend.hashCode;
   }
 
   @override
