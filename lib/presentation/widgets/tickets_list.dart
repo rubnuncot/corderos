@@ -31,12 +31,12 @@ class _TicketListState extends State<TicketList> {
   @override
   void initState() {
     ticketBloc = BlocProvider.of<TicketBloc>(context);
-    ticketBloc!.add(FetchTickets());
+    ticketBloc!.add(FetchTicketsScreen());
 
     ticketSubscription = ticketBloc!.stream.listen((state) {
       if (state is TicketSuccess) {
         switch (state.event) {
-          case 'FetchTickets':
+          case 'FetchTicketsScreen':
             setState(() {
               tickets = state.data as List<DeliveryTicket>;
             });

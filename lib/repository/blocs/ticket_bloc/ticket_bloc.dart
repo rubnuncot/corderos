@@ -12,14 +12,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   TicketBloc() : super(TicketLoading()) {
     List<DeliveryTicket> tickets = [];
 
-    on<FetchTickets>((event, emit) async {
+    on<FetchTicketsScreen>((event, emit) async {
       emit(TicketLoading());
       try {
         tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
         emit(TicketSuccess(
             message: 'Tickets recibidos con éxito',
             data: tickets,
-            event: 'FetchTickets'));
+            event: 'FetchTicketsScreen'));
       } catch (e) {
         emit(TicketError(
             'Ha ocurrido un error a la hora de cargar los tickets.'));

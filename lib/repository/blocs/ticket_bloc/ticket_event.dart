@@ -2,8 +2,8 @@ part of 'ticket_bloc.dart';
 
 abstract class TicketEvent {}
 
-class FetchTickets extends TicketEvent {
-  FetchTickets();
+class FetchTicketsScreen extends TicketEvent {
+  FetchTicketsScreen();
 }
 
 class SelectTicket extends TicketEvent {
