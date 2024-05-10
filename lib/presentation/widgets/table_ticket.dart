@@ -243,7 +243,7 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget buildTable(DropDownState dropDownState, int tableIndex) {
+  Widget buildTable(DropDownStateBloc dropDownState, int tableIndex) {
     final appColors = AppColors(context: context).getColors();
 
     return Column(

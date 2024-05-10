@@ -18,6 +18,7 @@ class DeliveryTicketModel extends ModelBase{
   RancherModel? rancher;
   ProductModel? product;
   int? number;
+  bool? isSend;
 
   DeliveryTicketModel();
 
@@ -31,6 +32,7 @@ class DeliveryTicketModel extends ModelBase{
     required this.slaughterhouse,
     required this.rancher,
     required this.product,
+    required this.isSend,
   });
 
   @override
@@ -71,6 +73,8 @@ class DeliveryTicketModel extends ModelBase{
     product = productModel;
 
     number = deliveryTicketEntity.number;
+
+    isSend = deliveryTicketEntity.isSend!;
   }
 
   @override

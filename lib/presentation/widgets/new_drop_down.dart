@@ -21,7 +21,7 @@ class NewDropDown extends StatefulWidget {
 
 class _NewDropDownState extends State<NewDropDown> {
   late DropDownBloc dropdownBloc;
-  late DropDownState dropdownState;
+  late DropDownStateBloc dropdownState;
   List<String>? list;
 
   @override

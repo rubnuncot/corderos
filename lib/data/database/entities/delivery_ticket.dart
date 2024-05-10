@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
@@ -76,7 +77,7 @@ class DeliveryTicket extends ModelDao {
       idSlaughterhouse: map['idSlaughterhouse'],
       idRancher: map['idRancher'],
       idProduct: map['idProduct'],
-      isSend: map['isSend'],
+      isSend: map['isSend'] == 0 ? false : true,
     );
   }
 
@@ -84,7 +85,6 @@ class DeliveryTicket extends ModelDao {
 
   static final List<String> _primary = [
     _names.elementAt(0),
-    _names.elementAt(7),
   ];
 
   static final List<String> _exception = [];
