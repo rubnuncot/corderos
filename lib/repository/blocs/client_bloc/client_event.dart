@@ -34,3 +34,7 @@ class SelectClient extends ClientEvent {
   });
 }
 
+class FetchTickets extends ClientEvent {
+  FetchTickets();
+}
+

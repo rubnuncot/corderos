@@ -9,6 +9,7 @@ part 'client_state.dart';
 class ClientBloc extends Bloc<ClientEvent, ClientState> {
   ClientBloc() : super(ClientLoading()) {
     List<Client> clients = [];
+    List<DeliveryTicket> tickets = [];
     on<FetchClients>((event, emit) async {
       emit(ClientLoading());
       try {
@@ -29,6 +30,20 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
           data: clients,
           event: 'SelectClient',
           selectedClient: event.clientId));
+    });
+
+    on<FetchTickets>((event, emit) async {
+      emit(ClientLoading());
+      try {
+        tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+        emit(ClientSuccess(
+            message: 'Tickets recibidos con éxito',
+            data: tickets,
+            event: 'FetchTickets'));
+      } catch (e) {
+        emit(ClientError(
+            'Ha ocurrido un error a la hora de cargar los tickets.'));
+      }
     });
 
   }

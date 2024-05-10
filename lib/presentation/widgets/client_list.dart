@@ -53,6 +53,7 @@ class _ClientListState extends State<ClientList> {
 
   @override
   Widget build(BuildContext context) {
+    final openPanel = context.read<OpenPanelBloc>();
     return Container(
         padding: const EdgeInsets.all(8),
         child: ListView.builder(
@@ -61,6 +62,7 @@ class _ClientListState extends State<ClientList> {
             return ZoomTapAnimation(
               onTap: () {
                 clientBloc!.add(SelectClient(clientId: clients[index].id!));
+                openPanel.changeScreen(1);
               },
               child: Card(
                 child: ListTile(

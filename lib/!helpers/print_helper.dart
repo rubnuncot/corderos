@@ -49,7 +49,7 @@ class PrintHelper {
   }
 
   Future<Map<String, List<BluetoothInfo>>> getBluetooth() async {
-    Map<String, List<BluetoothInfo>> result = {};
+    Map<String, List<BluetoothInfo>> result =  {};
     final List<BluetoothInfo> listResult =
         await PrintBluetoothThermal.pairedBluetooths;
 

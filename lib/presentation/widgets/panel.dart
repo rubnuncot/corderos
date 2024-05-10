@@ -16,6 +16,7 @@ class Panel extends StatelessWidget {
 
     final screens = {
       0 : const ClientList(),
+      1 : const TicketList(),
     };
 
     return AnimatedContainer(
