@@ -1,3 +1,4 @@
+import 'package:corderos_app/presentation/widgets/tickets_list.dart';
 import 'package:flutter/material.dart';
 
 class TicketSelectionScreen extends StatelessWidget {
@@ -7,7 +8,7 @@ class TicketSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text("Tickets"),
+      child: TicketList(),
     );
   }
 }

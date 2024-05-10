@@ -11,9 +11,18 @@ class TicketError extends TicketState {
 }
 
 class TicketSuccess extends TicketState {
-  final String message;
-  List<List> data;
-  String event;
+  String message = '';
+  List data = [];
+  String event = '';
 
-  TicketSuccess(this.message, this.data, this.event);
+  TicketSuccess({required this.message,required this.data,required this.event});
+
+  TicketSuccess copyWith(
+      {String? message, List? data, String? event, int? selectedTicket}) {
+    return TicketSuccess(
+        message: message ?? this.message,
+        data: data ?? this.data,
+        event: event ?? this.event,
+    );
+  }
 }
