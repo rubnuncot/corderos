@@ -101,6 +101,7 @@ class AppColors {
     colors!.addAll({
       'primary': Theme.of(context).colorScheme.primary,
       'secondary': Theme.of(context).colorScheme.secondary,
+      'background': Theme.of(context).colorScheme.surface,
       'bottomBarIconColor': Theme.of(context).colorScheme.inversePrimary,
       'bottomBarBackgroundColor': Theme.of(context).colorScheme.surface,
       'appBarTitle': Theme.of(context).colorScheme.inversePrimary,
@@ -138,6 +139,8 @@ class AppColors {
       'fontHeaderColor': Theme.of(context).colorScheme.onSecondary,
       'fontCardColor': Theme.of(context).colorScheme.secondary,
       'iconCardColor': Theme.of(context).colorScheme.secondary,
+      //! COLORES TICKET SCREEN
+      'backgroundCard': Theme.of(context).scaffoldBackgroundColor
     });
     return colors;
   }

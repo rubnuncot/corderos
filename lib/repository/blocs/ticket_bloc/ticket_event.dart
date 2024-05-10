@@ -2,23 +2,26 @@ part of 'ticket_bloc.dart';
 
 abstract class TicketEvent {}
 
-class GetAllProductDeliveryNotes extends TicketEvent {
-  final int idDeliveryNote;
-  final int idProduct;
-  final int idClassification;
-  final String nameClassification;
-  final int units;
-  final double weight;
-  final String color;
+class FetchTickets extends TicketEvent {
+  FetchTickets();
+}
 
-  GetAllProductDeliveryNotes({
-    this.idDeliveryNote = 0,
-    this.idProduct = 0,
-    this.idClassification = 0,
+class SelectTicket extends TicketEvent {
+  final int ticketId;
 
-    this.nameClassification = 'Sin clasificación',
-    this.units = 0,
-    this.weight = 0.0,
-    this.color = 'Sin color'
+  SelectTicket({required this.ticketId});
+}
+
+class DeleteTicket extends TicketEvent {
+  final int ticketId;
+
+  DeleteTicket({required this.ticketId});
+}
+
+class GetTicketInfo extends TicketEvent {
+  final int ticketId;
+
+  GetTicketInfo({
+    required this.ticketId
   });
 }

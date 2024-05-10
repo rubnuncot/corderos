@@ -64,7 +64,7 @@ class ClientDeliveryNote extends ModelDao {
       series: map['series'],
       slaughterhouseId: map['slaughterhouseId'],
       idProduct: map['idProduct'],
-      isSend: map['isSend'],
+      isSend: map['isSend'] == 0 ? false : true,
     );
   }
 

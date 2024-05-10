@@ -3,8 +3,8 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
 import 'package:corderos_app/repository/!repository.dart';
 
-class DropDownBloc extends Cubit<DropDownState> {
-  DropDownBloc() : super(DropDownState());
+class DropDownBloc extends Cubit<DropDownStateBloc> {
+  DropDownBloc() : super(DropDownStateBloc());
   Map<String, List<String>> values = {
     'driver': [],
     'vehicle_registration': [],
@@ -167,11 +167,11 @@ class DropDownBloc extends Cubit<DropDownState> {
   }
 
   void reset() {
-    emit(DropDownState());
+    emit(DropDownStateBloc());
   }
 }
 
-class DropDownState {
+class DropDownStateBloc {
   Map<String, List<String>> values = {
     'driver': [],
     'vehicle_registration': [],
@@ -202,15 +202,15 @@ class DropDownState {
     'performance': [],
   };
 
-  DropDownState();
+  DropDownStateBloc();
 
-  DropDownState.all(
+  DropDownStateBloc.all(
       {Map<String, List<String>>? values, Map<String, String>? selectedValues});
 
-  DropDownState copyWith(
+  DropDownStateBloc copyWith(
       {Map<String, List<String>>? values,
       Map<String, String>? selectedValues}) {
-    return DropDownState.all(
+    return DropDownStateBloc.all(
         values: values ?? this.values,
         selectedValues: selectedValues ?? this.selectedValues);
   }
