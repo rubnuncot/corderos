@@ -61,7 +61,7 @@ class _TicketListState extends State<TicketList> {
             break;
           case 'GetTicketInfo':
             setState(() {
-              //! 0 --> ProductDeliveryNote | 1 --> DeliveryTicket
+              //! 0 --> ProductTicket | 1 --> DeliveryTicket
               showAlertDialog(state.data[0], state.data[1]);
             });
             break;
@@ -73,21 +73,26 @@ class _TicketListState extends State<TicketList> {
   }
 
   //! DETALLES TICKET
-  void showAlertDialog(ProductDeliveryNoteModel productDeliveryNoteModel,
+  void showAlertDialog(ProductTicketModel productTicketModel,
       DeliveryTicketModel deliveryTicketModel) {
+
     final appColors = AppColors(context: context).getColors();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     Dialogs.materialDialog(
       color: appColors?['backgroundCard'],
-        customView: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            color: appColors?['backgroundCard'],
-          ),
+      customView: Container(
+        padding: const EdgeInsets.all(16.0),
+        width: screenWidth * 0.9,
+        height: screenHeight * 0.72,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: appColors?['backgroundCard'],
+        ),
+        child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Serie Nº: ${deliveryTicketModel.number}',
@@ -99,47 +104,60 @@ class _TicketListState extends State<TicketList> {
                 ),
               ),
               const SizedBox(height: 20),
-              Table(
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                border: TableBorder.all(color: Colors.grey),
-                children: [
-                  _buildRow(
-                      "Producto", '${productDeliveryNoteModel.product?.name}'),
-                  _buildRow("Unidades", '${productDeliveryNoteModel.units}'),
-                  _buildRow("Clasificación",
-                      '${productDeliveryNoteModel.nameClassification}'),
-                  _buildRow(
-                      "Kilogramos", '${productDeliveryNoteModel.kilograms}'),
-                  _buildRow("Color", '${productDeliveryNoteModel.color}'),
-                  _buildRow(
-                      "Número del ticket", '${deliveryTicketModel.number}'),
-                  _buildRow("Fecha", '${deliveryTicketModel.date}'),
-                  _buildRow(
-                      "Vehículo",
-                      deliveryTicketModel
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: screenHeight * 0.9,
+                    maxWidth: screenWidth * 0.8,
+                  ),
+                  child: Table(
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    border: TableBorder.all(color: Colors.grey, borderRadius: BorderRadius.circular(12)),
+                    children: [
+                      _buildRow(
+                          "Producto", '${productTicketModel.product!.name}'),
+                      _buildRow("Unidades", '${productTicketModel.numAnimals}'),
+                      _buildRow("Clasificación",
+                          '${productTicketModel.nameClassification}'),
+                      _buildRow(
+                          "Kilogramos", '${productTicketModel.weight}'),
+                      _buildRow("Color", '${productTicketModel.color}'),
+                      _buildRow("Rendimiento", '${productTicketModel.performance!.performance}'),
+                      _buildRow(
+                          "Número del ticket", '${deliveryTicketModel.number}'),
+                      _buildRow("Fecha", '${deliveryTicketModel.date}'),
+                      _buildRow(
+                          "Vehículo",
+                          deliveryTicketModel
                               .vehicleRegistration?.vehicleRegistrationNum ??
-                          ""),
-                  _buildRow(
-                      "Conductor", deliveryTicketModel.driver?.name ?? ""),
-                  _buildRow(
-                      "Ganadero", deliveryTicketModel.rancher?.name ?? ""),
-                ],
+                              ""),
+                      _buildRow(
+                          "Conductor", deliveryTicketModel.driver?.name ?? ""),
+                      _buildRow(
+                          "Ganadero", deliveryTicketModel.rancher?.name ?? ""),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
         ),
-        context: context,
-        actions: [
-          IconsButton(
-            onPressed: () {},
-            text: 'Hecho',
-            iconData: Icons.confirmation_num,
-            color: appColors?['updateDialogButtonColor'],
-            textStyle: TextStyle(color: appColors?['background']),
-            iconColor: appColors?['background'],
-          ),
-        ]);
+      ),
+      context: context,
+      actions: [
+        IconsButton(
+          onPressed: () {},
+          text: 'Hecho',
+          iconData: Icons.confirmation_num,
+          color: appColors?['updateDialogButtonColor'],
+          textStyle: TextStyle(color: appColors?['background']),
+          iconColor: appColors?['background'],
+        ),
+      ],
+    );
   }
+
 
   TableRow _buildRow(String title, String value) {
     final appColors = AppColors(context: context).getColors();
@@ -155,6 +173,8 @@ class _TicketListState extends State<TicketList> {
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
               textAlign: TextAlign.justify,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -207,6 +227,7 @@ class _TicketListState extends State<TicketList> {
               break;
             default:
             //TODO: Imprimir el recibo
+              ticketBloc!.add(PrintTicketEvent(context: context, deliveryTicket: ticket));
           }
         },
       ),

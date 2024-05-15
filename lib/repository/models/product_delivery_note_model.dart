@@ -76,6 +76,6 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   @override
   String toString() {
-    return '${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color';
+    return '${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
   }
 }

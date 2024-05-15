@@ -1,7 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 part 'ticket_event.dart';
@@ -36,13 +40,13 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
             sqlBuilder: SqlBuilder()
                 .querySelect(fields: ["*"])
                 .queryFrom(
-                    table: selectedDeliveryTicket
-                        .getTableName(selectedDeliveryTicket))
+                table: selectedDeliveryTicket
+                    .getTableName(selectedDeliveryTicket))
                 .queryWhere(conditions: [
-                  'id',
-                  SqlBuilder.constOperators['equals']!,
-                  '$selectedId'
-                ]));
+              'id',
+              SqlBuilder.constOperators['equals']!,
+              '$selectedId'
+            ]));
 
         if (results.isNotEmpty) {
           selectedDeliveryTicket = results.first as DeliveryTicket;
@@ -66,44 +70,43 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       try {
         int selectedId = event.ticketId;
         var selectedDeliveryTicket = DeliveryTicket();
-        var selectedProductDeliveryNote = ProductDeliveryNote();
+        var selectedProductTicket = ProductTicket();
 
         selectedDeliveryTicket = (await DeliveryTicket().select(
-                model: DeliveryTicket(),
-                sqlBuilder: SqlBuilder()
-                    .querySelect(fields: ["*"])
-                    .queryFrom(
-                        table: selectedDeliveryTicket
-                            .getTableName(selectedDeliveryTicket))
-                    .queryWhere(conditions: [
-                      'id',
-                      SqlBuilder.constOperators['equals']!,
-                      '$selectedId'
-                    ])))
+            model: DeliveryTicket(),
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(
+                table: selectedDeliveryTicket
+                    .getTableName(selectedDeliveryTicket))
+                .queryWhere(conditions: [
+              'id',
+              SqlBuilder.constOperators['equals']!,
+              '$selectedId'
+            ])))
             .first as DeliveryTicket;
 
-        selectedProductDeliveryNote = (await ProductDeliveryNote().select(
-                model: ProductDeliveryNote(),
-                sqlBuilder: SqlBuilder()
-                    .querySelect(fields: ["*"])
-                    .queryFrom(
-                        table: selectedProductDeliveryNote
-                            .getTableName(selectedProductDeliveryNote))
-                    .queryWhere(conditions: [
-                      'idDeliveryNote',
-                      SqlBuilder.constOperators['equals']!,
-                      '$selectedId'
-                    ])))
-            .first as ProductDeliveryNote;
+        selectedProductTicket = (await ProductTicket().select(
+            model: ProductTicket(),
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(
+                table: selectedProductTicket
+                    .getTableName(selectedProductTicket))
+                .queryWhere(conditions: [
+              'idTicket',
+              SqlBuilder.constOperators['equals']!,
+              '$selectedId'
+            ])))
+            .first as ProductTicket;
 
         selectedDeliveryTicket.delete();
-        selectedProductDeliveryNote.delete();
+        selectedProductTicket.delete();
 
         emit(TicketSuccess(
             message: 'Ticket borrado correctamente',
             data: [selectedDeliveryTicket],
             event: 'DeleteTicket'));
-
       } catch (e) {
         emit(TicketError('Ha habido un error al borrar el ticket'));
       }
@@ -116,43 +119,138 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
         !  - nameClassification   - vehicleregistration
         !  - kilograms            - driver (name)
         !  - color                - rancher (name)
-        */
+    */
     on<GetTicketInfo>((event, emit) async {
       emit(TicketLoading());
 
       try {
-
         int selectedId = event.ticketId;
         DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
-        var selectedProductDeliveryNote = ProductDeliveryNote();
-        ProductDeliveryNoteModel productDeliveryNoteModel = ProductDeliveryNoteModel();
+        var selectedProductTicket = ProductTicket();
+        ProductTicketModel productTicketModel =
+        ProductTicketModel();
 
-        await deliveryTicketModel.fromEntity(await DatabaseRepository.getEntityById(DeliveryTicket(), selectedId));
+        await deliveryTicketModel.fromEntity(
+            await DatabaseRepository.getEntityById(
+                DeliveryTicket(), selectedId));
 
-        selectedProductDeliveryNote = (await ProductDeliveryNote().select(
-            model: ProductDeliveryNote(),
+        selectedProductTicket = (await ProductTicket().select(
+            model: ProductTicket(),
             sqlBuilder: SqlBuilder()
                 .querySelect(fields: ["*"])
                 .queryFrom(
-                table: selectedProductDeliveryNote
-                    .getTableName(selectedProductDeliveryNote))
+                table: selectedProductTicket
+                    .getTableName(selectedProductTicket))
                 .queryWhere(conditions: [
-              'idDeliveryNote',
+              'idTicket',
               SqlBuilder.constOperators['equals']!,
               '$selectedId'
             ])))
-            .first as ProductDeliveryNote;
+            .first as ProductTicket;
 
-        await productDeliveryNoteModel.fromEntity(await selectedProductDeliveryNote.selectLast());
+        await productTicketModel
+            .fromEntity(await selectedProductTicket.selectLast());
 
         emit(TicketSuccess(
           message: 'Tickets de productos obtenidos correctamente',
-          data: [productDeliveryNoteModel, deliveryTicketModel],
+          data: [productTicketModel, deliveryTicketModel],
           event: "GetTicketInfo",
         ));
       } catch (e) {
         emit(TicketError(
             'Ha ocurrido un error a la hora de obtener los tickets'));
+      }
+    });
+
+    on<PrintTicketEvent>((event, emit) async {
+      emit(TicketLoading());
+      PrintHelper printHelper = PrintHelper();
+      var selectedProductTicket = ProductTicket();
+      ProductTicketModel productTicketModel =
+      ProductTicketModel();
+      VehicleRegistrationModel vehicleRegistrationModel =
+      VehicleRegistrationModel();
+      DriverModel driverModel = DriverModel();
+      SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
+      RancherModel rancherModel = RancherModel();
+      ProductModel productModel = ProductModel();
+      PerformanceModel performanceModel = PerformanceModel();
+
+      Map<String, List<BluetoothInfo>> itemsMap =
+      await printHelper.getBluetooth();
+
+      //! ProductTicket
+      selectedProductTicket = (await ProductTicket().select(
+          model: ProductTicket(),
+          sqlBuilder: SqlBuilder()
+              .querySelect(fields: ["*"])
+              .queryFrom(
+              table: selectedProductTicket
+                  .getTableName(selectedProductTicket))
+              .queryWhere(conditions: [
+            'idTicket',
+            SqlBuilder.constOperators['equals']!,
+            '${event.deliveryTicket.id}'
+          ])))
+          .first as ProductTicket;
+      await productTicketModel
+          .fromEntity(await selectedProductTicket.selectLast());
+
+      //! VehicleRegistrationNum
+      await vehicleRegistrationModel.fromEntity(
+          await DatabaseRepository.getEntityById(VehicleRegistration(),
+              event.deliveryTicket.idVehicleRegistration!));
+
+      //! Driver (name)
+      await driverModel.fromEntity(await DatabaseRepository.getEntityById(
+          Driver(), event.deliveryTicket.idDriver!));
+
+      //! Slaughterhouse (name)
+      await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
+          Rancher(), event.deliveryTicket.idRancher!));
+
+      //! Rancher (name)
+      await slaughterhouseModel.fromEntity(
+          await DatabaseRepository.getEntityById(
+              Slaughterhouse(), event.deliveryTicket.idSlaughterhouse!));
+
+      //! Product (name)
+      await productModel.fromEntity(await DatabaseRepository.getEntityById(
+          Product(), event.deliveryTicket.idProduct!));
+
+      //! Performance (num)
+      await performanceModel.fromEntity(
+          await DatabaseRepository.getEntityById(Performance(),selectedProductTicket.idPerformance!));
+
+
+      try {
+        await printHelper.print(event.context, itemsMap.values
+            .toList()
+            .first,
+            date: event.deliveryTicket.date.toString(),
+            vehicleRegistrationNum:
+            '${vehicleRegistrationModel.vehicleRegistrationNum}',
+            driver: '${driverModel.name}',
+            slaughterHouse: '${slaughterhouseModel.name}',
+            rancher: '${rancherModel.name}',
+            deliveryTicketNumber:
+            '${event.deliveryTicket.deliveryTicket!} - ${event.deliveryTicket
+                .number}',
+            product: '${productModel.name}',
+            number: '${selectedProductTicket.numAnimals}',
+            classification: '${selectedProductTicket.nameClassification}',
+            performance: '${performanceModel.performance}',
+            kilograms: '${selectedProductTicket.weight}',
+            color: '${selectedProductTicket.color}');
+
+        emit(TicketSuccess(
+            message: 'Impresión realizada con éxito',
+            data: [200],
+            event: 'PrintTicketEvent'));
+      } catch (e) {
+        LogHelper.logger.d(e);
+        emit(TicketError(
+            'Ha ocurrido un error a la hora de imprimir el ticket'));
       }
     });
   }

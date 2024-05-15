@@ -46,7 +46,7 @@ class DataFileWriter {
   Future<List<File>> writeFile() async {
     List<File> files = [];
     String hoy =
-    Jiffy.parse(DateTime.now().toString()).format(pattern: 'dd-MM-yyyy');
+    Jiffy.parse(DateTime.now().toString()).format(pattern: 'dd-MM-yyyy HH:mm:ss');
     Directory dir = await getApplicationDocumentsDirectory();
     Map<String, List> data = await repository
         .getFTPData(); //! Key: productticket.txt | value: ProductTicket()
@@ -74,7 +74,7 @@ class DataFileWriter {
             restData, key, dataString, productData, 'product_ticket.txt');
       }
 
-      File file = File('${dir.path}/$fileName$hoy');
+      File file = File('${dir.path}/$hoy$fileName');
       file.writeAsStringSync(dataString);
       files.add(file);
     }

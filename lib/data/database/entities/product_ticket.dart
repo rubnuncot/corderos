@@ -13,6 +13,7 @@ class ProductTicket extends ModelDao {
   int? numAnimals;
   double? weight;
   int? idPerformance;
+  String? color;
   int? losses;
 
   ProductTicket();
@@ -25,6 +26,7 @@ class ProductTicket extends ModelDao {
     @required required this.numAnimals,
     @required required this.weight,
     @required required this.idPerformance,
+    @required required this.color,
     @required required this.losses,
   }){
     super.id = id;
@@ -38,6 +40,7 @@ class ProductTicket extends ModelDao {
     'numAnimals': Constants.bigint,
     'weight': Constants.decimal['9,2']!,
     'idPerformance': Constants.bigint,
+    'color': Constants.varchar['255']!,
     'losses': Constants.bigint,
   };
 
@@ -50,6 +53,7 @@ class ProductTicket extends ModelDao {
       'numAnimals': numAnimals,
       'weight': weight,
       'idPerformance': idPerformance,
+      'color': color,
       'losses': losses,
     };
   }
@@ -66,6 +70,7 @@ class ProductTicket extends ModelDao {
       numAnimals: map['numAnimals'],
       weight: map['weight']?.toDouble(),
       idPerformance: map['idPerformance'],
+      color: map['color'],
       losses: map['losses'],
     );
   }
@@ -103,6 +108,7 @@ class ProductTicket extends ModelDao {
         other.numAnimals == numAnimals &&
         other.weight == weight &&
         other.idPerformance == idPerformance &&
+        other.color == color &&
         other.losses == losses;
   }
 
@@ -115,11 +121,12 @@ class ProductTicket extends ModelDao {
         numAnimals.hashCode ^
         weight.hashCode ^
         idPerformance.hashCode ^
+        color.hashCode ^
         losses.hashCode;
   }
 
   @override
   String toString() {
-    return '$nameClassification\t$numAnimals\t$weight\t$idPerformance\t$losses';
+    return '$nameClassification\t$numAnimals\t$weight\t$idPerformance\t$color\t$losses';
   }
 }
