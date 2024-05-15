@@ -8,6 +8,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
   Map<String, List<String>> values = {
     'driver': [],
     'vehicle_registration': [],
+    'deliveryTicket': [],
     'slaughterhouse': [],
     'rancher': [],
     'product': [],
@@ -135,7 +136,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     }
   }
 
-  Future<Map<String, dynamic>> getSelectedModel() async {
+  Future<Map<String, dynamic>>  getSelectedModel() async {
     Map<String, dynamic> returnedList = {};
 
     state.models.forEach((modelListKey, modelList) {

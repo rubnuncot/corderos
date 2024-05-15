@@ -106,6 +106,7 @@ class DeliveryTicket extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is DeliveryTicket &&
+        other.id != id &&
         other.deliveryTicket == deliveryTicket &&
         other.number == number &&
         other.date == date &&

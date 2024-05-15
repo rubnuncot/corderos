@@ -16,6 +16,7 @@ class ProductTicketModel extends ModelBase{
   int? numAnimals;
   double? weight;
   PerformanceModel? performance;
+  String? color;
   int? losses;
 
   ProductTicketModel();
@@ -28,7 +29,8 @@ class ProductTicketModel extends ModelBase{
     required this.numAnimals,
     required this.weight,
     required this.performance,
-    required this.losses,
+    required this.color,
+    required this.losses
   });
 
   @override
@@ -59,11 +61,13 @@ class ProductTicketModel extends ModelBase{
 
     performance = performanceModel;
 
+    color = productTicket.color;
+
     losses = productTicket.losses;
   }
 
   @override
   String toString() {
-    return '${product!.name}\t$nameClassification\t$numAnimals\t$weight\t${performance?.performance}\t$losses';
+    return '${product!.name}\t$nameClassification\t$numAnimals\t$weight\t${performance?.performance}\t$color\t$losses'.replaceAll('\r', '');
   }
 }

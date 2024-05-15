@@ -33,7 +33,7 @@ class PrintHelper {
     if (mac != '') {
       getBluetooth();
       final bool resultBool =
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+      await PrintBluetoothThermal.connect(macPrinterAddress: mac);
       if (resultBool) {
         result.addAll({'Conexión exitosa.': true});
         connected = true;
@@ -49,9 +49,9 @@ class PrintHelper {
   }
 
   Future<Map<String, List<BluetoothInfo>>> getBluetooth() async {
-    Map<String, List<BluetoothInfo>> result =  {};
+    Map<String, List<BluetoothInfo>> result = {};
     final List<BluetoothInfo> listResult =
-        await PrintBluetoothThermal.pairedBluetooths;
+    await PrintBluetoothThermal.pairedBluetooths;
 
     if (listResult.isEmpty) {
       result.addAll({
@@ -99,21 +99,21 @@ class PrintHelper {
   }
 
   Future<String> print(
-    BuildContext context,
-    List<BluetoothInfo> items, {
-    @required required String date,
-    @required required String vehicleRegistrationNum,
-    @required required String driver,
-    @required required String slaughterHouse,
-    @required required String rancher,
-    @required required String deliveryTicketNumber,
-    @required required String product,
-    @required required String number,
-    @required required String classification,
-    @required required String performance,
-    @required required String kilograms,
-    @required required String color,
-  }) async {
+      BuildContext context,
+      List<BluetoothInfo> items, {
+        @required required String date,
+        @required required String vehicleRegistrationNum,
+        @required required String driver,
+        @required required String slaughterHouse,
+        @required required String rancher,
+        @required required String deliveryTicketNumber,
+        @required required String product,
+        @required required String number,
+        @required required String classification,
+        @required required String performance,
+        @required required String kilograms,
+        @required required String color,
+      }) async {
     String result = '';
     if (!connected) {
       dialogConnect(context, items);
@@ -157,7 +157,6 @@ class PrintHelper {
     @required required String color,
   }) async {
     List<int> bytes = [];
-    // Using default profile
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm80, profile);
 
@@ -171,40 +170,40 @@ class PrintHelper {
             bold: true,
             width: PosTextSize.size2,
             height: PosTextSize.size2,
-            align: PosAlign.right));
+            align: PosAlign.center));
     bytes += generator.emptyLines(1);
     bytes += generator.text('C.I.F: F-49104938',
         styles: const PosStyles(
           bold: true,
-          align: PosAlign.right,
+          align: PosAlign.center,
         ));
-
     bytes += generator.text('Avda. Tres Cruces, 35 · Entpta. A',
         styles: const PosStyles(
           bold: true,
           codeTable: 'CP1252',
-          align: PosAlign.right,
+          align: PosAlign.center,
         ));
     bytes += generator.text('Tel.: 980 55 74 16',
         styles: const PosStyles(
           bold: true,
           codeTable: 'CP1252',
-          align: PosAlign.right,
+          align: PosAlign.center,
         ));
     bytes += generator.text('Fax: 980 55 79 13',
         styles: const PosStyles(
           bold: true,
           codeTable: 'CP1252',
-          align: PosAlign.right,
+          align: PosAlign.center,
         ));
     bytes += generator.emptyLines(1);
+    bytes += generator.hr();
     bytes += generator.text('Serie: ${deliveryTicketNumberSplitted[0]} -- No: ${deliveryTicketNumberSplitted[1]}',
         styles: const PosStyles(
             bold: true,
             width: PosTextSize.size2,
             height: PosTextSize.size2,
             align: PosAlign.left));
-    bytes += generator.emptyLines(1);
+    bytes += generator.hr();
     bytes += generator.text('Conductor: $driver',
       styles: const PosStyles(
         bold: true,
@@ -212,23 +211,54 @@ class PrintHelper {
         fontType: PosFontType.fontA,
         width: PosTextSize.size2,
         height: PosTextSize.size2,
-        align: PosAlign.center,
+        align: PosAlign.left,
+      ),);
+    bytes += generator.text('Vehiculo: $vehicleRegistrationNum',
+      styles: const PosStyles(
+        bold: true,
+        underline: true,
+        fontType: PosFontType.fontA,
+        width: PosTextSize.size2,
+        height: PosTextSize.size2,
+        align: PosAlign.left,
+      ),);
+    bytes += generator.text('Ganadero: $rancher',
+      styles: const PosStyles(
+        bold: true,
+        underline: true,
+        fontType: PosFontType.fontA,
+        width: PosTextSize.size2,
+        height: PosTextSize.size2,
+        align: PosAlign.left,
+      ),);
+    bytes += generator.text('Matadero: $slaughterHouse',
+      styles: const PosStyles(
+        bold: true,
+        underline: true,
+        fontType: PosFontType.fontA,
+        width: PosTextSize.size2,
+        height: PosTextSize.size2,
+        align: PosAlign.left,
       ),);
     bytes += generator.emptyLines(1);
+    bytes += generator.hr();
     bytes += generator.text(
       'Producto: $product',
       styles: const PosStyles(
         bold: true,
         underline: true,
         fontType: PosFontType.fontA,
+        width: PosTextSize.size2,
+        height: PosTextSize.size2,
         align: PosAlign.center,
       ),
     );
+    bytes += generator.hr();
     bytes += generator.emptyLines(1);
     bytes += generator.row([
       PosColumn(
         text: 'No',
-        width: 2,
+        width: 1,
         styles: const PosStyles(
           bold: true,
           width: PosTextSize.size2,
@@ -238,7 +268,7 @@ class PrintHelper {
       ),
       PosColumn(
         text: 'Clase',
-        width: 2,
+        width: 3,
         styles: const PosStyles(
           bold: true,
           width: PosTextSize.size2,
@@ -285,19 +315,19 @@ class PrintHelper {
     bytes += generator.row([
       PosColumn(
         text: number,
-        width: 2,
+        width: 1,
         styles: const PosStyles(
-          width: PosTextSize.size1,
-          height: PosTextSize.size1,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
           align: PosAlign.center,
         ),
       ),
       PosColumn(
         text: classification,
-        width: 2,
+        width: 3,
         styles: const PosStyles(
-          width: PosTextSize.size1,
-          height: PosTextSize.size1,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
           codeTable: 'CP1252',
           align: PosAlign.center,
         ),
@@ -306,8 +336,8 @@ class PrintHelper {
         text: kilograms,
         width: 2,
         styles: const PosStyles(
-          width: PosTextSize.size1,
-          height: PosTextSize.size1,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
           codeTable: 'CP1252',
           align: PosAlign.center,
         ),
@@ -316,8 +346,8 @@ class PrintHelper {
         text: performance,
         width: 4,
         styles: const PosStyles(
-          width: PosTextSize.size1,
-          height: PosTextSize.size1,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
           codeTable: 'CP1252',
           align: PosAlign.center,
         ),
@@ -326,14 +356,15 @@ class PrintHelper {
         text: color,
         width: 2,
         styles: const PosStyles(
-          width: PosTextSize.size1,
-          height: PosTextSize.size1,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
           codeTable: 'CP1252',
           align: PosAlign.center,
         ),
       ),
     ]);
     bytes += generator.emptyLines(1);
+    bytes += generator.hr();
     bytes += generator.text('Fecha: ${Jiffy.parse(date).format(pattern: 'dd/MM/yyyy')}',
         styles: const PosStyles(
           bold: true,

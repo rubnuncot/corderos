@@ -25,3 +25,13 @@ class GetTicketInfo extends TicketEvent {
     required this.ticketId
   });
 }
+
+class PrintTicketEvent extends TicketEvent {
+  final BuildContext context;
+  final DeliveryTicket deliveryTicket;
+
+  PrintTicketEvent({
+    required this.context,
+    required this.deliveryTicket
+  });
+}

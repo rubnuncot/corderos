@@ -64,57 +64,60 @@ class ReportScreenContent extends StatelessWidget {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: appColors?['headerBackgroundColor'],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Matrícula: ${reportState.vehicleRegistration}",
-                style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: appColors?['fontHeaderColor']),
-              ),
-              Text(
-                "Nombre: ${reportState.driver}",
-                style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: appColors?['fontHeaderColor']),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20.0),
-        Card(
-          elevation: 7.0,
-          margin: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Padding(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
             padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: appColors?['headerBackgroundColor'],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: rowValues.asMap().entries.map((entry) {
-                final rowData = entry.value;
-                final realData = realValues[entry.key];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (realData.isNotEmpty) buildRow(rowData, realData),
-                    const SizedBox(height: 20.0),
-                  ],
-                );
-              }).toList(),
+              children: [
+                Text(
+                  "Matrícula: ${reportState.vehicleRegistration}",
+                  style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: appColors?['fontHeaderColor']),
+                ),
+                Text(
+                  "Nombre: ${reportState.driver}",
+                  style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: appColors?['fontHeaderColor']),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 20.0),
+          Card(
+            elevation: 7.0,
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: rowValues.asMap().entries.map((entry) {
+                  final rowData = entry.value;
+                  final realData = realValues[entry.key];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (realData.isNotEmpty) buildRow(rowData, realData),
+                      const SizedBox(height: 20.0),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20.0)
+        ],
+      ),
     );
   }
 }

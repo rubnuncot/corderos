@@ -2,12 +2,15 @@ import 'package:bloc/bloc.dart';
 import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
+import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 import '../../../data/database/entities/changes.dart';
+import '../../models/!models.dart';
 
 part 'burden_state.dart';
 
@@ -39,10 +42,10 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
         changes = whereClause.isEmpty
             ? await change.selectAll() as List<Change>
             : await change.select(
-                sqlBuilder: SqlBuilder()
-                    .querySelect(fields: ["*"])
-                    .queryFrom(table: change.getTableName(change))
-                    .queryWhere(conditions: whereClause)) as List<Change>;
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(table: change.getTableName(change))
+                .queryWhere(conditions: whereClause)) as List<Change>;
 
         emit(BurdenSuccess('Cambios de tabla obtenidos correctamente.',
             [changes], "GetChanges"));
@@ -57,22 +60,22 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       emit(BurdenLoading());
 
       try {
-        ProductTicket productTicket = ProductTicket();
+        ProductDeliveryNote productTicket = ProductDeliveryNote();
         List<String> whereClause = [];
-        List<ProductTicket> productTickets = [];
+        List<ProductDeliveryNote> productTickets = [];
 
         Map<String, Iterable<String>> eventData = {};
 
         getConditions(eventData);
 
         productTickets = whereClause.isEmpty
-            ? await productTicket.selectAll() as List<ProductTicket>
+            ? await productTicket.selectAll() as List<ProductDeliveryNote>
             : await productTicket.select(
-                sqlBuilder: SqlBuilder()
-                    .querySelect(fields: ["*"])
-                    .queryFrom(table: productTicket.getTableName(productTicket))
-                    .queryWhere(
-                        conditions: whereClause)) as List<ProductTicket>;
+            sqlBuilder: SqlBuilder()
+                .querySelect(fields: ["*"])
+                .queryFrom(table: productTicket.getTableName(productTicket))
+                .queryWhere(
+                conditions: whereClause)) as List<ProductDeliveryNote>;
 
         emit(BurdenSuccess('Albarán de productos obtenidos correctamente.',
             [productTickets], "GetProductTickets"));
@@ -130,27 +133,77 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       PrintHelper printHelper = PrintHelper();
 
       Map<String, List<BluetoothInfo>> itemsMap =
-          await printHelper.getBluetooth();
+      await printHelper.getBluetooth();
 
       try {
-        await event.deliveryTicket!.insert();
-        event.productDeliveryNote!.idDeliveryNote = event.deliveryTicket!.id;
-        await event.productDeliveryNote!.insert();
+        DeliveryTicket lastDeliveryTicket = DeliveryTicket();
+        ProductTicket lastProductTicket = ProductTicket();
+        lastDeliveryTicket =
+        await lastDeliveryTicket.isTableEmpty() ? DeliveryTicket() : await event
+            .deliveryTicket!.selectLast();
+        lastProductTicket =
+        await lastProductTicket.isTableEmpty() ? ProductTicket() : await event
+            .productTicket!.selectLast();
+        VehicleRegistrationModel vehicleRegistrationModel =
+        VehicleRegistrationModel();
+        DriverModel driverModel = DriverModel();
+        SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
+        RancherModel rancherModel = RancherModel();
+        ProductModel productModel = ProductModel();
+        PerformanceModel performanceModel = PerformanceModel();
 
-        await printHelper.print(event.context!, itemsMap.values.toList().first,
+        if (event.deliveryTicket != lastDeliveryTicket &&
+            event.productTicket != lastProductTicket) {
+          await event.deliveryTicket!.insert();
+          event.productTicket!.idTicket = event.deliveryTicket!.id;
+          await event.productTicket!.insert();
+        }
+
+        //! VehicleRegistrationNum
+        await vehicleRegistrationModel.fromEntity(
+            await DatabaseRepository.getEntityById(VehicleRegistration(),
+                event.deliveryTicket!.idVehicleRegistration!));
+
+        //! Driver (name)
+        await driverModel.fromEntity(await DatabaseRepository.getEntityById(
+            Driver(), event.deliveryTicket!.idDriver!));
+
+        //! Slaughterhouse (name)
+        await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
+            Rancher(), event.deliveryTicket!.idRancher!));
+
+        //! Rancher (name)
+        await slaughterhouseModel.fromEntity(
+            await DatabaseRepository.getEntityById(
+                Slaughterhouse(), event.deliveryTicket!.idSlaughterhouse!));
+
+        //! Product (name)
+        await productModel.fromEntity(await DatabaseRepository.getEntityById(
+            Product(), event.deliveryTicket!.idProduct!));
+
+        //! Performance (num)
+        await performanceModel.fromEntity(
+            await DatabaseRepository.getEntityById(Performance(),lastProductTicket.idPerformance!));
+
+
+        await printHelper.print(event.context!, itemsMap.values
+            .toList()
+            .first,
             date: event.deliveryTicket!.date.toString(),
-            vehicleRegistrationNum: 'una cualquiera',
-            driver: 'uno cualquiera',
-            slaughterHouse: 'uno cualquiera',
-            rancher: 'uno cualquiera',
+            vehicleRegistrationNum:
+            '${vehicleRegistrationModel.vehicleRegistrationNum}',
+            driver: '${driverModel.name}',
+            slaughterHouse: '${slaughterhouseModel.name}',
+            rancher: '${rancherModel.name}',
             deliveryTicketNumber:
-                '${event.deliveryTicket!.deliveryTicket!} - ${event.deliveryTicket!.number}',
-            product: 'uno cualquiera',
-            number: '${event.productDeliveryNote!.units}',
-            classification: '${event.productDeliveryNote!.nameClassification}',
-            performance: '19',
-            kilograms: '${event.productDeliveryNote!.kilograms}',
-            color: '${event.productDeliveryNote!.color}');
+            '${event.deliveryTicket!.deliveryTicket!} - ${event.deliveryTicket!
+                .number}',
+            product: '${productModel.name}',
+            number: '${event.productTicket!.numAnimals}',
+            classification: '${event.productTicket!.nameClassification}',
+            performance: '${performanceModel.performance}',
+            kilograms: '${event.productTicket!.weight}',
+            color: '${event.productTicket!.color}');
 
         emit(BurdenSuccess(
             'Carga guardada correctamente.',

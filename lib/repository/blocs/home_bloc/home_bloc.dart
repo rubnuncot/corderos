@@ -28,9 +28,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     on<SendFiles>((event, emit) {
       emit(HomeLoading());
+
       try {
         ftpDataTransfer.sendFilesToFTP();
         emit(HomeSuccess('Datos enviados correctamente', [], 'SendFiles'));
+
       } catch (e) {
         LogHelper.logger.d(e);
         emit(HomeError('Error enviando datos'));

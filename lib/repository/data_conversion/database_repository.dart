@@ -9,7 +9,7 @@ class DatabaseRepository {
   static final _ftpData = {
     ClientDeliveryNote: ClientDeliveryNote(),
     DeliveryTicket: DeliveryTicket(),
-    ProductTicket: ProductTicket(),
+    ProductDeliveryNote: ProductDeliveryNote(),
     ProductDeliveryNote: ProductDeliveryNote(),
   };
 
