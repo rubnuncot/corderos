@@ -8,6 +8,7 @@ import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -22,6 +23,10 @@ class TicketList extends StatefulWidget {
 
 class _TicketListState extends State<TicketList> {
   TicketBloc? ticketBloc;
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+  DateFormat timeFormat = DateFormat('HH:mm:ss');
+  Rancher rancher = Rancher();
+  Product product = Product();
   StreamSubscription? ticketSubscription;
 
   IconData icon = Icons.radio_button_unchecked;
@@ -63,6 +68,13 @@ class _TicketListState extends State<TicketList> {
             setState(() {
               //! 0 --> ProductTicket | 1 --> DeliveryTicket
               showAlertDialog(state.data[0], state.data[1]);
+            });
+            break;
+          case 'FetchRancherAndProductInfo':
+            setState(() {
+              var data = state.data as Map<String, dynamic>;
+              rancher = data['rancher'] as Rancher;
+              product = data['product'] as Product;
             });
             break;
           default:
@@ -250,6 +262,8 @@ class _TicketListState extends State<TicketList> {
       child: ListView.builder(
         itemCount: tickets.length,
         itemBuilder: (context, index) {
+          final reversedTickets = List.from(tickets.reversed);
+          String formattedDate = dateFormat.format(reversedTickets[index].date);
           return ZoomTapAnimation(
             onTap: () {
               showDropDown(tickets[index]);
@@ -278,16 +292,16 @@ class _TicketListState extends State<TicketList> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Serie Nº: ${tickets[index].number.toString()}',
+                              'Fecha: $formattedDate\nGanadero: ${rancher.name}',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: appColors?['dialogTitleColor']),
                             ),
                             const SizedBox(height: 5),
-                            const Text(
-                              'Aqui pondré el producto.',
-                              style: TextStyle(
+                            Text(
+                              '${product.name}',
+                              style: const TextStyle(
                                 fontSize: 14,
                               ),
                             ),
@@ -300,10 +314,10 @@ class _TicketListState extends State<TicketList> {
                         child: IconButton(
                           onPressed: () {
                             ticketBloc!.add(
-                                SelectTicket(ticketId: tickets[index].id!));
+                                SelectTicket(ticketId: reversedTickets[index].id!));
                           },
                           icon: Icon(
-                            tickets[index].isSend!
+                            reversedTickets[index].isSend!
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_unchecked,
                             color: Colors.blue,

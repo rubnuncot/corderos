@@ -2,6 +2,7 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:corderos_app/repository/models/client_delivery_note_model.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
@@ -12,7 +13,7 @@ import '../../data/database/entities/!!model_dao.dart';
 @reflector
 class ProductDeliveryNoteModel extends ModelBase{
   int? id;
-  DeliveryTicketModel? deliveryTicket;
+  ClientDeliveryNoteModel? clientDeliveryNote;
   ProductModel? product;
   ClassificationModel? classification;
   String? nameClassification;
@@ -24,7 +25,7 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   ProductDeliveryNoteModel.all({
     @required required this.id,
-    @required required this.deliveryTicket,
+    @required required this.clientDeliveryNote,
     @required required this.product,
     @required required this.classification,
     @required required this.nameClassification,
@@ -35,7 +36,7 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   ProductDeliveryNote toEntity() {
     return ProductDeliveryNote.all(
-      idDeliveryNote: deliveryTicket!.id,
+      idDeliveryNote: clientDeliveryNote!.idDeliveryNote,
       idProduct: product!.id,
       idClassification: classification!.id,
       nameClassification: nameClassification,
@@ -50,11 +51,11 @@ class ProductDeliveryNoteModel extends ModelBase{
     ProductDeliveryNote productDeliveryNote = entity as ProductDeliveryNote;
     id = productDeliveryNote.id;
 
-    DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
-    await deliveryTicketModel.fromEntity(
-        await DatabaseRepository.getEntityById(DeliveryTicket(), productDeliveryNote.idDeliveryNote!) as DeliveryTicket
+    ClientDeliveryNoteModel clientDeliveryNoteModel = ClientDeliveryNoteModel();
+    await clientDeliveryNoteModel.fromEntity(
+        await DatabaseRepository.getEntityById(ClientDeliveryNoteModel(), productDeliveryNote.idDeliveryNote!) as ClientDeliveryNote
     );
-    deliveryTicket = deliveryTicketModel;
+    clientDeliveryNote = clientDeliveryNoteModel;
 
     ProductModel productModel = ProductModel();
     await productModel.fromEntity(
@@ -76,6 +77,6 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   @override
   String toString() {
-    return '${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
+    return '$id\t${clientDeliveryNote!.idDeliveryNote}\t${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
   }
 }

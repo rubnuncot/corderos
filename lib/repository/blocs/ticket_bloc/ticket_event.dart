@@ -35,3 +35,10 @@ class PrintTicketEvent extends TicketEvent {
     required this.deliveryTicket
   });
 }
+
+class FetchRancherAndProductInfo extends TicketEvent {
+  final int rancherId;
+  final int productId;
+
+  FetchRancherAndProductInfo({required this.rancherId, required this.productId});
+}

@@ -26,6 +26,7 @@ class _TableTicketState extends State<TableTicket> {
   double _kilogramos = 0.0;
   String _color = '-';
   int _losses = 0;
+  String _selectedRancher = '';  // Nueva variable de estado
 
   DatabaseBloc? databaseBloc;
   BurdenBloc? burdenBloc;
@@ -34,6 +35,9 @@ class _TableTicketState extends State<TableTicket> {
   StreamSubscription? tableItemDatabaseSubscription;
   final ScrollController _scrollController = ScrollController();
   bool dialogShown = false;
+
+  FocusNode focusNode = FocusNode();
+  TextEditingController textController = TextEditingController();
 
   @override
   void initState() {
@@ -56,7 +60,8 @@ class _TableTicketState extends State<TableTicket> {
 
     // Scroll listener to detect when we reach the end of the list
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         // When at the bottom, ask to generate new table
         if (!dialogShown) {
           dialogShown = true;
@@ -64,12 +69,17 @@ class _TableTicketState extends State<TableTicket> {
         }
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     tableItemDatabaseSubscription!.cancel();
     _scrollController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -84,11 +94,15 @@ class _TableTicketState extends State<TableTicket> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancelar', style: TextStyle(color: appColors?['cancelDialogButtonColor'])),
+              child: Text('Cancelar',
+                  style:
+                  TextStyle(color: appColors?['cancelDialogButtonColor'])),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Aceptar', style: TextStyle(color: appColors?['acceptDialogButtonColor'])),
+              child: Text('Aceptar',
+                  style:
+                  TextStyle(color: appColors?['acceptDialogButtonColor'])),
             ),
           ],
         );
@@ -105,11 +119,13 @@ class _TableTicketState extends State<TableTicket> {
 
       // Animate to the new table
       await Future.delayed(const Duration(milliseconds: 300));
-      _scrollController.animateTo(
+      _scrollController
+          .animateTo(
         _scrollController.position.maxScrollExtent + 100,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
-      ).then((_) {
+      )
+          .then((_) {
         // Re-enable the scroll listener
         _scrollController.addListener(_scrollListener);
       });
@@ -119,7 +135,8 @@ class _TableTicketState extends State<TableTicket> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       // When at the bottom, ask to generate new table
       if (!dialogShown) {
         dialogShown = true;
@@ -132,12 +149,16 @@ class _TableTicketState extends State<TableTicket> {
     burdenBloc?.add(UploadData(
         context: context,
         deliveryTicket: DeliveryTicket.all(
-          deliveryTicket: list[VehicleRegistrationModel().runtimeType.toString()].vehicleRegistrationNum,
+          deliveryTicket:
+          list[VehicleRegistrationModel().runtimeType.toString()]
+              .vehicleRegistrationNum,
           idProduct: list[ProductModel().runtimeType.toString()].id,
           idRancher: list[RancherModel().runtimeType.toString()].id,
-          idSlaughterhouse: list[SlaughterhouseModel().runtimeType.toString()].id,
+          idSlaughterhouse:
+          list[SlaughterhouseModel().runtimeType.toString()].id,
           idDriver: list[DriverModel().runtimeType.toString()].id,
-          idVehicleRegistration: list[VehicleRegistrationModel().runtimeType.toString()].id,
+          idVehicleRegistration:
+          list[VehicleRegistrationModel().runtimeType.toString()].id,
           date: DateTime.now(),
           number: _tableCount,
           isSend: false,
@@ -145,14 +166,17 @@ class _TableTicketState extends State<TableTicket> {
         productTicket: ProductTicket.all(
             idTicket: 0,
             idProduct: list[ProductModel().runtimeType.toString()].id,
-            nameClassification: list[ClassificationModel().runtimeType.toString()].name,
+            nameClassification:
+            list[ClassificationModel().runtimeType.toString()].name,
             numAnimals: _numeroCorderos,
             weight: _kilogramos,
             idPerformance: list[PerformanceModel().runtimeType.toString()].id,
             color: _color,
             losses: _losses)));
 
-    burdenBloc!.stream.firstWhere((state) => state is BurdenSuccess || state is BurdenError).then((state) {
+    burdenBloc!.stream
+        .firstWhere((state) => state is BurdenSuccess || state is BurdenError)
+        .then((state) {
       if (state is BurdenSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -220,11 +244,13 @@ class _TableTicketState extends State<TableTicket> {
                 : TextField(
               cursorColor: appColors?['dialogTitleColor'],
               style: TextStyle(color: appColors?['dialogHintColor']),
-              controller: TextEditingController(text: currentValue),
+              controller: textController,
+              focusNode: focusNode,
               autofocus: true,
               decoration: InputDecoration(
                 hintText: "Ingresa nuevo valor",
-                hintStyle: TextStyle(color: appColors?['dialogHintColor']),
+                hintStyle:
+                TextStyle(color: appColors?['dialogHintColor']),
               ),
               onChanged: (value) {
                 editedValue = value;
@@ -246,7 +272,8 @@ class _TableTicketState extends State<TableTicket> {
                             () => _numeroCorderos = int.tryParse(editedValue) ?? 0);
                     break;
                   case "Kg":
-                    setState(() => _kilogramos = double.tryParse(editedValue) ?? 0.0);
+                    setState(() =>
+                    _kilogramos = double.tryParse(editedValue) ?? 0.0);
                     break;
                   case "Color":
                     setState(() => _color = editedValue);
@@ -258,7 +285,8 @@ class _TableTicketState extends State<TableTicket> {
                 setState(() {});
               },
               child: Text('Actualizar',
-                  style: TextStyle(color: appColors?['updateDialogButtonColor'])),
+                  style:
+                  TextStyle(color: appColors?['updateDialogButtonColor'])),
             ),
           ],
         );
@@ -294,7 +322,12 @@ class _TableTicketState extends State<TableTicket> {
           foregroundColor: appColors?['valueTableColor'],
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
-        onPressed: () => showEditDialog(label, value, (newValue) {}),
+        onPressed: () {
+          textController.text = value;
+          showEditDialog(label, value, (newValue) {});
+          textController.selection = TextSelection(
+              baseOffset: 0, extentOffset: textController.text.length);
+        },
         child: Text(value),
       ),
     );
@@ -307,7 +340,8 @@ class _TableTicketState extends State<TableTicket> {
       children: [
         //! PRIMERA TABLA
         Table(
-          border: TableBorder.all(color: appColors?['borderTableColor'], width: 2),
+          border:
+          TableBorder.all(color: appColors?['borderTableColor'], width: 2),
           columnWidths: const {
             0: FlexColumnWidth(2),
             1: FlexColumnWidth(3),
@@ -320,9 +354,11 @@ class _TableTicketState extends State<TableTicket> {
               buildTableHeader('Clasif'),
             ]),
             TableRow(children: [
-              buildEditableCell(dropDownState.selectedValues['product']!, 'Producto'),
+              buildEditableCell(
+                  dropDownState.selectedValues['product']!, 'Producto'),
               buildEditableCell('$_numeroCorderos', 'NºCorderos'),
-              buildEditableCell(dropDownState.selectedValues['classification']!, 'Clasif'),
+              buildEditableCell(
+                  dropDownState.selectedValues['classification']!, 'Clasif'),
             ]),
           ],
         ),
@@ -363,7 +399,8 @@ class _TableTicketState extends State<TableTicket> {
               buildTableHeader('Color'),
             ]),
             TableRow(children: [
-              buildEditableCell(dropDownState.selectedValues['performance']!, 'Rend'),
+              buildEditableCell(
+                  dropDownState.selectedValues['performance']!, 'Rend'),
               buildEditableCell('$_kilogramos', 'Kg'),
               buildEditableCell(_color, 'Color'),
             ]),
@@ -492,7 +529,10 @@ class _TableTicketState extends State<TableTicket> {
                                         'labelInputColor'])),
                               ),
                               CustomButton(
-                                text: dropDownState.selectedValues['rancher']!,
+                                text: _selectedRancher.isEmpty
+                                    ? dropDownState.selectedValues[
+                                'rancher']!
+                                    : _selectedRancher,
                                 onPressed: () async {
                                   searchableDropdownBloc.setItems(
                                       dropDownState.values['rancher']!);
@@ -535,9 +575,14 @@ class _TableTicketState extends State<TableTicket> {
               ),
             ),
           ),
-          const SearchableDropdown(
+          SearchableDropdown(
             dropdownValue: 'rancher',
             titleText: 'Selecciona un ganadero',
+            onItemSelected: (String selectedRancher) {
+              setState(() {
+                _selectedRancher = selectedRancher;
+              });
+            },
           ),
         ],
       ),

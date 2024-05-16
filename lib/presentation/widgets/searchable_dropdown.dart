@@ -6,11 +6,13 @@ import '../../repository/!repository.dart';
 class SearchableDropdown extends StatefulWidget {
   final String dropdownValue;
   final String titleText;
+  final Function(String) onItemSelected;  // Añadir la función de retorno
 
   const SearchableDropdown({
     super.key,
     required this.dropdownValue,
     required this.titleText,
+    required this.onItemSelected,
   });
 
   @override
@@ -20,12 +22,8 @@ class SearchableDropdown extends StatefulWidget {
 class _SearchableDropdownState extends State<SearchableDropdown> {
   @override
   Widget build(BuildContext context) {
-    SearchableDropdownBloc searchableDropdown =
-    context.read<SearchableDropdownBloc>();
-
-    SearchableDropdownState state =
-        context.watch<SearchableDropdownBloc>().state;
-
+    SearchableDropdownBloc searchableDropdown = context.read<SearchableDropdownBloc>();
+    SearchableDropdownState state = context.watch<SearchableDropdownBloc>().state;
     DropDownBloc dropDownBloc = context.read<DropDownBloc>();
 
     return AnimatedContainer(
@@ -68,11 +66,16 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                 itemCount: state.items.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('${state.items[index]}'),
-                    onTap: () {
-                      dropDownBloc.changeValue(
-                          widget.dropdownValue, '${state.items[index]}');
+                    title: Text(
+                      state.items[index],
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    onTap: () async {
+                      await dropDownBloc.changeValue(widget.dropdownValue, state.items[index]);
                       searchableDropdown.closePanel();
+                      widget.onItemSelected(state.items[index]);
                     },
                   );
                 },

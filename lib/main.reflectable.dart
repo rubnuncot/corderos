@@ -460,7 +460,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
                   () => b ? prefix7.ProductDeliveryNoteModel() : null,
               r'all': (bool b) => (
                       {id,
-                      deliveryTicket,
+                      clientDeliveryNote,
                       product,
                       classification,
                       nameClassification,
@@ -470,8 +470,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
                   b
                       ? prefix7.ProductDeliveryNoteModel.all(
                           classification: classification,
+                          clientDeliveryNote: clientDeliveryNote,
                           color: color,
-                          deliveryTicket: deliveryTicket,
                           id: id,
                           kilograms: kilograms,
                           nameClassification: nameClassification,
@@ -2122,8 +2122,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const prefix0.MyReflectable(), -1, 26, 26, null, const []),
         r.VariableMirrorImpl(r'id', 67239941, 6, const prefix0.MyReflectable(),
             -1, 26, 26, null, const []),
-        r.VariableMirrorImpl(r'deliveryTicket', 67239941, 6,
-            const prefix0.MyReflectable(), 2, 2, 2, null, const []),
+        r.VariableMirrorImpl(r'clientDeliveryNote', 67239941, 6,
+            const prefix0.MyReflectable(), 1, 1, 1, null, const []),
         r.VariableMirrorImpl(r'product', 67239941, 6,
             const prefix0.MyReflectable(), 7, 7, 7, null, const []),
         r.VariableMirrorImpl(r'classification', 67239941, 6,
@@ -4633,17 +4633,17 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             #id),
         r.ParameterMirrorImpl(
-            r'deliveryTicket',
+            r'clientDeliveryNote',
             67249158,
             244,
             const prefix0.MyReflectable(),
-            2,
-            2,
-            2,
+            1,
+            1,
+            1,
             null,
             const <Object>[prefix27.required],
             null,
-            #deliveryTicket),
+            #clientDeliveryNote),
         r.ParameterMirrorImpl(
             r'product',
             67249158,
@@ -4728,8 +4728,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const [],
             null,
             null),
-        r.ParameterMirrorImpl(r'_deliveryTicket', 67240038, 230,
-            const prefix0.MyReflectable(), 2, 2, 2, null, const [], null, null),
+        r.ParameterMirrorImpl(r'_clientDeliveryNote', 67240038, 230,
+            const prefix0.MyReflectable(), 1, 1, 1, null, const [], null, null),
         r.ParameterMirrorImpl(r'_product', 67240038, 232,
             const prefix0.MyReflectable(), 7, 7, 7, null, const [], null, null),
         r.ParameterMirrorImpl(r'_classification', 67240038, 234,
@@ -7663,6 +7663,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'email': (dynamic instance) => instance.email,
         r'classification': (dynamic instance) => instance.classification,
         r'performance': (dynamic instance) => instance.performance,
+        r'clientDeliveryNote': (dynamic instance) =>
+            instance.clientDeliveryNote,
         r'nameClassification': (dynamic instance) =>
             instance.nameClassification,
         r'units': (dynamic instance) => instance.units,
@@ -7673,8 +7675,6 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'losses': (dynamic instance) => instance.losses,
         r'vehicleRegistrationNum': (dynamic instance) =>
             instance.vehicleRegistrationNum,
-        r'clientDeliveryNote': (dynamic instance) =>
-            instance.clientDeliveryNote,
         r'getDatabase': (dynamic instance) => instance.getDatabase,
         r'getTableName': (dynamic instance) => instance.getTableName,
         r'makeWhere': (dynamic instance) => instance.makeWhere,
@@ -7743,6 +7743,8 @@ final _data = <r.Reflectable, r.ReflectorData>{
             instance.classification = value,
         r'performance=': (dynamic instance, value) =>
             instance.performance = value,
+        r'clientDeliveryNote=': (dynamic instance, value) =>
+            instance.clientDeliveryNote = value,
         r'nameClassification=': (dynamic instance, value) =>
             instance.nameClassification = value,
         r'units=': (dynamic instance, value) => instance.units = value,
@@ -7754,8 +7756,6 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r'losses=': (dynamic instance, value) => instance.losses = value,
         r'vehicleRegistrationNum=': (dynamic instance, value) =>
             instance.vehicleRegistrationNum = value,
-        r'clientDeliveryNote=': (dynamic instance, value) =>
-            instance.clientDeliveryNote = value,
         r'tableChanged=': (dynamic instance, value) =>
             instance.tableChanged = value,
         r'isRead=': (dynamic instance, value) => instance.isRead = value,

@@ -12,6 +12,7 @@ import '../../models/!!model_base.dart';
 class DataFileWriter {
   //Instancia del repositorio de la base de datos para acceder a sus métodos.
   DatabaseRepository repository = DatabaseRepository();
+  String fileDate = '';
 
   /// ### `writeFile`
   ///
@@ -45,78 +46,82 @@ class DataFileWriter {
   /// ```
   Future<List<File>> writeFile() async {
     List<File> files = [];
-    String hoy =
-    Jiffy.parse(DateTime.now().toString()).format(pattern: 'dd-MM-yyyy HH:mm:ss');
     Directory dir = await getApplicationDocumentsDirectory();
-    Map<String, List> data = await repository
-        .getFTPData(); //! Key: productticket.txt | value: ProductTicket()
+    Map<String, List> data = await repository.getFTPData();
+
+    //! Key: productticket.txt | value: ProductTicket()
 
     Map<String, List> productData = {};
     Map<String, List> restData = {};
 
     for (var line in data.keys) {
+      var key = line.split('-')[0];
+      fileDate = line.split('-')[1].split(".")[0];
       if (line.contains('product')) {
-        productData.addAll({line: data[line]!});
+        productData.addAll({'$key$fileDate.txt': data[line]!});
       } else {
-        restData.addAll({line: data[line]!});
+        restData.addAll({'$key$fileDate.txt': data[line]!.where((element) => !element.isSend,).toList()});
       }
     }
 
-    for (var key in restData.keys) {
-      var dataString = "";
-      var fileName = key;
+    if(restData.isNotEmpty) {
+      for (var key in restData.keys) {
+        var dataString = "";
+        var fileName = key;
 
-      if (key.contains('delivery')) {
-        dataString = await _getDataString(
-            restData, key, dataString, productData, 'product_deliverynote.txt');
-      } else {
-        dataString = await _getDataString(
-            restData, key, dataString, productData, 'product_ticket.txt');
+        if (key.contains('delivery')) {
+          dataString = await _getDataString(
+              restData, key, dataString, productData, 'product_ticket$fileDate.txt');
+        } else {
+          dataString = await _getDataString(
+              restData, key, dataString, productData, 'product_deliverynote$fileDate.txt');
+        }
+
+        if(dataString != '') {
+          File file = File('${dir.path}/$fileName');
+          file.writeAsStringSync(dataString);
+          files.add(file);
+        }
       }
-
-      File file = File('${dir.path}/$hoy$fileName');
-      file.writeAsStringSync(dataString);
-      files.add(file);
+      return files;
     }
-    return files;
+    return [];
   }
 
-  Future <String> _getDataString(
+  Future<String> _getDataString(
       Map<String, List<dynamic>> restData,
       String key,
       String dataString,
       Map<String, List<dynamic>> productData,
       String productTicketKey) async {
     Map<String, dynamic> models = {
-      'product_ticket.txt': ProductTicketModel,
-      'product_deliverynote.txt': ProductDeliveryNoteModel,
-      'deliveryticket.txt': DeliveryTicketModel,
-      'clientdeliverynote.txt': ClientDeliveryNoteModel,
+      'product_ticket$fileDate.txt': ProductTicketModel,
+      'product_deliverynote$fileDate.txt': ProductDeliveryNoteModel,
+      'deliveryticket$fileDate.txt': DeliveryTicketModel,
+      'clientdeliverynote$fileDate.txt': ClientDeliveryNoteModel,
     };
 
     for (var data in restData[key]!) {
       var classMirror = reflector.reflectType(models[key]) as ClassMirror;
-
-      var instanceMirrorRestData =
-          classMirror.newInstance('', []) as ModelBase;
+      var instanceMirrorRestData = classMirror.newInstance('', []) as ModelBase;
       await instanceMirrorRestData.fromEntity(data);
 
-      dataString += 'C\t${instanceMirrorRestData.toString()}';
+      dataString += 'C\t${instanceMirrorRestData.toString()}\n';
+      data.isSend = true;
+      data.update();
+
       for (var product in productData[productTicketKey]!) {
-        var classMirror =
-            reflector.reflectType(models[productTicketKey]) as ClassMirror;
-
-        var instanceMirrorProductData =
-            classMirror.newInstance('', []) as ModelBase;
-
+        var classMirror = reflector.reflectType(models[productTicketKey]) as ClassMirror;
+        var instanceMirrorProductData = classMirror.newInstance('', []) as ModelBase;
         await instanceMirrorProductData.fromEntity(product);
 
         if (product.id == data.id) {
-          dataString += '\tL\t${instanceMirrorProductData.toString()}\n';
+          dataString += 'L\t${instanceMirrorProductData.toString()}\n';
         }
       }
     }
 
     return dataString;
   }
+
 }

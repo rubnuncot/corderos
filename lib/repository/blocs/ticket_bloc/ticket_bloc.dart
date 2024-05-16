@@ -253,5 +253,20 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
             'Ha ocurrido un error a la hora de imprimir el ticket'));
       }
     });
+
+    on<FetchRancherAndProductInfo>((event, emit) async {
+      emit(TicketLoading());
+      try {
+        final rancher = await DatabaseRepository.getEntityById(Rancher(), event.rancherId);
+        final product = await DatabaseRepository.getEntityById(Product(), event.productId);
+        emit(TicketSuccess(
+          message: 'Información del ganadero y producto obtenida con éxito',
+          data: [rancher,  product],
+          event: 'FetchRancherAndProductInfo',
+        ));
+      } catch (e) {
+        emit(TicketError('Ha ocurrido un error a la hora de obtener la información del ganadero y producto'));
+      }
+    });
   }
 }
