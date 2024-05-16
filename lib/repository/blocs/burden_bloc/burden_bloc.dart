@@ -132,78 +132,73 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       emit(BurdenLoading());
       PrintHelper printHelper = PrintHelper();
 
-      Map<String, List<BluetoothInfo>> itemsMap =
-      await printHelper.getBluetooth();
+      Map<String, List<BluetoothInfo>> itemsMap = await printHelper.getBluetooth();
 
       try {
         DeliveryTicket lastDeliveryTicket = DeliveryTicket();
         ProductTicket lastProductTicket = ProductTicket();
-        lastDeliveryTicket =
-        await lastDeliveryTicket.isTableEmpty() ? DeliveryTicket() : await event
-            .deliveryTicket!.selectLast();
-        lastProductTicket =
-        await lastProductTicket.isTableEmpty() ? ProductTicket() : await event
-            .productTicket!.selectLast();
-        VehicleRegistrationModel vehicleRegistrationModel =
-        VehicleRegistrationModel();
-        DriverModel driverModel = DriverModel();
-        SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
-        RancherModel rancherModel = RancherModel();
-        ProductModel productModel = ProductModel();
-        PerformanceModel performanceModel = PerformanceModel();
+        bool isNewDeliveryTicket = false;
 
-        if (event.deliveryTicket != lastDeliveryTicket &&
-            event.productTicket != lastProductTicket) {
+        lastDeliveryTicket = await lastDeliveryTicket.isTableEmpty()
+            ? DeliveryTicket()
+            : await event.deliveryTicket?.selectLast() ?? DeliveryTicket();
+        lastProductTicket = await lastProductTicket.isTableEmpty()
+            ? ProductTicket()
+            : await event.productTicket?.selectLast() ?? ProductTicket();
+
+        if (event.deliveryTicket != null && event.deliveryTicket != lastDeliveryTicket) {
+          isNewDeliveryTicket = true;
           await event.deliveryTicket!.insert();
-          event.productTicket!.idTicket = event.deliveryTicket!.id;
-          await event.productTicket!.insert();
         }
 
+        event.productTicket!.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
+        await event.productTicket!.insert();
+
         //! VehicleRegistrationNum
+        VehicleRegistrationModel vehicleRegistrationModel = VehicleRegistrationModel();
         await vehicleRegistrationModel.fromEntity(
             await DatabaseRepository.getEntityById(VehicleRegistration(),
-                event.deliveryTicket!.idVehicleRegistration!));
+                event.deliveryTicket?.idVehicleRegistration ?? lastDeliveryTicket.idVehicleRegistration!));
 
         //! Driver (name)
+        DriverModel driverModel = DriverModel();
         await driverModel.fromEntity(await DatabaseRepository.getEntityById(
-            Driver(), event.deliveryTicket!.idDriver!));
+            Driver(), event.deliveryTicket?.idDriver ?? lastDeliveryTicket.idDriver!));
 
         //! Slaughterhouse (name)
-        await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
-            Rancher(), event.deliveryTicket!.idRancher!));
-
-        //! Rancher (name)
+        SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
         await slaughterhouseModel.fromEntity(
             await DatabaseRepository.getEntityById(
-                Slaughterhouse(), event.deliveryTicket!.idSlaughterhouse!));
+                Slaughterhouse(), event.deliveryTicket?.idSlaughterhouse ?? lastDeliveryTicket.idSlaughterhouse!));
+
+        //! Rancher (name)
+        RancherModel rancherModel = RancherModel();
+        await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
+            Rancher(), event.deliveryTicket?.idRancher ?? lastDeliveryTicket.idRancher!));
 
         //! Product (name)
+        ProductModel productModel = ProductModel();
         await productModel.fromEntity(await DatabaseRepository.getEntityById(
-            Product(), event.deliveryTicket!.idProduct!));
+            Product(), event.deliveryTicket?.idProduct ?? lastDeliveryTicket.idProduct!));
 
         //! Performance (num)
+        PerformanceModel performanceModel = PerformanceModel();
         await performanceModel.fromEntity(
-            await DatabaseRepository.getEntityById(Performance(),lastProductTicket.idPerformance!));
+            await DatabaseRepository.getEntityById(Performance(), lastProductTicket.idPerformance!));
 
-
-        await printHelper.print(event.context!, itemsMap.values
-            .toList()
-            .first,
-            date: event.deliveryTicket!.date.toString(),
-            vehicleRegistrationNum:
-            '${vehicleRegistrationModel.vehicleRegistrationNum}',
-            driver: '${driverModel.name}',
-            slaughterHouse: '${slaughterhouseModel.name}',
-            rancher: '${rancherModel.name}',
-            deliveryTicketNumber:
-            '${event.deliveryTicket!.deliveryTicket!} - ${event.deliveryTicket!
-                .number}',
-            product: '${productModel.name}',
-            number: '${event.productTicket!.numAnimals}',
-            classification: '${event.productTicket!.nameClassification}',
-            performance: '${performanceModel.performance}',
-            kilograms: '${event.productTicket!.weight}',
-            color: '${event.productTicket!.color}');
+        await printHelper.print(event.context!, itemsMap.values.toList().first,
+            date: event.deliveryTicket?.date.toString() ?? lastDeliveryTicket.date.toString(),
+            vehicleRegistrationNum: vehicleRegistrationModel.vehicleRegistrationNum!,
+            driver: driverModel.name!,
+            slaughterHouse: slaughterhouseModel.name!,
+            rancher: rancherModel.name!,
+            deliveryTicketNumber: '${event.deliveryTicket?.deliveryTicket ?? lastDeliveryTicket.deliveryTicket} - ${event.deliveryTicket?.number ?? lastDeliveryTicket.number}',
+            product: productModel.name!,
+            number: event.productTicket!.numAnimals.toString(),
+            classification: event.productTicket!.nameClassification!,
+            performance: performanceModel.performance.toString(),
+            kilograms: event.productTicket!.weight.toString(),
+            color: event.productTicket!.color!);
 
         emit(BurdenSuccess(
             'Carga guardada correctamente.',
@@ -216,6 +211,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
         emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.'));
       }
     });
+
   }
 
   List<String> getConditions(Map<String, Iterable<String>> eventData) {
