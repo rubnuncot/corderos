@@ -30,8 +30,30 @@ class ProductTicketModel extends ModelBase{
     required this.weight,
     required this.performance,
     required this.color,
-    required this.losses
+    required this.losses,
   });
+
+  // Getters
+  int? get getId => id;
+  DeliveryTicketModel? get getDeliveryTicket => deliveryTicket;
+  ProductModel? get getProduct => product;
+  String? get getNameClassification => nameClassification;
+  int? get getNumAnimals => numAnimals;
+  double? get getWeight => weight;
+  PerformanceModel? get getPerformance => performance;
+  String? get getColor => color;
+  int? get getLosses => losses;
+
+  // Setters
+  set setId(int? id) => this.id = id;
+  set setDeliveryTicket(DeliveryTicketModel? deliveryTicket) => this.deliveryTicket = deliveryTicket;
+  set setProduct(ProductModel? product) => this.product = product;
+  set setNameClassification(String? nameClassification) => this.nameClassification = nameClassification;
+  set setNumAnimals(int? numAnimals) => this.numAnimals = numAnimals;
+  set setWeight(double? weight) => this.weight = weight;
+  set setPerformance(PerformanceModel? performance) => this.performance = performance;
+  set setColor(String? color) => this.color = color;
+  set setLosses(int? losses) => this.losses = losses;
 
   @override
   Future<void> fromEntity(ModelDao entity) async {

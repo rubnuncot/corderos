@@ -50,7 +50,7 @@ dependencies:
   meta: ^1.11.0
   sqflite_simple_dao_backend: ^1.0.1
   reflectable: ^4.0.6
-  intl: 0.19.0
+  intl: 0.18.1
 
   bloc: any
   shared_preferences: ^2.2.2

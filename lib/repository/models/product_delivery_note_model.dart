@@ -2,7 +2,6 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
-import 'package:corderos_app/repository/models/client_delivery_note_model.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
@@ -12,27 +11,43 @@ import '../../data/database/entities/!!model_dao.dart';
 
 @reflector
 class ProductDeliveryNoteModel extends ModelBase{
-  int? id;
-  ClientDeliveryNoteModel? clientDeliveryNote;
-  ProductModel? product;
-  ClassificationModel? classification;
-  String? nameClassification;
-  int? units;
-  double? kilograms;
-  String? color;
+  int? _id;
+  ClientDeliveryNoteModel? _clientDeliveryNote;
+  ProductModel? _product;
+  ClassificationModel? _classification;
+  String? _nameClassification;
+  int? _units;
+  double? _kilograms;
+  String? _color;
 
   ProductDeliveryNoteModel();
 
   ProductDeliveryNoteModel.all({
-    @required required this.id,
-    @required required this.clientDeliveryNote,
-    @required required this.product,
-    @required required this.classification,
-    @required required this.nameClassification,
-    @required required this.units,
-    @required required this.kilograms,
-    @required required this.color,
-  });
+    required int? id,
+    required ClientDeliveryNoteModel? clientDeliveryNote,
+    required ProductModel? product,
+    required ClassificationModel? classification,
+    required String? nameClassification,
+    required int? units,
+    required double? kilograms,
+    required String? color,
+  })  : _id = id,
+        _clientDeliveryNote = clientDeliveryNote,
+        _product = product,
+        _classification = classification,
+        _nameClassification = nameClassification,
+        _units = units,
+        _kilograms = kilograms,
+        _color = color;
+
+  int? get id => _id;
+  ClientDeliveryNoteModel? get clientDeliveryNote => _clientDeliveryNote;
+  ProductModel? get product => _product;
+  ClassificationModel? get classification => _classification;
+  String? get nameClassification => _nameClassification;
+  int? get units => _units;
+  double? get kilograms => _kilograms;
+  String? get color => _color;
 
   ProductDeliveryNote toEntity() {
     return ProductDeliveryNote.all(
@@ -45,6 +60,16 @@ class ProductDeliveryNoteModel extends ModelBase{
       color: color,
     );
   }
+
+  // Setters
+  set id(int? id) => _id = id;
+  set clientDeliveryNote(ClientDeliveryNoteModel? clientDeliveryNote) => _clientDeliveryNote = clientDeliveryNote;
+  set product(ProductModel? product) => _product = product;
+  set classification(ClassificationModel? classification) => _classification = classification;
+  set nameClassification(String? nameClassification) => _nameClassification = nameClassification;
+  set units(int? units) => _units = units;
+  set kilograms(double? kilograms) => _kilograms = kilograms;
+  set color(String? color) => _color = color;
 
   @override
   Future<void> fromEntity(ModelDao entity) async {

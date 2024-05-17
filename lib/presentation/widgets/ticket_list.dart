@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../!helpers/log_helper.dart';
 import '../../data/!data.dart';
 
 class TicketList extends StatefulWidget {
@@ -20,6 +21,8 @@ class _TicketListState extends State<TicketList> {
 
   ClientBloc? clientBloc;
   StreamSubscription? clientSubscription;
+  List<double>? newSize = [];
+  List<bool>? isOpen = [];
 
   List<DeliveryTicket> tickets = [];
 
@@ -35,13 +38,15 @@ class _TicketListState extends State<TicketList> {
           case 'FetchTickets':
             setState(() {
               tickets = state.data as List<DeliveryTicket>;
+              newSize = List.generate(tickets.length,
+                  (index) => MediaQuery.of(context).size.height * 0.07);
+              isOpen = List.generate(tickets.length, (index) => false);
             });
             break;
           case 'SelectClient':
-            print('Cliente seleccionado: ${state.selectedClient}');
             break;
           default:
-            print('Event not recognized');
+            LogHelper.logger.d('Evento no reconocido');
         }
       }
     });
@@ -55,22 +60,46 @@ class _TicketListState extends State<TicketList> {
 
   @override
   Widget build(BuildContext context) {
+    if (newSize!.isNotEmpty) {
+      newSize = newSize!
+          .map((e) => e = MediaQuery.of(context).size.height * 0.07)
+          .toList();
+    }
     return Container(
       padding: const EdgeInsets.all(8),
       child: ListView.builder(
         itemCount: tickets.length,
         itemBuilder: (context, index) {
           return Card(
-            child: ListTile(
-              title: Text('${tickets.isEmpty ? "Lista vacía!" : tickets[index].number!}'),
-              subtitle: Text('Description $index'),
-              trailing: IconButton(
-                icon: icon,
-                onPressed: () {
-                  setState(() {
-                    icon = const Icon(FontAwesomeIcons.check);
-                  });
-                },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              height: newSize![index],
+              curve: Curves.elasticOut,
+              child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 50,
+                ),
+                child: ListTile(
+                  onTap: () {
+                    setState(() {
+                      newSize![index] = isOpen![index]
+                          ? MediaQuery.of(context).size.height * 0.07
+                          : MediaQuery.of(context).size.height * 0.4;
+                      isOpen![index] = !isOpen![index];
+                    });
+                  },
+                  title: Text(
+                      '${tickets.isEmpty ? "Lista vacía!" : tickets[index].number!}'),
+                  subtitle: Text('Description $index'),
+                  trailing: IconButton(
+                    icon: icon,
+                    onPressed: () {
+                      setState(() {
+                        icon = const Icon(FontAwesomeIcons.check);
+                      });
+                    },
+                  ),
+                ),
               ),
             ),
           );

@@ -70,6 +70,8 @@ class _TicketListState extends State<TicketList> {
               showAlertDialog(state.data[0], state.data[1]);
             });
             break;
+          case 'GetTicketLines':
+            break;
           case 'FetchRancherAndProductInfo':
             setState(() {
               var data = state.data as Map<String, dynamic>;
@@ -87,7 +89,6 @@ class _TicketListState extends State<TicketList> {
   //! DETALLES TICKET
   void showAlertDialog(ProductTicketModel productTicketModel,
       DeliveryTicketModel deliveryTicketModel) {
-
     final appColors = AppColors(context: context).getColors();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -125,24 +126,26 @@ class _TicketListState extends State<TicketList> {
                   ),
                   child: Table(
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    border: TableBorder.all(color: Colors.grey, borderRadius: BorderRadius.circular(12)),
+                    border: TableBorder.all(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12)),
                     children: [
                       _buildRow(
                           "Producto", '${productTicketModel.product!.name}'),
                       _buildRow("Unidades", '${productTicketModel.numAnimals}'),
                       _buildRow("Clasificación",
                           '${productTicketModel.nameClassification}'),
-                      _buildRow(
-                          "Kilogramos", '${productTicketModel.weight}'),
+                      _buildRow("Kilogramos", '${productTicketModel.weight}'),
                       _buildRow("Color", '${productTicketModel.color}'),
-                      _buildRow("Rendimiento", '${productTicketModel.performance!.performance}'),
+                      _buildRow("Rendimiento",
+                          '${productTicketModel.performance!.performance}'),
                       _buildRow(
                           "Número del ticket", '${deliveryTicketModel.number}'),
                       _buildRow("Fecha", '${deliveryTicketModel.date}'),
                       _buildRow(
                           "Vehículo",
-                          deliveryTicketModel
-                              .vehicleRegistration?.vehicleRegistrationNum ??
+                          deliveryTicketModel.vehicleRegistration
+                                  ?.vehicleRegistrationNum ??
                               ""),
                       _buildRow(
                           "Conductor", deliveryTicketModel.driver?.name ?? ""),
@@ -169,7 +172,6 @@ class _TicketListState extends State<TicketList> {
       ],
     );
   }
-
 
   TableRow _buildRow(String title, String value) {
     final appColors = AppColors(context: context).getColors();
@@ -210,6 +212,7 @@ class _TicketListState extends State<TicketList> {
 
   //! MENÚ DE OPCIONES DROPDOWN
   void showDropDown(DeliveryTicket ticket) {
+    ticketBloc!.add(GetTicketInfo(ticketId: ticket.id!));
     DropDownState(
       DropDown(
         isSearchVisible: false,
@@ -227,7 +230,8 @@ class _TicketListState extends State<TicketList> {
         data: [
           SelectedListItem(name: 'Borrar', value: 'delete'),
           SelectedListItem(name: 'Ver Ticket', value: 'showTicket'),
-          SelectedListItem(name: 'Imprimir'),
+          SelectedListItem(name: 'Imprimir', value: 'print'),
+          SelectedListItem(name: 'Añadir Bajas', value: 'addLosses'),
         ],
         selectedItems: (selectedItems) {
           switch (selectedItems.first.value) {
@@ -237,9 +241,12 @@ class _TicketListState extends State<TicketList> {
             case 'showTicket':
               ticketBloc!.add(GetTicketInfo(ticketId: ticket.id!));
               break;
+            case 'print':
+              ticketBloc!.add(
+                  PrintTicketEvent(context: context, deliveryTicket: ticket));
+            case 'addLosses':
             default:
-            //TODO: Imprimir el recibo
-              ticketBloc!.add(PrintTicketEvent(context: context, deliveryTicket: ticket));
+              LogHelper.logger.d('Evento no reconocido');
           }
         },
       ),
@@ -257,7 +264,6 @@ class _TicketListState extends State<TicketList> {
     final appColors = AppColors(context: context).getColors();
 
     return Container(
-
       padding: const EdgeInsets.all(8),
       child: ListView.builder(
         itemCount: tickets.length,
@@ -287,7 +293,6 @@ class _TicketListState extends State<TicketList> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Column(
-
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -313,8 +318,8 @@ class _TicketListState extends State<TicketList> {
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: IconButton(
                           onPressed: () {
-                            ticketBloc!.add(
-                                SelectTicket(ticketId: reversedTickets[index].id!));
+                            ticketBloc!.add(SelectTicket(
+                                ticketId: reversedTickets[index].id!));
                           },
                           icon: Icon(
                             reversedTickets[index].isSend!
