@@ -117,49 +117,48 @@ class _TicketListState extends State<TicketList> {
                 ),
               ),
               const SizedBox(height: 20),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxHeight: screenHeight * 0.9,
-                    maxWidth: screenWidth * 0.8,
-                  ),
-                  child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    border: TableBorder.all(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(12)),
-                    children: [
-                      _buildRow(
-                          "Producto", '${productTicketModel.first.product!.name}'),
-                      for(var x in productTicketModel)
-                        _buildRow("Unidades", '${x.numAnimals}'),
-                      for(var x in productTicketModel)
-                        _buildRow("Clasificación",
-                            '${x.nameClassification}'),
-                      for(var x in productTicketModel)
-                        _buildRow("Kilogramos", '${x.weight}'),
-                      for(var x in productTicketModel)
-                        _buildRow("Color", '${x.color}'),
-                      for(var x in productTicketModel)
-                        _buildRow("Rendimiento",
-                            '${x.performance!.performance}'),
-                        _buildRow(
-                            "Número del ticket", '${deliveryTicketModel.number}'),
-                        _buildRow("Fecha", '${deliveryTicketModel.date}'),
-                        _buildRow(
-                            "Vehículo",
-                            deliveryTicketModel.vehicleRegistration
-                                    ?.vehicleRegistrationNum ??
-                                ""),
-                        _buildRow(
-                            "Conductor", deliveryTicketModel.driver?.name ?? ""),
-                        _buildRow(
-                            "Ganadero", deliveryTicketModel.rancher?.name ?? ""),
-                    ],
+              for (var x in productTicketModel)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxHeight: screenHeight * 0.9,
+                        maxWidth: screenWidth * 0.8,
+                      ),
+                      child: Table(
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        border: TableBorder.all(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(12)),
+                        children: [
+                          _buildRow("Producto",
+                              '${productTicketModel.first.product!.name}'),
+                          _buildRow("Unidades", '${x.numAnimals}'),
+                          _buildRow("Clasificación", '${x.nameClassification}'),
+                          _buildRow("Kilogramos", '${x.weight}'),
+                          _buildRow("Color", '${x.color}'),
+                          _buildRow(
+                              "Rendimiento", '${x.performance!.performance}'),
+                          _buildRow("Número del ticket",
+                              '${deliveryTicketModel.number}'),
+                          _buildRow("Fecha", '${deliveryTicketModel.date}'),
+                          _buildRow(
+                              "Vehículo",
+                              deliveryTicketModel.vehicleRegistration
+                                      ?.vehicleRegistrationNum ??
+                                  ""),
+                          _buildRow("Conductor",
+                              deliveryTicketModel.driver?.name ?? ""),
+                          _buildRow("Ganadero",
+                              deliveryTicketModel.rancher?.name ?? ""),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
