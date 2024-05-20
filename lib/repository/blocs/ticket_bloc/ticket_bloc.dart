@@ -2,11 +2,13 @@ import 'package:bloc/bloc.dart';
 import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
+import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:reflectable/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
+import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
 part 'ticket_event.dart';
 
@@ -14,259 +16,237 @@ part 'ticket_state.dart';
 
 class TicketBloc extends Bloc<TicketEvent, TicketState> {
   TicketBloc() : super(TicketLoading()) {
-    List<DeliveryTicket> tickets = [];
+    on<FetchTicketsScreen>(_onFetchTicketsScreen);
+    on<SelectTicket>(_onSelectTicket);
+    on<DeleteTicket>(_onDeleteTicket);
+    on<GetTicketInfo>(_onGetTicketInfo);
+    on<PrintTicketEvent>(_onPrintTicketEvent);
+    on<FetchRancherAndProductInfo>(_onFetchRancherAndProductInfo);
+  }
 
-    on<FetchTicketsScreen>((event, emit) async {
-      emit(TicketLoading());
-      try {
-        tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+  Future<void> _onFetchTicketsScreen(
+      FetchTicketsScreen event, Emitter<TicketState> emit) async {
+    emit(TicketLoading());
+    try {
+      final tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+      emit(TicketSuccess(
+        message: 'Tickets recibidos con éxito',
+        data: tickets,
+        event: 'FetchTicketsScreen',
+      ));
+    } catch (e) {
+      emit(
+          TicketError('Ha ocurrido un error a la hora de cargar los tickets.'));
+    }
+  }
+
+  Future<void> _onSelectTicket(
+      SelectTicket event, Emitter<TicketState> emit) async {
+    try {
+      final selectedDeliveryTicket =
+      await _fetchDeliveryTicketById(event.ticketId);
+      if (selectedDeliveryTicket != null) {
+        selectedDeliveryTicket.isSend = !selectedDeliveryTicket.isSend!;
+        await selectedDeliveryTicket.update();
         emit(TicketSuccess(
-            message: 'Tickets recibidos con éxito',
-            data: tickets,
-            event: 'FetchTicketsScreen'));
-      } catch (e) {
-        emit(TicketError(
-            'Ha ocurrido un error a la hora de cargar los tickets.'));
-      }
-    });
-
-    on<SelectTicket>((event, emit) async {
-      try {
-        int selectedId = event.ticketId;
-        var selectedDeliveryTicket = DeliveryTicket();
-
-        var results = await DeliveryTicket().select(
-            model: DeliveryTicket(),
-            sqlBuilder: SqlBuilder()
-                .querySelect(fields: ["*"])
-                .queryFrom(
-                table: selectedDeliveryTicket
-                    .getTableName(selectedDeliveryTicket))
-                .queryWhere(conditions: [
-              'id',
-              SqlBuilder.constOperators['equals']!,
-              '$selectedId'
-            ]));
-
-        if (results.isNotEmpty) {
-          selectedDeliveryTicket = results.first as DeliveryTicket;
-          selectedDeliveryTicket.isSend = !selectedDeliveryTicket.isSend!;
-          selectedDeliveryTicket.update();
-
-          emit(TicketSuccess(
-              message: 'Ticket seleccionado correctamente',
-              data: [selectedDeliveryTicket],
-              event: 'SelectTicket'));
-        } else {
-          throw Exception('No ticket found with id $selectedId');
-        }
-      } catch (e) {
-        emit(TicketError(
-            'Ha habido un error al seleccionar el ticket: ${e.toString()}'));
-      }
-    });
-
-    on<DeleteTicket>((event, emit) async {
-      try {
-        int selectedId = event.ticketId;
-        var selectedDeliveryTicket = DeliveryTicket();
-        var selectedProductTicket = ProductTicket();
-
-        selectedDeliveryTicket = (await DeliveryTicket().select(
-            model: DeliveryTicket(),
-            sqlBuilder: SqlBuilder()
-                .querySelect(fields: ["*"])
-                .queryFrom(
-                table: selectedDeliveryTicket
-                    .getTableName(selectedDeliveryTicket))
-                .queryWhere(conditions: [
-              'id',
-              SqlBuilder.constOperators['equals']!,
-              '$selectedId'
-            ])))
-            .first as DeliveryTicket;
-
-        selectedProductTicket = (await ProductTicket().select(
-            model: ProductTicket(),
-            sqlBuilder: SqlBuilder()
-                .querySelect(fields: ["*"])
-                .queryFrom(
-                table: selectedProductTicket
-                    .getTableName(selectedProductTicket))
-                .queryWhere(conditions: [
-              'idTicket',
-              SqlBuilder.constOperators['equals']!,
-              '$selectedId'
-            ])))
-            .first as ProductTicket;
-
-        selectedDeliveryTicket.delete();
-        selectedProductTicket.delete();
-
-        emit(TicketSuccess(
-            message: 'Ticket borrado correctamente',
-            data: [selectedDeliveryTicket],
-            event: 'DeleteTicket'));
-      } catch (e) {
-        emit(TicketError('Ha habido un error al borrar el ticket'));
-      }
-    });
-
-    /*
-        !  ProductDeliveryNote:   DeliveryTicket:
-        !  - Producto (nombre)    - number (para utilizarlo como identificador)
-        !  - units                - date
-        !  - nameClassification   - vehicleregistration
-        !  - kilograms            - driver (name)
-        !  - color                - rancher (name)
-    */
-    on<GetTicketInfo>((event, emit) async {
-      emit(TicketLoading());
-
-      try {
-        int selectedId = event.ticketId;
-        DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
-        var selectedProductTicket = ProductTicket();
-        ProductTicketModel productTicketModel =
-        ProductTicketModel();
-
-        await deliveryTicketModel.fromEntity(
-            await DatabaseRepository.getEntityById(
-                DeliveryTicket(), selectedId));
-
-        selectedProductTicket = (await ProductTicket().select(
-            model: ProductTicket(),
-            sqlBuilder: SqlBuilder()
-                .querySelect(fields: ["*"])
-                .queryFrom(
-                table: selectedProductTicket
-                    .getTableName(selectedProductTicket))
-                .queryWhere(conditions: [
-              'idTicket',
-              SqlBuilder.constOperators['equals']!,
-              '$selectedId'
-            ])))
-            .first as ProductTicket;
-
-        await productTicketModel
-            .fromEntity(await selectedProductTicket.selectLast());
-
-        emit(TicketSuccess(
-          message: 'Tickets de productos obtenidos correctamente',
-          data: [productTicketModel, deliveryTicketModel],
-          event: "GetTicketInfo",
+          message: 'Ticket seleccionado correctamente',
+          data: [selectedDeliveryTicket],
+          event: 'SelectTicket',
         ));
-      } catch (e) {
-        emit(TicketError(
-            'Ha ocurrido un error a la hora de obtener los tickets'));
+      } else {
+        throw Exception('No ticket found with id ${event.ticketId}');
       }
-    });
+    } catch (e) {
+      emit(TicketError(
+          'Ha habido un error al seleccionar el ticket: ${e.toString()}'));
+    }
+  }
 
-    on<PrintTicketEvent>((event, emit) async {
-      emit(TicketLoading());
-      PrintHelper printHelper = PrintHelper();
-      var selectedProductTicket = ProductTicket();
-      ProductTicketModel productTicketModel =
-      ProductTicketModel();
-      VehicleRegistrationModel vehicleRegistrationModel =
-      VehicleRegistrationModel();
-      DriverModel driverModel = DriverModel();
-      SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
-      RancherModel rancherModel = RancherModel();
-      ProductModel productModel = ProductModel();
-      PerformanceModel performanceModel = PerformanceModel();
-
-      Map<String, List<BluetoothInfo>> itemsMap =
-      await printHelper.getBluetooth();
-
-      //! ProductTicket
-      selectedProductTicket = (await ProductTicket().select(
-          model: ProductTicket(),
-          sqlBuilder: SqlBuilder()
-              .querySelect(fields: ["*"])
-              .queryFrom(
-              table: selectedProductTicket
-                  .getTableName(selectedProductTicket))
-              .queryWhere(conditions: [
-            'idTicket',
-            SqlBuilder.constOperators['equals']!,
-            '${event.deliveryTicket.id}'
-          ])))
-          .first as ProductTicket;
-      await productTicketModel
-          .fromEntity(await selectedProductTicket.selectLast());
-
-      //! VehicleRegistrationNum
-      await vehicleRegistrationModel.fromEntity(
-          await DatabaseRepository.getEntityById(VehicleRegistration(),
-              event.deliveryTicket.idVehicleRegistration!));
-
-      //! Driver (name)
-      await driverModel.fromEntity(await DatabaseRepository.getEntityById(
-          Driver(), event.deliveryTicket.idDriver!));
-
-      //! Slaughterhouse (name)
-      await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
-          Rancher(), event.deliveryTicket.idRancher!));
-
-      //! Rancher (name)
-      await slaughterhouseModel.fromEntity(
-          await DatabaseRepository.getEntityById(
-              Slaughterhouse(), event.deliveryTicket.idSlaughterhouse!));
-
-      //! Product (name)
-      await productModel.fromEntity(await DatabaseRepository.getEntityById(
-          Product(), event.deliveryTicket.idProduct!));
-
-      //! Performance (num)
-      await performanceModel.fromEntity(
-          await DatabaseRepository.getEntityById(Performance(),selectedProductTicket.idPerformance!));
-
-
-      try {
-        await printHelper.print(event.context, itemsMap.values
-            .toList()
-            .first,
-            date: event.deliveryTicket.date.toString(),
-            vehicleRegistrationNum:
-            '${vehicleRegistrationModel.vehicleRegistrationNum}',
-            driver: '${driverModel.name}',
-            slaughterHouse: '${slaughterhouseModel.name}',
-            rancher: '${rancherModel.name}',
-            deliveryTicketNumber:
-            '${event.deliveryTicket.deliveryTicket!} - ${event.deliveryTicket
-                .number}',
-            product: '${productModel.name}',
-            number: '${selectedProductTicket.numAnimals}',
-            classification: '${selectedProductTicket.nameClassification}',
-            performance: '${performanceModel.performance}',
-            kilograms: '${selectedProductTicket.weight}',
-            color: '${selectedProductTicket.color}');
-
-        emit(TicketSuccess(
-            message: 'Impresión realizada con éxito',
-            data: [200],
-            event: 'PrintTicketEvent'));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(TicketError(
-            'Ha ocurrido un error a la hora de imprimir el ticket'));
+  Future<void> _onDeleteTicket(
+      DeleteTicket event, Emitter<TicketState> emit) async {
+    try {
+      final selectedDeliveryTicket =
+      await _fetchDeliveryTicketById(event.ticketId);
+      final selectedProductTicket =
+      await _fetchProductTicketByTicketId(event.ticketId);
+      await selectedDeliveryTicket?.delete();
+      for(var productTicket in selectedProductTicket!){
+        await productTicket.delete();
       }
-    });
+      emit(TicketSuccess(
+        message: 'Ticket borrado correctamente',
+        data: [selectedDeliveryTicket],
+        event: 'DeleteTicket',
+      ));
+    } catch (e) {
+      emit(TicketError('Ha habido un error al borrar el ticket'));
+    }
+  }
 
-    on<FetchRancherAndProductInfo>((event, emit) async {
-      emit(TicketLoading());
-      try {
-        final rancher = await DatabaseRepository.getEntityById(Rancher(), event.rancherId);
-        final product = await DatabaseRepository.getEntityById(Product(), event.productId);
-        emit(TicketSuccess(
-          message: 'Información del ganadero y producto obtenida con éxito',
-          data: [rancher,  product],
-          event: 'FetchRancherAndProductInfo',
-        ));
-      } catch (e) {
-        emit(TicketError('Ha ocurrido un error a la hora de obtener la información del ganadero y producto'));
+  Future<void> _onGetTicketInfo(
+      GetTicketInfo event, Emitter<TicketState> emit) async {
+    emit(TicketLoading());
+    try {
+      final deliveryTicketModel =
+      await _getDeliveryTicketModelById(event.ticketId);
+      final productTicketModel =
+      await _getProductTicketModelByTicketId(event.ticketId);
+      emit(TicketSuccess(
+        message: 'Tickets de productos obtenidos correctamente',
+        data: [productTicketModel, deliveryTicketModel],
+        event: "GetTicketInfo",
+      ));
+    } catch (e) {
+      emit(
+          TicketError('Ha ocurrido un error a la hora de obtener los tickets'));
+    }
+  }
+
+  Future<void> _onPrintTicketEvent(
+      PrintTicketEvent event, Emitter<TicketState> emit) async {
+    emit(TicketLoading());
+    try {
+      final printData = await _gatherPrintData(event.deliveryTicket);
+      await _printTicket(event.context, printData);
+      emit(TicketSuccess(
+        message: 'Impresión realizada con éxito',
+        data: [200],
+        event: 'PrintTicketEvent',
+      ));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(TicketError('Ha ocurrido un error a la hora de imprimir el ticket'));
+    }
+  }
+
+  Future<void> _onFetchRancherAndProductInfo(
+      FetchRancherAndProductInfo event, Emitter<TicketState> emit) async {
+    emit(TicketLoading());
+    try {
+      final rancher =
+      await DatabaseRepository.getEntityById(Rancher(), event.rancherId);
+      final product =
+      await DatabaseRepository.getEntityById(Product(), event.productId);
+      emit(TicketSuccess(
+        message: 'Información del ganadero y producto obtenida con éxito',
+        data: [rancher, product],
+        event: 'FetchRancherAndProductInfo',
+      ));
+    } catch (e) {
+      emit(TicketError(
+          'Ha ocurrido un error a la hora de obtener la información del ganadero y producto'));
+    }
+  }
+
+  Future<DeliveryTicket?> _fetchDeliveryTicketById(int ticketId) async {
+    final results = await DeliveryTicket().select(
+      model: DeliveryTicket(),
+      sqlBuilder: SqlBuilder()
+          .querySelect(fields: ["*"])
+          .queryFrom(table: DeliveryTicket().getTableName(DeliveryTicket()))
+          .queryWhere(conditions: [
+        'id',
+        SqlBuilder.constOperators['equals']!,
+        '$ticketId'
+      ]),
+    );
+    return results.isNotEmpty ? results.first as DeliveryTicket : null;
+  }
+
+  Future<List<ProductTicket>?> _fetchProductTicketByTicketId(
+      int ticketId) async {
+    final results = await ProductTicket().getData<ProductTicket>(
+      where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId']
+    );
+    return results.isNotEmpty ? results : null;
+  }
+
+  Future<DeliveryTicketModel> _getDeliveryTicketModelById(int ticketId) async {
+    final model = DeliveryTicketModel();
+    final entity =
+    await DatabaseRepository.getEntityById(DeliveryTicket(), ticketId);
+    await model.fromEntity(entity);
+    return model;
+  }
+
+  Future<List<ProductTicketModel>> _getProductTicketModelByTicketId(
+      int ticketId) async {
+    final selectedProductTicket = await _fetchProductTicketByTicketId(ticketId);
+    List<ProductTicketModel> model = [];
+    if (selectedProductTicket != null) {
+      for (var productTicket in selectedProductTicket) {
+        ProductTicketModel product = ProductTicketModel();
+        await product.fromEntity(productTicket);
+        model.add(product);
       }
-    });
+    }
+    return model;
+  }
+
+  Future<Map<String, dynamic>> _gatherPrintData(
+      DeliveryTicket deliveryTicket) async {
+    final productTicketModel =
+    await _getProductTicketModelByTicketId(deliveryTicket.id!);
+    final vehicleRegistrationModel =
+    await _getModelById<VehicleRegistrationModel>(
+        VehicleRegistration(), deliveryTicket.idVehicleRegistration!);
+    final driverModel =
+    await _getModelById<DriverModel>(Driver(), deliveryTicket.idDriver!);
+    final rancherModel =
+    await _getModelById<RancherModel>(Rancher(), deliveryTicket.idRancher!);
+    final slaughterhouseModel = await _getModelById<SlaughterhouseModel>(
+        Slaughterhouse(), deliveryTicket.idSlaughterhouse!);
+
+    Map<String, dynamic> ticket = {
+      'date': deliveryTicket.date.toString(),
+      'deliveryTicketNumber' : deliveryTicket.deliveryTicket,
+      'vehicleRegistrationNum': vehicleRegistrationModel.vehicleRegistrationNum,
+      'driver': driverModel.name,
+      'slaughterHouse': slaughterhouseModel.name,
+      'rancher': rancherModel.name,
+      'product' : productTicketModel.first.product!.name,
+      'number' : [],
+      'classification' : [],
+      'performance' : [],
+      'kilograms' : [],
+      'color' : [],
+    };
+
+    for (final productTicket in productTicketModel) {
+      if (productTicket.losses != 0) {
+        ticket['number'].add(productTicket.numAnimals);
+        ticket['classification'].add(productTicket.nameClassification);
+        ticket['performance'].add(productTicket.performance!.performance);
+        ticket['kilograms'].add(productTicket.weight);
+        ticket['color'].add(productTicket.color);
+      }
+    }
+
+    return ticket;
+  }
+
+  Future<void> _printTicket(
+      BuildContext context, Map<String, dynamic> printData) async {
+    final printHelper = PrintHelper();
+    final itemsMap = await printHelper.getBluetooth();
+    await printHelper.print(
+      context,
+      itemsMap.values.toList().first,
+      tickets: printData,
+    );
+  }
+
+  Future<T> _getModelById<T>(ModelDao entity, int id) async {
+    final classMirror = reflector.reflectType(T) as ClassMirror;
+    final model = classMirror.newInstance('', []) as T;
+    final entityData = await DatabaseRepository.getEntityById(entity, id);
+    await (model as dynamic).fromEntity(entityData);
+    return model;
+  }
+
+  Future<List<ProductTicketModel>> _addingLosses(DeliveryTicket deliveryTicket) async {
+    final productTicketModel =
+    await _getProductTicketModelByTicketId(deliveryTicket.id!);
+    return productTicketModel;
   }
 }

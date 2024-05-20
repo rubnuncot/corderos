@@ -68,13 +68,13 @@ class ReportBloc extends Cubit<ReportState> {
     List<ProductDeliveryNote> products = [];
 
     for (var ticket in data) {
-      var productAux = await product.getData(where: [
+      var productAux = await product.getData<ProductDeliveryNote>(where: [
         'idDeliveryNote',
         SqlBuilder.constOperators['equals']!,
         '"${ticket.id}"'
       ]);
       if (productAux.isNotEmpty) {
-        products.add(productAux.first as ProductDeliveryNote);
+        products.add(productAux.first);
       }
     }
 

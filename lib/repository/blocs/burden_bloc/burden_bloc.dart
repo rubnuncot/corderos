@@ -3,11 +3,13 @@ import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
+import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:reflectable/mirrors.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
+import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
 import '../../../data/database/entities/changes.dart';
 import '../../models/!models.dart';
@@ -18,212 +20,279 @@ part 'burden_event.dart';
 
 class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
   BurdenBloc() : super(BurdenLoading()) {
-    on<GetChanges>((event, emit) async {
-      emit(BurdenLoading());
+    on<GetChanges>(_onGetChanges);
+    on<GetProductTicketsBurden>(_onGetProductTicketsBurden);
+    on<GetTableIndex>(_onGetTableIndex);
+    on<IncrementTableIndex>(_onIncrementTableIndex);
+    on<UploadData>(_onUploadData);
+  }
 
-      try {
-        String and = SqlBuilder.constOperators['and']!;
+  Future<void> _onGetChanges(
+      GetChanges event, Emitter<BurdenState> emit) async {
+    emit(BurdenLoading());
+    try {
+      final changes = await _fetchChanges(event);
+      emit(BurdenSuccess('Cambios de tabla obtenidos correctamente.', [changes],
+          "GetChanges"));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(BurdenError(
+          'Ha ocurrido un error a la hora de obtener los cambios de tabla.'));
+    }
+  }
 
-        Changes change = Changes();
-        List<String> whereClause = [];
-        List<Change> changes = [];
+  Future<List<Change>> _fetchChanges(GetChanges event) async {
+    Changes change = Changes();
+    Map<String, Iterable<String>> eventData = {
+      "date_${event.date}": [
+        "date LIKE '%${event.date}%'",
+        SqlBuilder.constOperators['and']!
+      ],
+      "tableChanged_${event.tableChanged}": [
+        "tableChanged LIKE '%${event.tableChanged}%'",
+        SqlBuilder.constOperators['and']!
+      ],
+      "isRead${event.isRead}": [
+        "isRead LIKE '%${event.isRead}%'",
+        SqlBuilder.constOperators['and']!
+      ],
+    };
 
-        Map<String, Iterable<String>> eventData = {
-          "date_${event.date}": ["date LIKE '%${event.date}%'", and],
-          "tableChanged_${event.tableChanged}": [
-            "tableChanged LIKE '%${event.tableChanged}%'",
-            and
-          ],
-          "isRead${event.isRead}": ["isRead LIKE '%${event.isRead}%'", and],
-        };
-
-        getConditions(eventData);
-
-        changes = whereClause.isEmpty
-            ? await change.selectAll() as List<Change>
-            : await change.select(
+    final whereClause = _buildConditions(eventData);
+    return whereClause.isEmpty
+        ? await change.selectAll() as List<Change>
+        : await change.select(
             sqlBuilder: SqlBuilder()
                 .querySelect(fields: ["*"])
                 .queryFrom(table: change.getTableName(change))
                 .queryWhere(conditions: whereClause)) as List<Change>;
-
-        emit(BurdenSuccess('Cambios de tabla obtenidos correctamente.',
-            [changes], "GetChanges"));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(BurdenError(
-            'Ha ocurrido un error a la hora de obtener los cambios de tabla.'));
-      }
-    });
-
-    on<GetProductTicketsBurden>((event, emit) async {
-      emit(BurdenLoading());
-
-      try {
-        ProductDeliveryNote productTicket = ProductDeliveryNote();
-        List<String> whereClause = [];
-        List<ProductDeliveryNote> productTickets = [];
-
-        Map<String, Iterable<String>> eventData = {};
-
-        getConditions(eventData);
-
-        productTickets = whereClause.isEmpty
-            ? await productTicket.selectAll() as List<ProductDeliveryNote>
-            : await productTicket.select(
-            sqlBuilder: SqlBuilder()
-                .querySelect(fields: ["*"])
-                .queryFrom(table: productTicket.getTableName(productTicket))
-                .queryWhere(
-                conditions: whereClause)) as List<ProductDeliveryNote>;
-
-        emit(BurdenSuccess('Albarán de productos obtenidos correctamente.',
-            [productTickets], "GetProductTickets"));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(BurdenError(
-            'Ha ocurrido un error a la hora de obtener los albaranes de productos.'));
-      }
-    });
-
-    on<GetTableIndex>((event, emit) async {
-      emit(BurdenLoading());
-
-      try {
-        final tableIndex = await Preferences.getValue('last_saved_tablet_id');
-
-        emit(BurdenSuccess(
-            'Índice de tabla obtenido correctamente',
-            [
-              [tableIndex]
-            ],
-            "GetTableIndex"));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(BurdenError(
-            'Ha ocurrido un error a la hora de obtener la última carga.'));
-      }
-    });
-
-    on<IncrementTableIndex>((event, emit) async {
-      emit(BurdenLoading());
-      const key = 'last_saved_tablet_id';
-      dynamic currentTableIndex;
-
-      try {
-        currentTableIndex = await Preferences.getValue(key);
-        currentTableIndex += 1;
-        await Preferences.setValue(key, currentTableIndex);
-
-        emit(BurdenSuccess(
-            'índice de tabla actualizado correctamente',
-            [
-              [currentTableIndex]
-            ],
-            "IncrementTableIndex"));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(BurdenError(
-            'Ha ocurrido un error a la hora de crear una nueva carga.'));
-      }
-    });
-
-    on<UploadData>((event, emit) async {
-      emit(BurdenLoading());
-      PrintHelper printHelper = PrintHelper();
-
-      Map<String, List<BluetoothInfo>> itemsMap = await printHelper.getBluetooth();
-
-      try {
-        DeliveryTicket lastDeliveryTicket = DeliveryTicket();
-        ProductTicket lastProductTicket = ProductTicket();
-        bool isNewDeliveryTicket = false;
-
-        lastDeliveryTicket = await lastDeliveryTicket.isTableEmpty()
-            ? DeliveryTicket()
-            : await event.deliveryTicket?.selectLast() ?? DeliveryTicket();
-        lastProductTicket = await lastProductTicket.isTableEmpty()
-            ? ProductTicket()
-            : await event.productTicket?.selectLast() ?? ProductTicket();
-
-        if (event.deliveryTicket != null && event.deliveryTicket != lastDeliveryTicket) {
-          isNewDeliveryTicket = true;
-          await event.deliveryTicket!.insert();
-        }
-
-        event.productTicket!.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
-        await event.productTicket!.insert();
-
-        //! VehicleRegistrationNum
-        VehicleRegistrationModel vehicleRegistrationModel = VehicleRegistrationModel();
-        await vehicleRegistrationModel.fromEntity(
-            await DatabaseRepository.getEntityById(VehicleRegistration(),
-                event.deliveryTicket?.idVehicleRegistration ?? lastDeliveryTicket.idVehicleRegistration!));
-
-        //! Driver (name)
-        DriverModel driverModel = DriverModel();
-        await driverModel.fromEntity(await DatabaseRepository.getEntityById(
-            Driver(), event.deliveryTicket?.idDriver ?? lastDeliveryTicket.idDriver!));
-
-        //! Slaughterhouse (name)
-        SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
-        await slaughterhouseModel.fromEntity(
-            await DatabaseRepository.getEntityById(
-                Slaughterhouse(), event.deliveryTicket?.idSlaughterhouse ?? lastDeliveryTicket.idSlaughterhouse!));
-
-        //! Rancher (name)
-        RancherModel rancherModel = RancherModel();
-        await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
-            Rancher(), event.deliveryTicket?.idRancher ?? lastDeliveryTicket.idRancher!));
-
-        //! Product (name)
-        ProductModel productModel = ProductModel();
-        await productModel.fromEntity(await DatabaseRepository.getEntityById(
-            Product(), event.deliveryTicket?.idProduct ?? lastDeliveryTicket.idProduct!));
-
-        //! Performance (num)
-        PerformanceModel performanceModel = PerformanceModel();
-        await performanceModel.fromEntity(
-            await DatabaseRepository.getEntityById(Performance(), lastProductTicket.idPerformance!));
-
-        await printHelper.print(event.context!, itemsMap.values.toList().first,
-            date: event.deliveryTicket?.date.toString() ?? lastDeliveryTicket.date.toString(),
-            vehicleRegistrationNum: vehicleRegistrationModel.vehicleRegistrationNum!,
-            driver: driverModel.name!,
-            slaughterHouse: slaughterhouseModel.name!,
-            rancher: rancherModel.name!,
-            deliveryTicketNumber: '${event.deliveryTicket?.deliveryTicket ?? lastDeliveryTicket.deliveryTicket} - ${event.deliveryTicket?.number ?? lastDeliveryTicket.number}',
-            product: productModel.name!,
-            number: event.productTicket!.numAnimals.toString(),
-            classification: event.productTicket!.nameClassification!,
-            performance: performanceModel.performance.toString(),
-            kilograms: event.productTicket!.weight.toString(),
-            color: event.productTicket!.color!);
-
-        emit(BurdenSuccess(
-            'Carga guardada correctamente.',
-            [
-              [200]
-            ],
-            "UploadData"));
-      } catch (e) {
-        LogHelper.logger.d(e);
-        emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.'));
-      }
-    });
-
   }
 
-  List<String> getConditions(Map<String, Iterable<String>> eventData) {
-    List<String> conditions = [];
-    for (String key in eventData.keys) {
-      if (key.contains("none")) {
-        for (var condition in eventData[key]!) {
-          conditions.add(condition);
-        }
+  Future<void> _onGetProductTicketsBurden(
+      GetProductTicketsBurden event, Emitter<BurdenState> emit) async {
+    emit(BurdenLoading());
+    try {
+      final productTickets = await _fetchProductTickets(event);
+      emit(BurdenSuccess('Albarán de productos obtenidos correctamente.',
+          [productTickets], "GetProductTickets"));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(BurdenError(
+          'Ha ocurrido un error a la hora de obtener los albaranes de productos.'));
+    }
+  }
+
+  Future<List<ProductDeliveryNote>> _fetchProductTickets(
+      GetProductTicketsBurden event) async {
+    ProductDeliveryNote productTicket = ProductDeliveryNote();
+    final whereClause = _buildConditions({});
+    return whereClause.isEmpty
+        ? await productTicket.selectAll() as List<ProductDeliveryNote>
+        : await productTicket.select(
+                sqlBuilder: SqlBuilder()
+                    .querySelect(fields: ["*"])
+                    .queryFrom(table: productTicket.getTableName(productTicket))
+                    .queryWhere(conditions: whereClause))
+            as List<ProductDeliveryNote>;
+  }
+
+  Future<void> _onGetTableIndex(
+      GetTableIndex event, Emitter<BurdenState> emit) async {
+    emit(BurdenLoading());
+    try {
+      final tableIndex = await Preferences.getValue('last_saved_tablet_id');
+      emit(BurdenSuccess(
+          'Índice de tabla obtenido correctamente',
+          [
+            [tableIndex]
+          ],
+          "GetTableIndex"));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(BurdenError(
+          'Ha ocurrido un error a la hora de obtener la última carga.'));
+    }
+  }
+
+  Future<void> _onIncrementTableIndex(
+      IncrementTableIndex event, Emitter<BurdenState> emit) async {
+    emit(BurdenLoading());
+    const key = 'last_saved_tablet_id';
+    try {
+      var currentTableIndex = await Preferences.getValue(key);
+      currentTableIndex += 1;
+      await Preferences.setValue(key, currentTableIndex);
+      emit(BurdenSuccess(
+          'Índice de tabla actualizado correctamente',
+          [
+            [currentTableIndex]
+          ],
+          "IncrementTableIndex"));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(BurdenError(
+          'Ha ocurrido un error a la hora de crear una nueva carga.'));
+    }
+  }
+
+  Future<void> _onUploadData(
+      UploadData event, Emitter<BurdenState> emit) async {
+    emit(BurdenLoading());
+    try {
+      await _handleUploadData(event);
+      emit(BurdenSuccess(
+          'Carga guardada correctamente.',
+          [
+            [200]
+          ],
+          "UploadData"));
+    } catch (e) {
+      LogHelper.logger.d(e);
+      emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.'));
+    }
+  }
+
+  Future<void> _handleUploadData(UploadData event) async {
+    try {
+      PrintHelper printHelper = PrintHelper();
+      var itemsMap = await printHelper.getBluetooth();
+
+      DeliveryTicket lastDeliveryTicket =
+          await _getLastOrNewDeliveryTicket(event.deliveryTicket);
+      List<ProductTicket> lastProductTicket =
+          await _getLastOrNewProductTicket(event.deliveryTicket);
+
+      if (event.deliveryTicket != null &&
+          event.deliveryTicket != lastDeliveryTicket) {
+        await event.deliveryTicket!.insert();
+      }
+
+      List<ProductTicket> productTicket = [];
+      for (var product in event.productTicket) {
+        productTicket.add(ProductTicket()
+          ..idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id
+          ..idProduct = product.product!.id
+          ..nameClassification = product.nameClassification
+          ..numAnimals = product.numAnimals
+          ..weight = product.weight
+          ..idPerformance = product.performance!.id
+          ..color = product.color
+          ..losses = product.losses);
+      }
+
+      for (var x in productTicket) {
+        x.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
+        await x.insert();
+      }
+
+      final data =
+          await _gatherPrintData(event.deliveryTicket ?? lastDeliveryTicket);
+      await printHelper.print(event.context!, itemsMap.values.toList().first,
+          tickets: data);
+    } catch (e) {
+      LogHelper.logger.d(e);
+    }
+  }
+
+  Future<DeliveryTicket> _getLastOrNewDeliveryTicket(
+      DeliveryTicket? deliveryTicket) async {
+    DeliveryTicket lastDeliveryTicket = DeliveryTicket();
+    return await lastDeliveryTicket.isTableEmpty()
+        ? DeliveryTicket()
+        : await deliveryTicket?.selectLast() ?? DeliveryTicket();
+  }
+
+  Future<List<ProductTicket>> _getLastOrNewProductTicket(
+      DeliveryTicket? deliveryTicket) async {
+    ProductTicket lastProductTicket = ProductTicket();
+    return await lastProductTicket.isTableEmpty()
+        ? [ProductTicket()]
+        : await lastProductTicket.getData<ProductTicket>(where: [
+            'idTicket',
+            SqlBuilder.constOperators['equals']!,
+            '${deliveryTicket!.id}'
+          ]);
+  }
+
+  Future<List<ProductTicket>?> _fetchProductTicketByTicketId(
+      int ticketId) async {
+    final results = await ProductTicket().getData<ProductTicket>(
+        where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId']);
+    return results.isNotEmpty ? results : null;
+  }
+
+  Future<List<ProductTicketModel>> _getProductTicketModelByTicketId(
+      int ticketId) async {
+    final selectedProductTicket = await _fetchProductTicketByTicketId(ticketId);
+    List<ProductTicketModel> model = [];
+    if (selectedProductTicket != null) {
+      for (var productTicket in selectedProductTicket) {
+        ProductTicketModel product = ProductTicketModel();
+        await product.fromEntity(productTicket);
+        model.add(product);
       }
     }
-    conditions.removeLast();
+    return model;
+  }
+
+  Future<Map<String, dynamic>> _gatherPrintData(
+      DeliveryTicket deliveryTicket) async {
+    final productTicketModel =
+        await _getProductTicketModelByTicketId(deliveryTicket.id!);
+    final vehicleRegistrationModel =
+        await _getModelById<VehicleRegistrationModel>(
+            VehicleRegistration(), deliveryTicket.idVehicleRegistration!);
+    final driverModel =
+        await _getModelById<DriverModel>(Driver(), deliveryTicket.idDriver!);
+    final rancherModel =
+        await _getModelById<RancherModel>(Rancher(), deliveryTicket.idRancher!);
+    final slaughterhouseModel = await _getModelById<SlaughterhouseModel>(
+        Slaughterhouse(), deliveryTicket.idSlaughterhouse!);
+
+    Map<String, dynamic> ticket = {
+      'date': deliveryTicket.date.toString(),
+      'deliveryTicketNumber': deliveryTicket.deliveryTicket,
+      'vehicleRegistrationNum': vehicleRegistrationModel.vehicleRegistrationNum,
+      'driver': driverModel.name,
+      'slaughterHouse': slaughterhouseModel.name,
+      'rancher': rancherModel.name,
+      'product': productTicketModel.first.product!.name,
+      'number': [],
+      'classification': [],
+      'performance': [],
+      'kilograms': [],
+      'color': [],
+    };
+
+    for (final productTicket in productTicketModel) {
+      if (productTicket.losses != 0) {
+        ticket['number'].add(productTicket.numAnimals);
+        ticket['classification'].add(productTicket.nameClassification);
+        ticket['performance'].add(productTicket.performance!.performance);
+        ticket['kilograms'].add(productTicket.weight);
+        ticket['color'].add(productTicket.color);
+      }
+    }
+
+    return ticket;
+  }
+
+  Future<T> _getModelById<T>(ModelDao entity, int id) async {
+    var classMirror = reflector.reflectType(T) as ClassMirror;
+    final model = classMirror.newInstance('', []) as T;
+    final entityData = await DatabaseRepository.getEntityById(entity, id);
+    await (model as dynamic).fromEntity(entityData);
+    return model;
+  }
+
+  List<String> _buildConditions(Map<String, Iterable<String>> eventData) {
+    List<String> conditions = [];
+    for (var entry in eventData.entries) {
+      if (entry.key.contains("none")) {
+        conditions.addAll(entry.value);
+      }
+    }
+    if (conditions.isNotEmpty) conditions.removeLast();
     return conditions;
   }
 }

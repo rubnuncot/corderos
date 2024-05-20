@@ -6,13 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/!repository.dart';
 
 class NewDropDown extends StatefulWidget {
-  final String mapKey;
+  final String? mapKey;
   final String? labelText;
+  final List? values;
+  final String? initialValue;
 
   const NewDropDown({
     super.key,
-    required this.mapKey,
+    this.mapKey,
     this.labelText,
+    this.values,
+    this.initialValue,
   });
 
   @override
@@ -29,7 +33,9 @@ class _NewDropDownState extends State<NewDropDown> {
     super.didChangeDependencies();
     dropdownBloc = context.read<DropDownBloc>();
     dropdownState = context.watch<DropDownBloc>().state;
-    list = dropdownState.values[widget.mapKey];
+    list = widget.mapKey == null
+        ? widget.values as List<String>?
+        : dropdownState.values[widget.mapKey];
   }
 
   @override
@@ -39,10 +45,12 @@ class _NewDropDownState extends State<NewDropDown> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if(widget.labelText != null)
-          Text(widget.labelText!, style: TextStyle(fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: appColors?['labelInputColor'])),
+        if (widget.labelText != null)
+          Text(widget.labelText!,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: appColors?['labelInputColor'])),
         const SizedBox(height: 8),
         if (list != null && list!.isNotEmpty)
           CustomDropdown<String>(
@@ -63,9 +71,14 @@ class _NewDropDownState extends State<NewDropDown> {
                     offset: const Offset(3, 1),
                   ),
                 ]),
-            initialItem: list!.contains(dropdownState.selectedValues[widget.mapKey]) ? dropdownState.selectedValues[widget.mapKey] : null,
+            initialItem:
+                list!.contains(dropdownState.selectedValues[widget.mapKey])
+                    ? dropdownState.selectedValues[widget.mapKey]
+                    : widget.initialValue,
             onChanged: (value) async {
-              await dropdownBloc.changeValue(widget.mapKey, value);
+              if (widget.mapKey != null) {
+                await dropdownBloc.changeValue(widget.mapKey!, value);
+              }
             },
           )
         else
@@ -73,5 +86,4 @@ class _NewDropDownState extends State<NewDropDown> {
       ],
     );
   }
-
 }
