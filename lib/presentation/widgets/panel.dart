@@ -2,6 +2,7 @@ import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../!helpers/app_theme.dart';
 import '../../repository/!repository.dart';
 
 class Panel extends StatelessWidget {
@@ -11,6 +12,7 @@ class Panel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = AppColors(context: context).getColors();
     final openPanel = context.read<OpenPanelBloc>();
     final openPanelState = context.watch<OpenPanelBloc>().state;
 
@@ -25,7 +27,7 @@ class Panel extends StatelessWidget {
         height: openPanelState.isOpen ? size.height * 0.7 : 0,
         width: openPanelState.isOpen ? size.width * 0.95 : 0,
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: appColors?['backgroundPanel'],
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(

@@ -23,6 +23,9 @@ class AppTheme {
           inversePrimary: Color(0xff3f3c3c),
           // Color primario inverso para ciertos controles
           onTertiary: Colors.black,
+
+          onPrimaryContainer: Colors.white,
+
           shadow: Colors.black),
       scaffoldBackgroundColor: const Color(0xFFF0F0F6),
       cardColor: const Color(0xFFFFFFFF),
@@ -62,6 +65,7 @@ class AppTheme {
           inversePrimary: Colors.white70,
           // Color primario inverso para ciertos controles
           onTertiary: Colors.white,
+          onPrimaryContainer: Colors.black87,
           // Color
 
           shadow: Colors.black),
@@ -140,7 +144,14 @@ class AppColors {
       'fontCardColor': Theme.of(context).colorScheme.secondary,
       'iconCardColor': Theme.of(context).colorScheme.secondary,
       //! COLORES TICKET SCREEN
-      'backgroundCard': Theme.of(context).scaffoldBackgroundColor
+      'backgroundCard': Theme.of(context).scaffoldBackgroundColor,
+      'selectedBackgroundCard': Theme.of(context).colorScheme.onSurface,
+      'selectedTitleCard': Theme.of(context).colorScheme.onSecondary,
+      'unSelectedTitleCard': Theme.of(context).colorScheme.secondary,
+      'selectedIconCard': Theme.of(context).colorScheme.onSecondary,
+      'unSelectedIconCard': Theme.of(context).colorScheme.secondary,
+      //! COLOR DE FONDO DEL PANEL
+      'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
     });
     return colors;
   }

@@ -333,7 +333,6 @@ class _TableTicketState extends State<TableTicket> {
           showEditDialog(label.keys.first, value, (newValue) {
             setState(() {
               dynamic requestValue = list;
-              // Asume que `label` es un Map con un solo par clave-valor
               String key = label.keys.first;
 
               switch (key) {
