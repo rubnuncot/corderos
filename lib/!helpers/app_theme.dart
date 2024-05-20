@@ -117,16 +117,16 @@ class AppColors {
       'hintInputColor': Theme.of(context).colorScheme.inversePrimary,
       'iconInputColor': Theme.of(context).colorScheme.onSurface,
       'buttonShadowInput':
-          Theme.of(context).colorScheme.inversePrimary.withOpacity(0.2),
+      Theme.of(context).colorScheme.inversePrimary.withOpacity(0.2),
       'secondShadowDarkMode': Theme.of(context).colorScheme.onSecondary,
       'themeButtonColor': Theme.of(context).colorScheme.surface,
       'textFieldBackgroundColor': Theme.of(context).colorScheme.surface,
       'buttonBorderColor': Theme.of(context).colorScheme.surface,
       'buttonBackgroundNeuColor': Theme.of(context).colorScheme.onPrimary,
       'buttonBackgroundNeuGradientColor':
-          Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.secondary,
       'buttonBackgroundNeuGradientSecondColor':
-          Theme.of(context).colorScheme.error,
+      Theme.of(context).colorScheme.error,
       'buttonNavigationBackground': Theme.of(context).colorScheme.surface,
       //! COLORES TABLA
       'borderTableColor': Theme.of(context).colorScheme.shadow,
@@ -150,6 +150,10 @@ class AppColors {
       'unSelectedTitleCard': Theme.of(context).colorScheme.secondary,
       'selectedIconCard': Theme.of(context).colorScheme.onSecondary,
       'unSelectedIconCard': Theme.of(context).colorScheme.secondary,
+      'selectedContentCard': Theme.of(context).colorScheme.onSecondary,
+      'unSelectedContentCard': Theme.of(context).colorScheme.onError,
+      'unSelectedTableBorder': Theme.of(context).colorScheme.inversePrimary,
+      'valueTableColumn': Theme.of(context).colorScheme.surface,
       //! COLOR DE FONDO DEL PANEL
       'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
     });

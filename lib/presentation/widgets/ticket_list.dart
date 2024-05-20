@@ -97,15 +97,29 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
                   title: Text(
                     '${ticket.number!}',
                     style: TextStyle(
-                        color: isSelected ? appColors!['selectedTitleCard'] : appColors!['unSelectedTitleCard']),
+                      color: isSelected
+                          ? appColors!['selectedTitleCard']
+                          : appColors!['unSelectedTitleCard'],
+                    ),
                   ),
-                  subtitle: Text('Description $index',
-                    style: TextStyle(color: isSelected ? appColors['selectedTitleCard'] : appColors['unSelectedTitleCard']),
+                  subtitle: Text(
+                    'Description $index',
+                    style: TextStyle(
+                      color: isSelected
+                          ? appColors['selectedTitleCard']
+                          : appColors['unSelectedTitleCard'],
+                    ),
                   ),
                   trailing: IconButton(
                     icon: isOpen[index]
-                        ? Icon(FontAwesomeIcons.chevronUp, color: isSelected ? appColors['selectedIconCard'] : appColors['unSelectedIconCard'])
-                        : Icon(FontAwesomeIcons.chevronDown, color: isSelected ? appColors['selectedIconCard'] : appColors['unSelectedIconCard']),
+                        ? Icon(FontAwesomeIcons.chevronUp,
+                        color: isSelected
+                            ? appColors['selectedIconCard']
+                            : appColors['unSelectedIconCard'])
+                        : Icon(FontAwesomeIcons.chevronDown,
+                        color: isSelected
+                            ? appColors['selectedIconCard']
+                            : appColors['unSelectedIconCard']),
                     onPressed: () {
                       setState(() {
                         isOpen[index] = !isOpen[index];
@@ -120,58 +134,77 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
                   duration: const Duration(milliseconds: 1000),
                   curve: Curves.elasticOut,
                   child: isOpen[index] &&
-                          productTicketModel != null &&
-                          deliveryTicketModel != null
+                      productTicketModel != null &&
+                      deliveryTicketModel != null
                       ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Ganadero: ${deliveryTicketModel.rancher?.name ?? ""}'),
-                              Text(
-                                  'Matadero: ${deliveryTicketModel.slaughterhouse?.name ?? ""}'),
-                              const SizedBox(height: 8.0),
-                              Table(
-                                border: TableBorder.all(color: Colors.grey),
-                                columnWidths: const <int, TableColumnWidth>{
-                                  0: FlexColumnWidth(),
-                                  1: FlexColumnWidth(),
-                                },
-                                children: [
-                                  _buildTableRow(
-                                    'Producto',
-                                    productTicketModel.product?.name ?? '',
-                                  ),
-                                  _buildTableRow(
-                                    'Nº Animales',
-                                    '${productTicketModel.numAnimals ?? ' '}',
-                                  ),
-                                  _buildTableRow(
-                                    'Peso',
-                                    '${productTicketModel.weight ?? ' '}',
-                                  ),
-                                  _buildTableRow(
-                                    'Clasificación',
-                                    productTicketModel.nameClassification ?? '',
-                                  ),
-                                  _buildTableRow(
-                                    'Rendimiento',
-                                    '${productTicketModel.performance?.performance ?? ''}',
-                                  ),
-                                  _buildTableRow(
-                                    'Color',
-                                    productTicketModel.color ?? '',
-                                  ),
-                                  _buildTableRow(
-                                    'Pérdidas',
-                                    '${productTicketModel.losses ?? ' '}',
-                                  ),
-                                ],
-                              ),
-                            ],
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ganadero: ${deliveryTicketModel.rancher?.name ?? ""}',
+                          style: TextStyle(
+                            color: isSelected
+                                ? appColors['selectedContentCard']
+                                : appColors['unSelectedContentCard'],
                           ),
-                        )
+                        ),
+                        Text(
+                          'Matadero: ${deliveryTicketModel.slaughterhouse?.name ?? ""}',
+                          style: TextStyle(
+                            color: isSelected
+                                ? appColors['selectedContentCard']
+                                : appColors['unSelectedContentCard'],
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Table(
+                          border: TableBorder.all(),
+                          columnWidths: const <int, TableColumnWidth>{
+                            0: FlexColumnWidth(),
+                            1: FlexColumnWidth(),
+                          },
+                          children: [
+                            _buildTableRow(
+                              'Producto',
+                              productTicketModel.product?.name ?? '',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Nº Animales',
+                              '${productTicketModel.numAnimals ?? ' '}',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Peso',
+                              '${productTicketModel.weight ?? ' '}',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Clasificación',
+                              productTicketModel.nameClassification ?? '',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Rendimiento',
+                              '${productTicketModel.performance?.performance ?? ''}',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Color',
+                              productTicketModel.color ?? '',
+                              isSelected,
+                            ),
+                            _buildTableRow(
+                              'Pérdidas',
+                              '${productTicketModel.losses ?? ' '}',
+                              isSelected,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
                       : Container(),
                 ),
               ],
@@ -182,7 +215,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  TableRow _buildTableRow(String label, String value) {
+  TableRow _buildTableRow(String label, String value, bool isSelected) {
     final appColors = AppColors(context: context).getColors();
 
     return TableRow(
@@ -193,14 +226,20 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
           child: Text(
             label,
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey[800],
+            ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
             value,
-            style: TextStyle(color: appColors?['valueTableColor']),
+            style: TextStyle(
+              color: isSelected
+                  ? appColors!['selectedContentCard']
+                  : appColors?['unSelectedContentCard'],
+            ),
           ),
         ),
       ],
