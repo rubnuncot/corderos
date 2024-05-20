@@ -20,7 +20,7 @@ class ModelBase {
     return models;
   }
 
-  void updateValue<T>(String fieldName, dynamic newValue) {
+  T updateValue<T>(String fieldName, dynamic newValue) {
     var classMirror = reflector.reflectType(T) as ClassMirror;
     var instanceMirror = reflector.reflect(this);
 
@@ -30,12 +30,17 @@ class ModelBase {
       if (newValue is Map<String, dynamic>) {
         newValue = newValue[variableMirror.reflectedType.toString()];
         instanceMirror.invokeSetter(fieldName, newValue);
+      } else if (newValue is ModelBase){
+        instanceMirror.invokeSetter(
+            fieldName,
+            newValue);
       } else {
         instanceMirror.invokeSetter(
             fieldName,
             _convertStringToType(
                 newValue, variableMirror.reflectedType.toString()));
       }
+      return this as T;
     } else {
       throw Exception(
           'Field $fieldName not found in class ${classMirror.simpleName}');

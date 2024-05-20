@@ -22,10 +22,6 @@ class TableTicket extends StatefulWidget {
 
 class _TableTicketState extends State<TableTicket> {
   int _tableCount = 1;
-  int _numeroCorderos = 0;
-  double _kilogramos = 0.0;
-  String _color = '-';
-  int _losses = 0;
   String _selectedRancher = ''; // Nueva variable de estado
 
   DatabaseBloc? databaseBloc;
@@ -37,6 +33,8 @@ class _TableTicketState extends State<TableTicket> {
   bool dialogShown = false;
 
   List<ProductTicketModel> productTickets = [ProductTicketModel()];
+
+  List<String> performances = [];
 
   FocusNode focusNode = FocusNode();
   TextEditingController textController = TextEditingController();
@@ -60,18 +58,6 @@ class _TableTicketState extends State<TableTicket> {
     });
     burdenBloc!.add(GetTableIndex());
 
-    // Scroll listener to detect when we reach the end of the list
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >
-          _scrollController.position.maxScrollExtent + 200) {
-        // When at the bottom, ask to generate new table
-        if (!dialogShown) {
-          dialogShown = true;
-          _showGenerateTableDialog();
-        }
-      }
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       focusNode.requestFocus();
     });
@@ -83,68 +69,6 @@ class _TableTicketState extends State<TableTicket> {
     _scrollController.dispose();
     focusNode.dispose();
     super.dispose();
-  }
-
-  Future<void> _showGenerateTableDialog() async {
-    final appColors = AppColors(context: context).getColors();
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Generar nueva tabla'),
-          content: const Text('¿Deseas generar una nueva tabla?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancelar',
-                  style:
-                      TextStyle(color: appColors?['cancelDialogButtonColor'])),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Aceptar',
-                  style:
-                      TextStyle(color: appColors?['acceptDialogButtonColor'])),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (result == true) {
-      // Temporarily disable the scroll listener to avoid triggering it during the animation
-      _scrollController.removeListener(_scrollListener);
-      productTickets.add(ProductTicketModel());
-      setState(() {
-        _tableCount += 1;
-      });
-
-      // Animate to the new table
-      await Future.delayed(const Duration(milliseconds: 300));
-      _scrollController
-          .animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      )
-          .then((_) {
-        // Re-enable the scroll listener
-        _scrollController.addListener(_scrollListener);
-      });
-    }
-
-    dialogShown = false;
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // When at the bottom, ask to generate new table
-      if (!dialogShown) {
-        dialogShown = true;
-        _showGenerateTableDialog();
-      }
-    }
   }
 
   void endTicket(Map<String, dynamic> list) {
@@ -165,16 +89,10 @@ class _TableTicketState extends State<TableTicket> {
           number: _tableCount,
           isSend: false,
         ),
-        productTicket: ProductTicket.all(
-            idTicket: 0,
-            idProduct: list[ProductModel().runtimeType.toString()].id,
-            nameClassification:
-                list[ClassificationModel().runtimeType.toString()].name,
-            numAnimals: _numeroCorderos,
-            weight: _kilogramos,
-            idPerformance: list[PerformanceModel().runtimeType.toString()].id,
-            color: _color,
-            losses: _losses)));
+        productTicket: productTickets
+            .where((element) =>
+                (element.numAnimals != null && element.numAnimals! > 0))
+            .toList()));
 
     burdenBloc!.stream
         .firstWhere((state) => state is BurdenSuccess || state is BurdenError)
@@ -211,12 +129,12 @@ class _TableTicketState extends State<TableTicket> {
 
   void showEditDialog(
     String title,
+    int index,
     String currentValue,
     Function(String) onUpdate,
   ) {
-    final appColors = AppColors(context: context).getColors();
-    bool isDropDown =
-        title == 'Producto' || title == 'Clasif' || title == 'Rend';
+    bool isDropDown = _isDropDownField(title);
+    bool isEditable = title != 'Clasif';
     Map<String, String> dropDownValues = {
       'Producto': 'product',
       'Clasif': 'classification',
@@ -227,73 +145,164 @@ class _TableTicketState extends State<TableTicket> {
       context: context,
       builder: (BuildContext context) {
         final dropDownBloc = context.read<DropDownBloc>();
+        final appColors = AppColors(context: context).getColors();
         String editedValue = currentValue;
         return AlertDialog(
-          title: Text('Editar $title',
-              style: TextStyle(color: appColors?['dialogTitleColor'])),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: isDropDown
-                ? SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: NewDropDown(
-                        mapKey: dropDownValues[title]!,
-                      ),
-                    ),
-                  )
-                : TextField(
-                    cursorColor: appColors?['dialogTitleColor'],
-                    style: TextStyle(color: appColors?['dialogHintColor']),
-                    controller: textController,
-                    focusNode: focusNode,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: "Ingresa nuevo valor",
-                      hintStyle:
-                          TextStyle(color: appColors?['dialogHintColor']),
-                    ),
-                    onChanged: (value) {
-                      editedValue = value;
-                    },
-                  ),
+          title: _buildDialogTitle(title, appColors),
+          content: _buildDialogContent(
+            context,
+            title,
+            currentValue,
+            isDropDown,
+            isEditable,
+            dropDownBloc,
+            dropDownValues,
+            (value) => editedValue = value,
+            appColors,
+            index,
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onUpdate(editedValue);
-
-                switch (title) {
-                  case "Producto":
-                    dropDownBloc.filterSelectedProduct();
-                    break;
-                  case "NºCorderos":
-                    setState(
-                        () => _numeroCorderos = int.tryParse(editedValue) ?? 0);
-                    break;
-                  case "Kg":
-                    setState(() =>
-                        _kilogramos = double.tryParse(editedValue) ?? 0.0);
-                    break;
-                  case "Color":
-                    setState(() => _color = editedValue);
-                    break;
-                  default:
-                    dropDownBloc.filterSelectedClassification();
-                }
-
-                setState(() {});
-              },
-              child: Text('Actualizar',
-                  style:
-                      TextStyle(color: appColors?['updateDialogButtonColor'])),
-            ),
-          ],
+          actions: _buildDialogActions(
+            context,
+            title,
+            editedValue,
+            onUpdate,
+            dropDownBloc,
+            appColors,
+            index,
+          ),
         );
       },
     );
+  }
+
+  bool _isDropDownField(String title) {
+    return title == 'Producto' || title == 'Rend';
+  }
+
+  Widget _buildDialogTitle(String title, Map<String, dynamic>? appColors) {
+    return Text(
+      'Editar $title',
+      style: TextStyle(color: appColors?['dialogTitleColor']),
+    );
+  }
+
+  Widget _buildDialogContent(
+    BuildContext context,
+    String title,
+    String currentValue,
+    bool isDropDown,
+    bool isEditable,
+    DropDownBloc dropdownBloc,
+    Map<String, String> dropDownValues,
+    Function(String) onChanged,
+    Map<String, dynamic>? appColors,
+    int index,
+  ) {
+    return SizedBox(
+      width: double.maxFinite,
+      height: MediaQuery.of(context).size.height * 0.1,
+      child: isDropDown
+          ? _buildDropDownContent(
+              title, currentValue, dropDownValues, dropdownBloc, context, index)
+          : _buildTextFieldContent(
+              isEditable, currentValue, onChanged, appColors),
+    );
+  }
+
+  Widget _buildDropDownContent(
+    String title,
+    String currentValue,
+    Map<String, String> dropDownValues,
+    DropDownBloc dropDownBloc,
+    BuildContext context,
+    int index,
+  ) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: title == 'Rend'
+            ? NewDropDown(
+                values: performances,
+                initialValue: productTickets[index].performance != null
+                    ? productTickets[index].performance!.performance.toString()
+                    : performances.first,
+              )
+            : NewDropDown(
+                mapKey: dropDownValues[title]!,
+              ),
+      ),
+    );
+  }
+
+  Widget _buildTextFieldContent(
+    bool isEditable,
+    String currentValue,
+    Function(String) onChanged,
+    Map<String, dynamic>? appColors,
+  ) {
+    if (!isEditable) return Container();
+    textController.selection = TextSelection(
+        baseOffset: 0, extentOffset: textController.text.length);
+    return TextField(
+      cursorColor: appColors?['dialogTitleColor'],
+      style: TextStyle(color: appColors?['dialogHintColor']),
+      controller: textController,
+      autofocus: true,
+      decoration: InputDecoration(
+        hintText: "Ingresa nuevo valor",
+        hintStyle: TextStyle(color: appColors?['dialogHintColor']),
+      ),
+      onChanged: onChanged,
+    );
+  }
+
+  List<Widget> _buildDialogActions(
+    BuildContext context,
+    String title,
+    String editedValue,
+    Function(String) onUpdate,
+    DropDownBloc dropDownBloc,
+    Map<String, dynamic>? appColors,
+    int index,
+  ) {
+    return [
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+          onUpdate(textController.text);
+          _updateDropDownBloc(dropDownBloc, title, index);
+          dropDownBloc.filterSelectedClassification(
+              productTickets[index].nameClassification ?? '');
+          performances = dropDownBloc.state.values['performance']!;
+          setState(() {});
+        },
+        child: Text(
+          'Actualizar',
+          style: TextStyle(color: appColors?['updateDialogButtonColor']),
+        ),
+      ),
+    ];
+  }
+
+  void _updateDropDownBloc(DropDownBloc dropDownBloc, String title, int index) {
+    dropDownBloc.filterSelectedProduct();
+
+    if (title == 'Producto') {
+      productTickets = [];
+      for (var x in dropDownBloc.state.values["classification"]!) {
+        productTickets.addAll([
+          ProductTicketModel()
+              .updateValue<ProductTicketModel>('nameClassification', x)
+              .updateValue<ProductTicketModel>(
+                  'product',
+                  dropDownBloc.state.models['product']!
+                      .where((element) =>
+                          element.name ==
+                          dropDownBloc.state.selectedValues['product'])
+                      .first)
+        ]);
+      }
+    }
   }
 
   Widget buildTableHeader(String text) {
@@ -330,29 +339,33 @@ class _TableTicketState extends State<TableTicket> {
           textController.text = value;
           Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
 
-          showEditDialog(label.keys.first, value, (newValue) {
-            setState(() {
-              dynamic requestValue = list;
-              // Asume que `label` es un Map con un solo par clave-valor
-              String key = label.keys.first;
+          if (label.keys.first != 'Clasif') {
+            showEditDialog(label.keys.first, listIndex, value, (newValue) {
+              setState(() {
+                dynamic requestValue = list;
+                String key = label.keys.first;
 
-              switch (key) {
-                case 'NºCorderos':
-                case 'Kg':
-                case 'Color':
-                  requestValue = newValue;
-                case 'Clasif':
-                  requestValue = list[ClassificationModel().runtimeType.toString()].name;
-                  break;
-                default:
-                  requestValue = list;
-              }
+                switch (key) {
+                  case 'NºCorderos':
+                  case 'Kg':
+                  case 'Color':
+                    requestValue = newValue;
+                  case 'Clasif':
+                    requestValue =
+                        list[ClassificationModel().runtimeType.toString()].name;
+                    break;
+                  default:
+                    requestValue = list;
+                }
 
-              value = newValue;
-              productTickets[listIndex].updateValue<ProductTicketModel>(
-                  label.values.first, requestValue);
+                value = newValue;
+                productTickets[listIndex] = productTickets[listIndex]
+                    .updateValue<ProductTicketModel>(
+                        label.values.first, requestValue);
+              });
             });
-          });
+          }
+
           textController.selection = TextSelection(
               baseOffset: 0, extentOffset: textController.text.length);
         },
@@ -381,12 +394,21 @@ class _TableTicketState extends State<TableTicket> {
               buildTableHeader('Clasif'),
             ]),
             TableRow(children: [
-              buildEditableCell('${productTickets[tableIndex - 1].product == null ? '' : productTickets[tableIndex - 1].product!.name}',
-                  {'Producto': 'product'}, tableIndex - 1),
-              buildEditableCell('${productTickets[tableIndex - 1].numAnimals ?? '0'}',
-                  {'NºCorderos': 'numAnimals'}, tableIndex - 1),
-              buildEditableCell('${productTickets[tableIndex - 1].nameClassification}' == 'null' ? '' : '${productTickets[tableIndex - 1].nameClassification}',
-                  {'Clasif': 'nameClassification'}, tableIndex - 1),
+              buildEditableCell(
+                  '${productTickets[tableIndex - 1].product == null ? '' : productTickets[tableIndex - 1].product!.name}',
+                  {'Producto': 'product'},
+                  tableIndex - 1),
+              buildEditableCell(
+                  '${productTickets[tableIndex - 1].numAnimals ?? '0'}',
+                  {'NºCorderos': 'numAnimals'},
+                  tableIndex - 1),
+              buildEditableCell(
+                  '${productTickets[tableIndex - 1].nameClassification}' ==
+                          'null'
+                      ? ''
+                      : '${productTickets[tableIndex - 1].nameClassification}',
+                  {'Clasif': 'nameClassification'},
+                  tableIndex - 1),
             ]),
           ],
         ),
@@ -427,11 +449,20 @@ class _TableTicketState extends State<TableTicket> {
               buildTableHeader('Color'),
             ]),
             TableRow(children: [
-              buildEditableCell('${productTickets[tableIndex - 1].performance == null ? '' : productTickets[tableIndex - 1].performance!.performance}',
-                  {'Rend': 'performance'}, tableIndex - 1),
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].weight ?? '0'}', {'Kg': 'weight'}, tableIndex - 1),
-              buildEditableCell('${productTickets[tableIndex - 1].color}' == 'null' ? '' : '${productTickets[tableIndex - 1].color}', {'Color': 'color'}, tableIndex - 1),
+                  '${productTickets[tableIndex - 1].performance == null ? '' : productTickets[tableIndex - 1].performance!.performance}',
+                  {'Rend': 'performance'},
+                  tableIndex - 1),
+              buildEditableCell(
+                  '${productTickets[tableIndex - 1].weight ?? '0'}',
+                  {'Kg': 'weight'},
+                  tableIndex - 1),
+              buildEditableCell(
+                  '${productTickets[tableIndex - 1].color}' == 'null'
+                      ? ''
+                      : '${productTickets[tableIndex - 1].color}',
+                  {'Color': 'color'},
+                  tableIndex - 1),
             ]),
           ],
         ),

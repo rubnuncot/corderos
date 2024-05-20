@@ -106,14 +106,12 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     for (var classification in classifications) {
       if (classification.product!.name == productSelectedValue) {
         state.values["classification"]!.add(classification.name!);
-      }
+    }
     }
   }
 
-  Future<void> filterSelectedClassification() async {
+  Future<void> filterSelectedClassification(String selectedClassification) async {
     String productSelectedValue = state.selectedValues['product']!;
-    String classificationSelectedValue =
-        state.selectedValues['classification']!;
 
     List<PerformanceModel> performances =
         state.models["performance"]! as List<PerformanceModel>;
@@ -121,10 +119,11 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     state.values["performance"] = [];
     for (var performance in performances) {
       if (performance.product!.name == productSelectedValue &&
-          performance.classification!.name == classificationSelectedValue) {
+          performance.classification!.name == selectedClassification) {
         state.values["performance"]!.add("${performance.performance}");
       }
     }
+    emit(state);
   }
 
   Future<void> _getPreferenceValue() async {

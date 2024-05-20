@@ -87,7 +87,7 @@ class _TicketListState extends State<TicketList> {
   }
 
   //! DETALLES TICKET
-  void showAlertDialog(ProductTicketModel productTicketModel,
+  void showAlertDialog(List<ProductTicketModel> productTicketModel,
       DeliveryTicketModel deliveryTicketModel) {
     final appColors = AppColors(context: context).getColors();
     final screenWidth = MediaQuery.of(context).size.width;
@@ -131,26 +131,31 @@ class _TicketListState extends State<TicketList> {
                         borderRadius: BorderRadius.circular(12)),
                     children: [
                       _buildRow(
-                          "Producto", '${productTicketModel.product!.name}'),
-                      _buildRow("Unidades", '${productTicketModel.numAnimals}'),
-                      _buildRow("Clasificación",
-                          '${productTicketModel.nameClassification}'),
-                      _buildRow("Kilogramos", '${productTicketModel.weight}'),
-                      _buildRow("Color", '${productTicketModel.color}'),
-                      _buildRow("Rendimiento",
-                          '${productTicketModel.performance!.performance}'),
-                      _buildRow(
-                          "Número del ticket", '${deliveryTicketModel.number}'),
-                      _buildRow("Fecha", '${deliveryTicketModel.date}'),
-                      _buildRow(
-                          "Vehículo",
-                          deliveryTicketModel.vehicleRegistration
-                                  ?.vehicleRegistrationNum ??
-                              ""),
-                      _buildRow(
-                          "Conductor", deliveryTicketModel.driver?.name ?? ""),
-                      _buildRow(
-                          "Ganadero", deliveryTicketModel.rancher?.name ?? ""),
+                          "Producto", '${productTicketModel.first.product!.name}'),
+                      for(var x in productTicketModel)
+                        _buildRow("Unidades", '${x.numAnimals}'),
+                      for(var x in productTicketModel)
+                        _buildRow("Clasificación",
+                            '${x.nameClassification}'),
+                      for(var x in productTicketModel)
+                        _buildRow("Kilogramos", '${x.weight}'),
+                      for(var x in productTicketModel)
+                        _buildRow("Color", '${x.color}'),
+                      for(var x in productTicketModel)
+                        _buildRow("Rendimiento",
+                            '${x.performance!.performance}'),
+                        _buildRow(
+                            "Número del ticket", '${deliveryTicketModel.number}'),
+                        _buildRow("Fecha", '${deliveryTicketModel.date}'),
+                        _buildRow(
+                            "Vehículo",
+                            deliveryTicketModel.vehicleRegistration
+                                    ?.vehicleRegistrationNum ??
+                                ""),
+                        _buildRow(
+                            "Conductor", deliveryTicketModel.driver?.name ?? ""),
+                        _buildRow(
+                            "Ganadero", deliveryTicketModel.rancher?.name ?? ""),
                     ],
                   ),
                 ),
@@ -212,7 +217,6 @@ class _TicketListState extends State<TicketList> {
 
   //! MENÚ DE OPCIONES DROPDOWN
   void showDropDown(DeliveryTicket ticket) {
-    ticketBloc!.add(GetTicketInfo(ticketId: ticket.id!));
     DropDownState(
       DropDown(
         isSearchVisible: false,
