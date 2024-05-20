@@ -38,3 +38,14 @@ class FetchTickets extends ClientEvent {
   FetchTickets();
 }
 
+class FetchProductTickets extends ClientEvent {
+  final int idTicket;
+
+  FetchProductTickets({required this.idTicket});
+}
+
+class SelectSendTicket extends ClientEvent {
+  final DeliveryTicket ticket;
+
+  SelectSendTicket({required this.ticket});
+}

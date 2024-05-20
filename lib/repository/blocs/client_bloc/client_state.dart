@@ -9,12 +9,14 @@ class ClientSuccess extends ClientState {
   List data = [];
   String event = '';
   int selectedClient = 0;
+  final List<DeliveryTicket>? selectedTickets;
 
   ClientSuccess(
       {required this.message,
       required this.data,
       required this.event,
-      this.selectedClient = 0});
+      this.selectedClient = 0,
+        this.selectedTickets,});
 
   ClientSuccess copyWith(
       {String? message, List? data, String? event, int? selectedClient}) {
@@ -22,7 +24,9 @@ class ClientSuccess extends ClientState {
         message: message ?? this.message,
         data: data ?? this.data,
         event: event ?? this.event,
-        selectedClient: selectedClient ?? this.selectedClient);
+        selectedClient: selectedClient ?? this.selectedClient,
+        selectedTickets: selectedTickets ?? this.selectedTickets
+    );
   }
 }
 

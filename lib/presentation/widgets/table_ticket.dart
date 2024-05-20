@@ -338,7 +338,6 @@ class _TableTicketState extends State<TableTicket> {
           final dropDownBloc = context.read<DropDownBloc>();
           textController.text = value;
           Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
-
           if (label.keys.first != 'Clasif') {
             showEditDialog(label.keys.first, listIndex, value, (newValue) {
               setState(() {
