@@ -82,18 +82,16 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
     }
   }
 
-  Future<List<ProductDeliveryNote>> _fetchProductTickets(
+  Future<List<ProductTicket>> _fetchProductTickets(
       GetProductTicketsBurden event) async {
-    ProductDeliveryNote productTicket = ProductDeliveryNote();
+    List<ProductTicket> productTicket = [];
     final whereClause = _buildConditions({});
-    return whereClause.isEmpty
-        ? await productTicket.selectAll() as List<ProductDeliveryNote>
-        : await productTicket.select(
-                sqlBuilder: SqlBuilder()
-                    .querySelect(fields: ["*"])
-                    .queryFrom(table: productTicket.getTableName(productTicket))
-                    .queryWhere(conditions: whereClause))
-            as List<ProductDeliveryNote>;
+
+    productTicket = (await ProductTicket().getData<ProductTicket>(
+      where: whereClause
+    ));
+
+    return productTicket;
   }
 
   Future<void> _onGetTableIndex(

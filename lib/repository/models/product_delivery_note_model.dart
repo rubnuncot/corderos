@@ -102,6 +102,6 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   @override
   String toString() {
-    return '$id\t${clientDeliveryNote!.idDeliveryNote}\t${product!.code}\t${product!.name}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
+    return '$id\t${clientDeliveryNote!.idDeliveryNote}\t${product!.code}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
   }
 }

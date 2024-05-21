@@ -19,7 +19,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   ClientBloc? clientBloc;
   StreamSubscription? clientSubscription;
   List<bool> isOpen = [];
-  Map<int, ProductTicketModel> productTicketModels = {};
+  List<AnimationController> animationControllers = [];
+  Map<int, List<ProductTicketModel>> productTicketModels = {};
   Map<int, DeliveryTicketModel> deliveryTicketModels = {};
   List<DeliveryTicket> tickets = [];
   List<DeliveryTicket> selectedTickets = [];
@@ -37,11 +38,15 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
             setState(() {
               tickets = state.data as List<DeliveryTicket>;
               isOpen = List.generate(tickets.length, (index) => false);
+              animationControllers = List.generate(tickets.length, (index) => AnimationController(
+                duration: const Duration(milliseconds: 300),
+                vsync: this,
+              ));
             });
             _fetchProductTickets();
             break;
           case 'FetchProductTickets':
-            final ticketId = state.data[0].id;
+            final ticketId = state.data[1].id;
             setState(() {
               productTicketModels[ticketId] = state.data[0];
               deliveryTicketModels[ticketId] = state.data[1];
@@ -71,6 +76,9 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    for (var controller in animationControllers) {
+      controller.dispose();
+    }
     clientSubscription?.cancel();
     super.dispose();
   }
@@ -85,9 +93,10 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
         itemCount: tickets.length,
         itemBuilder: (context, index) {
           final ticket = tickets[index];
-          final productTicketModel = productTicketModels[ticket.id];
+          final productTicketModelsList = productTicketModels[ticket.id];
           final deliveryTicketModel = deliveryTicketModels[ticket.id];
           final isSelected = selectedTickets.contains(ticket);
+          final animationController = animationControllers[index];
 
           return Card(
             color: isSelected ? appColors!['selectedBackgroundCard'] : null,
@@ -111,18 +120,21 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
                     ),
                   ),
                   trailing: IconButton(
-                    icon: isOpen[index]
-                        ? Icon(FontAwesomeIcons.chevronUp,
-                        color: isSelected
-                            ? appColors['selectedIconCard']
-                            : appColors['unSelectedIconCard'])
-                        : Icon(FontAwesomeIcons.chevronDown,
-                        color: isSelected
-                            ? appColors['selectedIconCard']
-                            : appColors['unSelectedIconCard']),
+                    icon: AnimatedIcon(
+                      icon: AnimatedIcons.menu_close,
+                      progress: animationController,
+                      color: isSelected
+                          ? appColors['selectedIconCard']
+                          : appColors['unSelectedIconCard'],
+                    ),
                     onPressed: () {
                       setState(() {
                         isOpen[index] = !isOpen[index];
+                        if (isOpen[index]) {
+                          animationController.forward();
+                        } else {
+                          animationController.reverse();
+                        }
                       });
                     },
                   ),
@@ -132,77 +144,90 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
                 ),
                 AnimatedSize(
                   duration: const Duration(milliseconds: 1000),
-                  curve: Curves.elasticOut,
+                  curve: Curves.fastLinearToSlowEaseIn,
                   child: isOpen[index] &&
-                      productTicketModel != null &&
+                      productTicketModelsList != null &&
                       deliveryTicketModel != null
-                      ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ganadero: ${deliveryTicketModel.rancher?.name ?? ""}',
-                          style: TextStyle(
-                            color: isSelected
-                                ? appColors['selectedContentCard']
-                                : appColors['unSelectedContentCard'],
+                      ? SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Ganadero: ${deliveryTicketModel.rancher?.name ?? ""}',
+                            style: TextStyle(
+                              color: isSelected
+                                  ? appColors['selectedHeaderCard']
+                                  : appColors['unSelectedHeaderCard'],
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Matadero: ${deliveryTicketModel.slaughterhouse?.name ?? ""}',
-                          style: TextStyle(
-                            color: isSelected
-                                ? appColors['selectedContentCard']
-                                : appColors['unSelectedContentCard'],
+                          Text(
+                            'Matadero: ${deliveryTicketModel.slaughterhouse?.name ?? ""}',
+                            style: TextStyle(
+                              color: isSelected
+                                  ? appColors['selectedHeaderCard']
+                                  : appColors['unSelectedHeaderCard'],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Table(
-                          border: TableBorder.all(),
-                          columnWidths: const <int, TableColumnWidth>{
-                            0: FlexColumnWidth(),
-                            1: FlexColumnWidth(),
-                          },
-                          children: [
-                            _buildTableRow(
-                              'Producto',
-                              productTicketModel.product?.name ?? '',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Nº Animales',
-                              '${productTicketModel.numAnimals ?? ' '}',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Peso',
-                              '${productTicketModel.weight ?? ' '}',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Clasificación',
-                              productTicketModel.nameClassification ?? '',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Rendimiento',
-                              '${productTicketModel.performance?.performance ?? ''}',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Color',
-                              productTicketModel.color ?? '',
-                              isSelected,
-                            ),
-                            _buildTableRow(
-                              'Pérdidas',
-                              '${productTicketModel.losses ?? ' '}',
-                              isSelected,
-                            ),
-                          ],
-                        ),
-                      ],
+                          const SizedBox(height: 8.0),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: productTicketModelsList.length,
+                            itemBuilder: (context, productIndex) {
+                              final productTicketModel = productTicketModelsList[productIndex];
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Table(
+                                  border: TableBorder.all(color: Colors.black54),
+                                  columnWidths: const <int, TableColumnWidth>{
+                                    0: FlexColumnWidth(),
+                                    1: FlexColumnWidth(),
+                                  },
+                                  children: [
+                                    _buildTableRow(
+                                      'Producto',
+                                      productTicketModel.product?.name ?? '',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Nº Animales',
+                                      '${productTicketModel.numAnimals ?? ' '}',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Peso',
+                                      '${productTicketModel.weight ?? ' '}',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Clasificación',
+                                      productTicketModel.nameClassification ?? '',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Rendimiento',
+                                      '${productTicketModel.performance?.performance ?? ''}',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Color',
+                                      productTicketModel.color ?? '',
+                                      isSelected,
+                                    ),
+                                    _buildTableRow(
+                                      'Pérdidas',
+                                      '${productTicketModel.losses ?? ' '}',
+                                      isSelected,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   )
                       : Container(),
@@ -231,14 +256,15 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
             ),
           ),
         ),
-        Padding(
+        Container(
+          color: appColors!['rightColumn'],
           padding: const EdgeInsets.all(8.0),
           child: Text(
             value,
             style: TextStyle(
               color: isSelected
-                  ? appColors!['selectedContentCard']
-                  : appColors?['unSelectedContentCard'],
+                  ? appColors['selectedContentCard']
+                  : appColors['unSelectedContentCard'],
             ),
           ),
         ),

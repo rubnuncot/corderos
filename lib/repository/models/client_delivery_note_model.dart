@@ -1,4 +1,5 @@
 import 'package:corderos_app/data/!data.dart';
+import 'package:corderos_app/repository/!repository.dart';
 import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
@@ -16,7 +17,7 @@ class ClientDeliveryNoteModel extends ModelBase {
   SlaughterhouseModel? slaughterhouse;
   ProductModel? product;
   String? vehicleRegistration;
-  String? driverName;
+  DriverModel? driver;
   String? series;
   int? number;
   bool? isSend;
@@ -40,7 +41,7 @@ class ClientDeliveryNoteModel extends ModelBase {
       date: date,
       slaughterhouseId: slaughterhouse!.id,
       idProduct: product!.id,
-      isSend: isSend?? false,
+      isSend: isSend ?? false,
     );
   }
 
@@ -71,7 +72,13 @@ class ClientDeliveryNoteModel extends ModelBase {
     product = productModel;
 
     vehicleRegistration = await Preferences.getValue('vehicle_registration');
-    driverName = await Preferences.getValue('name');
+    String driverName = await Preferences.getValue('name');
+
+    DriverModel driverModel = DriverModel();
+    await driverModel.fromEntity(
+        await DatabaseRepository.getEntityByName(Driver(), driverName));
+
+    driver = driverModel;
 
     series = clientDeliveryNote.series;
     number = clientDeliveryNote.number;
@@ -80,6 +87,6 @@ class ClientDeliveryNoteModel extends ModelBase {
 
   @override
   String toString() {
-    return '$idDeliveryNote\t$series\t$number\t$date\t${client!.nif}\t${slaughterhouse!.name}\t$vehicleRegistration\t$driverName';
+    return '$idDeliveryNote\t$series\t$number\t$date\t${client!.nif}\t${slaughterhouse!.code}\t$vehicleRegistration\t${driver!.id}';
   }
 }
