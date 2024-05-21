@@ -232,7 +232,7 @@ class PrintHelper {
       bytes += generator.row([
         PosColumn(
           text: 'No',
-          width: 1,
+          width: 3,
           styles: const PosStyles(
             bold: true,
             width: PosTextSize.size2,
@@ -242,17 +242,6 @@ class PrintHelper {
         ),
         PosColumn(
           text: 'Clase',
-          width: 3,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: 'Kgs.',
           width: 2,
           styles: const PosStyles(
             bold: true,
@@ -263,8 +252,19 @@ class PrintHelper {
           ),
         ),
         PosColumn(
+          text: 'Kgs.',
+          width: 3,
+          styles: const PosStyles(
+            bold: true,
+            width: PosTextSize.size2,
+            height: PosTextSize.size2,
+            codeTable: 'CP1252',
+            align: PosAlign.center,
+          ),
+        ),
+        PosColumn(
           text: 'Rendimiento',
-          width: 4,
+          width: 2,
           styles: const PosStyles(
             bold: true,
             width: PosTextSize.size2,
@@ -289,7 +289,7 @@ class PrintHelper {
       bytes += generator.row([
         PosColumn(
           text: '$x',
-          width: 1,
+          width: 3,
           styles: const PosStyles(
             width: PosTextSize.size2,
             height: PosTextSize.size2,
@@ -298,16 +298,6 @@ class PrintHelper {
         ),
         PosColumn(
           text: '${tickets['classification'][i]}',
-          width: 3,
-          styles: const PosStyles(
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: '${tickets['kilograms'][i]}',
           width: 2,
           styles: const PosStyles(
             width: PosTextSize.size2,
@@ -317,8 +307,18 @@ class PrintHelper {
           ),
         ),
         PosColumn(
+          text: '${tickets['kilograms'][i]}',
+          width: 3,
+          styles: const PosStyles(
+            width: PosTextSize.size2,
+            height: PosTextSize.size2,
+            codeTable: 'CP1252',
+            align: PosAlign.center,
+          ),
+        ),
+        PosColumn(
           text: '${tickets['performance'][i]}',
-          width: 4,
+          width: 2,
           styles: const PosStyles(
             width: PosTextSize.size2,
             height: PosTextSize.size2,

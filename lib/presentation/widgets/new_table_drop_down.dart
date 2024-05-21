@@ -33,8 +33,8 @@ class NewTableDropDown extends StatelessWidget {
           child: CustomDropdown<String>(
             items: list,
             decoration: CustomDropdownDecoration(
-              closedFillColor: appColors?['buttonBackgroundNeuColor'],
-              expandedFillColor: appColors?['buttonBackgroundNeuColor'],
+              closedFillColor: appColors!['buttonBackgroundNeuColor'],
+              expandedFillColor: appColors['buttonBackgroundNeuColor'],
             ),
             initialItem: dropdownState.selectedValues[mapKey],
             onChanged: (value) async {

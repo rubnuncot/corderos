@@ -43,7 +43,7 @@ class ReportScreenContent extends StatelessWidget {
           Row(
             children: [
               Icon(rowData["icon"],
-                  size: iconSize, color: appColors?['iconCardColor']),
+                  size: iconSize, color: appColors!['iconCardColor']),
               const SizedBox(width: 10.0),
               Text(rowData["text"],
                   style: TextStyle(fontSize: fontSize, fontWeight: bold)),
@@ -71,7 +71,7 @@ class ReportScreenContent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
-              color: appColors?['headerBackgroundColor'],
+              color: appColors!['headerBackgroundColor'],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,14 +81,14 @@ class ReportScreenContent extends StatelessWidget {
                   style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
-                      color: appColors?['fontHeaderColor']),
+                      color: appColors['fontHeaderColor']),
                 ),
                 Text(
                   "Nombre: ${reportState.driver}",
                   style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
-                      color: appColors?['fontHeaderColor']),
+                      color: appColors['fontHeaderColor']),
                 ),
               ],
             ),

@@ -31,19 +31,19 @@ class CustomButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: !themeBlocState.isDarkTheme
-                ? Border.all(color: appColors?['buttonBorderColor'], width: 3)
+                ? Border.all(color: appColors!['buttonBorderColor'], width: 3)
               : null,
             boxShadow: [
               if (!themeBlocState.isDarkTheme)
                 BoxShadow(
-                  color: appColors?['buttonShadowInput'],
+                  color: appColors!['buttonShadowInput'],
                   spreadRadius: 1,
                   blurRadius: 1,
                   offset: const Offset(2, 3),
                 ),
               if (themeBlocState.isDarkTheme)
                 BoxShadow(
-                  color: appColors?['buttonShadowInput'],
+                  color: appColors!['buttonShadowInput'],
                   spreadRadius: 1,
                   blurRadius: 1,
                   offset: const Offset(-2, -1),
@@ -51,7 +51,7 @@ class CustomButton extends StatelessWidget {
 
               if (!themeBlocState.isDarkTheme)
                 BoxShadow(
-                  color: appColors?['secondShadowDarkMode'],
+                  color: appColors!['secondShadowDarkMode'],
                   spreadRadius: 1,
                   blurRadius: 1,
                   offset: const Offset(-3, -2),
@@ -59,7 +59,7 @@ class CustomButton extends StatelessWidget {
               else
 
               BoxShadow(
-                color: appColors?['secondShadowDarkMode'],
+                color: appColors!['secondShadowDarkMode'],
                 spreadRadius: 1,
                 blurRadius: 1,
                 offset: const Offset(1, 2),
@@ -74,20 +74,20 @@ class CustomButton extends StatelessWidget {
                 begin: Alignment.bottomRight,
                 end: Alignment.topLeft,
                 colors: [
-                  appColors?['buttonBackgroundNeuGradientColor'], // Color de inicio del gradiente
-                  appColors?['buttonBackgroundNeuGradientSecondColor'], // Color de fin del gradiente
+                  appColors['buttonBackgroundNeuGradientColor'], // Color de inicio del gradiente
+                  appColors['buttonBackgroundNeuGradientSecondColor'], // Color de fin del gradiente
                 ],
               ) : const LinearGradient(colors: [Colors.transparent, Colors.transparent]),
             ),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: appColors?['buttonBackgroundNeuColor'],
+                color: appColors['buttonBackgroundNeuColor'],
               ),
               child: Center(
                 child: Text(
                   text,
-                  style: TextStyle(color: appColors?['buttonBackgroundColor'], fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(color: appColors['buttonBackgroundColor'], fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),

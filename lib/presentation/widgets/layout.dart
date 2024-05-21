@@ -44,7 +44,7 @@ class Layout extends StatelessWidget {
         appBar: AppBar(
           title: Text(
             text,
-            style: TextStyle(color: appThemes?['appBarTitle']),
+            style: TextStyle(color: appThemes!['appBarTitle']),
           ),
           leading: IconButton(
             icon: const Icon(FontAwesomeIcons.arrowLeft),
@@ -53,15 +53,15 @@ class Layout extends StatelessWidget {
             },
           ),
           centerTitle: true,
-          backgroundColor: appThemes?['appBarBackground'],
+          backgroundColor: appThemes['appBarBackground'],
           actions: const [ThemeButton()],
         ),
         body: content,
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: navigatorState.index,
-          backgroundColor: appThemes?['buttonNavigationBackground'],
-          selectedItemColor: appThemes?['selectedItemColor'],
-          unselectedItemColor: appThemes?['unselectedItemColor'],
+          backgroundColor: appThemes['buttonNavigationBackground'],
+          selectedItemColor: appThemes['selectedItemColor'],
+          unselectedItemColor: appThemes['unselectedItemColor'],
           onTap: (index) async {
             if(names[index] == ReportScreen.name){
               await reportBloc.getDatabaseValues();

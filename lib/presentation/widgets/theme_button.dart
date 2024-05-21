@@ -24,17 +24,17 @@ class ThemeButton extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(size * 0.5),
-            color: appColors?['themeButtonColor'],
+            color: appColors!['themeButtonColor'],
             boxShadow: [
               BoxShadow(
-                color: appColors?['buttonShadowInput'],
+                color: appColors['buttonShadowInput'],
                 spreadRadius: 1,
                 blurRadius: 1,
                 offset: themeBlocState.isDarkTheme ? const Offset(-2, -1) : const Offset(0, 3),
               ),
               if(themeBlocState.isDarkTheme)
                 BoxShadow(
-                  color: appColors?['secondShadowDarkMode'],
+                  color: appColors['secondShadowDarkMode'],
                   spreadRadius: 1,
                   blurRadius: 1,
                   offset: themeBlocState.isDarkTheme ? const Offset(1, 1) : const Offset(0, 3),

@@ -3,107 +3,104 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // Tema claro
   static final ThemeData lightTheme = ThemeData.light().copyWith(
-      colorScheme: const ColorScheme.light(
-          primary: Color(0xFF5E56E7),
-          // Violeta suave
-          onPrimary: Color(0xFFEEEEEF),
-          // Contraste para texto/iconos sobre el primario
-          secondary: Color(0xff33b46c),
-          // Verde menta
-          onSecondary: Colors.white,
-          // Contraste para texto/iconos sobre el secundario
-          surface: Color(0xFFDBDBE1),
-          // Fondo general claro
-          onSurface: Color(0xff398357),
-          // Texto general sobre fondo claro
-          error: Color(0xffb0eeaa),
-          // Rojo error
-          onError: Colors.black,
-          // Contraste para texto/iconos sobre el error
-          inversePrimary: Color(0xff3f3c3c),
-          // Color primario inverso para ciertos controles
-          onTertiary: Colors.black,
-          onPrimaryFixed: Color(0xff398357),
-
-          onPrimaryContainer: Colors.white,
-          onInverseSurface: Colors.white,
-
-          shadow: Colors.black),
-      scaffoldBackgroundColor: const Color(0xFFF0F0F6),
-      cardColor: const Color(0xFFFFFFFF),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Color(0xFF333333)),
-        bodySmall: TextStyle(color: Color(0xFF333333)),
-      ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Color(0xff67af8a),
-        foregroundColor: Colors.white,
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        fillColor: Colors.white,
-        filled: true,
-        hintStyle: TextStyle(color: Color(0xFF333333)),
-      ));
+    colorScheme: const ColorScheme.light(
+      primary: Color(0xFF5E56E7),
+      // Violeta suave
+      onPrimary: Color(0xFFEEEEEF),
+      // Contraste para texto/iconos sobre el primario
+      secondary: Color(0xff33b46c),
+      // Verde menta
+      onSecondary: Colors.white,
+      // Contraste para texto/iconos sobre el secundario
+      surface: Color(0xFFDBDBE1),
+      // Fondo general claro
+      onSurface: Color(0xff398357),
+      // Texto general sobre fondo claro
+      error: Color(0xffb0eeaa),
+      // Rojo error
+      onError: Colors.black,
+      // Contraste para texto/iconos sobre el error
+      inversePrimary: Color(0xff3f3c3c),
+      // Color primario inverso para ciertos controles
+      onTertiary: Colors.black,
+      onPrimaryContainer: Colors.white,
+      onInverseSurface: Colors.white,
+      shadow: Colors.black,
+    ),
+    scaffoldBackgroundColor: const Color(0xFFF0F0F6),
+    cardColor: const Color(0xFFFFFFFF),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Color(0xFF333333)),
+      bodySmall: TextStyle(color: Color(0xFF333333)),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Color(0xff67af8a),
+      foregroundColor: Colors.white,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      fillColor: Colors.white,
+      filled: true,
+      hintStyle: TextStyle(color: Color(0xFF333333)),
+    ),
+  );
 
   // Tema oscuro
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
-      colorScheme: ColorScheme.dark(
-          primary: const Color(0xffbb86fc),
-          // Violeta
-          onPrimary: const Color(0xFF232222),
-          // Contraste para texto/iconos sobre el primario
-          secondary: const Color(0xff03dac6),
-          // Verde menta
-          onSecondary: Colors.black,
-          // Contraste para texto/iconos sobre el secundario
-          surface: const Color(0xFF232222),
-          // Fondo general oscuro
-          onSurface: const Color(0xff03dac6),
-          // Texto general sobre fondo oscuro
-          error: const Color(0xff99e7df),
-          // Rojo error
-          onError: Colors.white,
-          // Contraste para texto/iconos sobre el error
-          inversePrimary: Colors.white70,
-          // Color primario inverso para ciertos controles
-          onTertiary: Colors.white,
-          onPrimaryContainer: Colors.black87,
-
-          onPrimaryFixed: Colors.blueGrey[800],
-          onInverseSurface: Colors.white,
-          // Color
-
-          shadow: Colors.black),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.black,
-        selectedItemColor: Color(0xFFA68AF5),
-        unselectedItemColor: Colors.white70,
-      ),
-      scaffoldBackgroundColor: const Color(0xFF2D2D2D),
-      cardColor: const Color(0xFF1E1E1E),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Color(0xFFE0E0E0)),
-        bodySmall: TextStyle(color: Color(0xFFE0E0E0)),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF232222),
-      ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Color(0xc2059a8e),
-        foregroundColor: Colors.white,
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        fillColor: Color(0xFF232222),
-        filled: true,
-        hintStyle: TextStyle(color: Color(0xFF333333)),
-      ));
+    colorScheme: const ColorScheme.dark(
+      primary: Color(0xffbb86fc),
+      // Violeta
+      onPrimary: Color(0xFF232222),
+      // Contraste para texto/iconos sobre el primario
+      secondary: Color(0xff03dac6),
+      // Verde menta
+      onSecondary: Colors.black,
+      // Contraste para texto/iconos sobre el secundario
+      surface: Color(0xFF232222),
+      // Fondo general oscuro
+      onSurface: Color(0xff03dac6),
+      // Texto general sobre fondo oscuro
+      error: Color(0xff99e7df),
+      // Rojo error
+      onError: Colors.white,
+      // Contraste para texto/iconos sobre el error
+      inversePrimary: Colors.white70,
+      // Color primario inverso para ciertos controles
+      onTertiary: Colors.white,
+      onPrimaryContainer: Colors.black87,
+      onInverseSurface: Colors.white,
+      shadow: Colors.black,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.black,
+      selectedItemColor: Color(0xFFA68AF5),
+      unselectedItemColor: Colors.white70,
+    ),
+    scaffoldBackgroundColor: const Color(0xFF2D2D2D),
+    cardColor: const Color(0xFF1E1E1E),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Color(0xFFE0E0E0)),
+      bodySmall: TextStyle(color: Color(0xFFE0E0E0)),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF232222),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Color(0xc2059a8e),
+      foregroundColor: Colors.white,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      fillColor: Color(0xFF232222),
+      filled: true,
+      hintStyle: TextStyle(color: Color(0xFF333333)),
+    ),
+  );
 }
 
 class AppColors {
   final BuildContext context;
   Map<String, dynamic>? colors;
 
-  AppColors({@required required this.context});
+  AppColors({required this.context});
 
   Map<String, dynamic>? getColors() {
     colors = {};
@@ -161,7 +158,7 @@ class AppColors {
       'unSelectedHeaderCard': Theme.of(context).colorScheme.onError,
       'unSelectedTableBorder': Theme.of(context).colorScheme.inversePrimary,
       'valueTableColumn': Theme.of(context).colorScheme.surface,
-      'rightColumn': Theme.of(context).colorScheme.onPrimaryFixed,
+      'rightColumn': Theme.of(context).colorScheme.onSurface,
       //! COLOR DE FONDO DEL PANEL
       'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
     });

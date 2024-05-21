@@ -87,9 +87,8 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
     List<ProductTicket> productTicket = [];
     final whereClause = _buildConditions({});
 
-    productTicket = (await ProductTicket().getData<ProductTicket>(
-      where: whereClause
-    ));
+    productTicket =
+        (await ProductTicket().getData<ProductTicket>(where: whereClause));
 
     return productTicket;
   }
@@ -157,9 +156,6 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
       DeliveryTicket lastDeliveryTicket =
           await _getLastOrNewDeliveryTicket(event.deliveryTicket);
-      List<ProductTicket> lastProductTicket =
-          await _getLastOrNewProductTicket(event.deliveryTicket);
-
       if (event.deliveryTicket != null &&
           event.deliveryTicket != lastDeliveryTicket) {
         await event.deliveryTicket!.insert();
@@ -179,8 +175,10 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       }
 
       for (var x in productTicket) {
-        x.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
-        await x.insert();
+        if (x.numAnimals! > 0) {
+          x.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
+          await x.insert();
+        }
       }
 
       final data =
@@ -198,18 +196,6 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
     return await lastDeliveryTicket.isTableEmpty()
         ? DeliveryTicket()
         : await deliveryTicket?.selectLast() ?? DeliveryTicket();
-  }
-
-  Future<List<ProductTicket>> _getLastOrNewProductTicket(
-      DeliveryTicket? deliveryTicket) async {
-    ProductTicket lastProductTicket = ProductTicket();
-    return await lastProductTicket.isTableEmpty()
-        ? [ProductTicket()]
-        : await lastProductTicket.getData<ProductTicket>(where: [
-            'idTicket',
-            SqlBuilder.constOperators['equals']!,
-            '${deliveryTicket!.id}'
-          ]);
   }
 
   Future<List<ProductTicket>?> _fetchProductTicketByTicketId(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SearchPanel extends StatefulWidget {
-  const SearchPanel({Key? key}) : super(key: key);
+  const SearchPanel({super.key});
 
   @override
   State<SearchPanel> createState() => _SearchPanelState();
@@ -11,7 +11,7 @@ class _SearchPanelState extends State<SearchPanel> {
 
   final TextEditingController _controller = TextEditingController();
 
-  final List<String> _valores = [
+  final List<String> _values = [
     "gato", "perro", "casa", "árbol", "coche", "sol", "luna", "mar", "montaña", "libro",
     "computadora", "teléfono", "fútbol", "musica", "arte", "viaje", "avión", "tren", "bicicleta",
     "jardín", "flor", "nube", "viento", "lluvia", "nieve", "café", "té", "leche", "agua",
@@ -19,13 +19,13 @@ class _SearchPanelState extends State<SearchPanel> {
     "jamón", "pollo", "pescado", "arroz", "pasta", "pizza", "helado", "pastel", "galleta", "chocolate"
   ];
 
-  List<String> _coincidencias = [];
+  List<String> _coincidences = [];
 
   @override
   void initState() {
     super.initState();
-    _coincidencias = List.from(_valores);
-    _controller.addListener(_filtrarValores);
+    _coincidences = List.from(_values);
+    _controller.addListener(_filterValues);
   }
 
   @override
@@ -34,11 +34,11 @@ class _SearchPanelState extends State<SearchPanel> {
     super.dispose();
   }
 
-  void _filtrarValores() {
+  void _filterValues() {
     setState(() {
-      _coincidencias = _controller.text.isEmpty
-          ? List.from(_valores)
-          : _valores.where((valor) =>
+      _coincidences = _controller.text.isEmpty
+          ? List.from(_values)
+          : _values.where((valor) =>
           valor.toLowerCase().contains(_controller.text.toLowerCase())).toList();
     });
   }
@@ -55,7 +55,7 @@ class _SearchPanelState extends State<SearchPanel> {
           icon: const Icon(Icons.clear),
           onPressed: () {
             _controller.clear();
-            _filtrarValores();
+            _filterValues();
           },
         )
             : null,
@@ -65,10 +65,10 @@ class _SearchPanelState extends State<SearchPanel> {
 
   Widget _listView() {
     return ListView.builder(
-      itemCount: _coincidencias.length,
+      itemCount: _coincidences.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(_coincidencias[index]),
+          title: Text(_coincidences[index]),
         );
       },
     );

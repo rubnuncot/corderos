@@ -125,6 +125,7 @@ class _TableTicketState extends State<TableTicket> {
         );
       }
     });
+    productTickets = [ProductTicketModel()];
   }
 
   void showEditDialog(
@@ -182,7 +183,7 @@ class _TableTicketState extends State<TableTicket> {
   Widget _buildDialogTitle(String title, Map<String, dynamic>? appColors) {
     return Text(
       'Editar $title',
-      style: TextStyle(color: appColors?['dialogTitleColor']),
+      style: TextStyle(color: appColors!['dialogTitleColor']),
     );
   }
 
@@ -244,13 +245,13 @@ class _TableTicketState extends State<TableTicket> {
     textController.selection = TextSelection(
         baseOffset: 0, extentOffset: textController.text.length);
     return TextField(
-      cursorColor: appColors?['dialogTitleColor'],
-      style: TextStyle(color: appColors?['dialogHintColor']),
+      cursorColor: appColors!['dialogTitleColor'],
+      style: TextStyle(color: appColors['dialogHintColor']),
       controller: textController,
       autofocus: true,
       decoration: InputDecoration(
         hintText: "Ingresa nuevo valor",
-        hintStyle: TextStyle(color: appColors?['dialogHintColor']),
+        hintStyle: TextStyle(color: appColors['dialogHintColor']),
       ),
       onChanged: onChanged,
     );
@@ -278,7 +279,7 @@ class _TableTicketState extends State<TableTicket> {
         },
         child: Text(
           'Actualizar',
-          style: TextStyle(color: appColors?['updateDialogButtonColor']),
+          style: TextStyle(color: appColors!['updateDialogButtonColor']),
         ),
       ),
     ];
@@ -310,7 +311,7 @@ class _TableTicketState extends State<TableTicket> {
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      color: appColors?['headBoardTableColor'],
+      color: appColors!['headBoardTableColor'],
       child: Center(
         child: Text(text,
             style: TextStyle(
@@ -329,9 +330,9 @@ class _TableTicketState extends State<TableTicket> {
     return TableCell(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: appColors?['backgroundValueColor'],
+          backgroundColor: appColors!['backgroundValueColor'],
           padding: EdgeInsets.zero,
-          foregroundColor: appColors?['valueTableColor'],
+          foregroundColor: appColors['valueTableColor'],
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         onPressed: () async {
@@ -380,7 +381,7 @@ class _TableTicketState extends State<TableTicket> {
         //! PRIMERA TABLA
         Table(
           border:
-              TableBorder.all(color: appColors?['borderTableColor'], width: 2),
+              TableBorder.all(color: appColors!['borderTableColor'], width: 2),
           columnWidths: const {
             0: FlexColumnWidth(2),
             1: FlexColumnWidth(3),
@@ -416,23 +417,23 @@ class _TableTicketState extends State<TableTicket> {
           border: TableBorder(
             top: BorderSide.none,
             verticalInside: BorderSide(
-              color: appColors?['borderTableColor'] ?? Colors.transparent,
+              color: appColors['borderTableColor'] ?? Colors.transparent,
               width: 2,
             ),
             left: BorderSide(
-              color: appColors?['borderTableColor'] ?? Colors.transparent,
+              color: appColors['borderTableColor'] ?? Colors.transparent,
               width: 2,
             ),
             right: BorderSide(
-              color: appColors?['borderTableColor'] ?? Colors.transparent,
+              color: appColors['borderTableColor'] ?? Colors.transparent,
               width: 2,
             ),
             bottom: BorderSide(
-              color: appColors?['borderTableColor'] ?? Colors.transparent,
+              color: appColors['borderTableColor'] ?? Colors.transparent,
               width: 2,
             ),
             horizontalInside: BorderSide(
-              color: appColors?['borderTableColor'] ?? Colors.transparent,
+              color: appColors['borderTableColor'] ?? Colors.transparent,
               width: 2,
             ),
           ),
@@ -601,7 +602,7 @@ class _TableTicketState extends State<TableTicket> {
                                                 .height);
                                         setState(() {});
                                       },
-                                      textColor: appColors?['valueTableColor'],
+                                      textColor: appColors!['valueTableColor'],
                                     ),
                                   ],
                                 ),

@@ -50,23 +50,23 @@ class _NewDropDownState extends State<NewDropDown> {
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: appColors?['labelInputColor'])),
+                  color: appColors!['labelInputColor'])),
         const SizedBox(height: 8),
         if (list != null && list!.isNotEmpty)
           CustomDropdown<String>(
             hintText: 'Seleccione una opción',
             items: list,
             decoration: CustomDropdownDecoration(
-                closedFillColor: appColors?['buttonBackgroundNeuColor'],
-                expandedFillColor: appColors?['buttonBackgroundNeuColor'],
+                closedFillColor: appColors!['buttonBackgroundNeuColor'],
+                expandedFillColor: appColors['buttonBackgroundNeuColor'],
                 closedShadow: [
                   BoxShadow(
-                    color: appColors?['buttonBackgroundNeuGradientColor'],
+                    color: appColors['buttonBackgroundNeuGradientColor'],
                     blurRadius: 5,
                     offset: const Offset(-1, 0),
                   ),
                   BoxShadow(
-                    color: appColors?['buttonBackgroundNeuGradientSecondColor'],
+                    color: appColors['buttonBackgroundNeuGradientSecondColor'],
                     blurRadius: 2,
                     offset: const Offset(3, 1),
                   ),

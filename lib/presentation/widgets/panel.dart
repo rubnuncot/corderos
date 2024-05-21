@@ -27,7 +27,7 @@ class Panel extends StatelessWidget {
         height: openPanelState.isOpen ? size.height * 0.7 : 0,
         width: openPanelState.isOpen ? size.width * 0.95 : 0,
         decoration: BoxDecoration(
-          color: appColors?['backgroundPanel'],
+          color: appColors!['backgroundPanel'],
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(

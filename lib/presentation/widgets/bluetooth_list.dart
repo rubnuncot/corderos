@@ -35,7 +35,7 @@ class _BluetoothListState extends State<BluetoothList> {
               itemCount: scanList!.length,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -43,7 +43,7 @@ class _BluetoothListState extends State<BluetoothList> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 6,
-                        offset: Offset(0, 3),
+                        offset: const Offset(0, 3),
                       ),
                     ],
                     borderRadius: BorderRadius.circular(10),
@@ -53,7 +53,7 @@ class _BluetoothListState extends State<BluetoothList> {
                         color: Theme.of(context).primaryColor),
                     title: Text(
                         scanList![index].device.advName,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(scanList![index].device.remoteId.toString()),
                     onTap: () async {
                       await bluetoothHelper.connectToDevice(scanList![index].device);
@@ -77,7 +77,7 @@ class _BluetoothListState extends State<BluetoothList> {
             ),
           );
         } else {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );

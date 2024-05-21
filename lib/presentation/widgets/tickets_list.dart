@@ -12,7 +12,6 @@ import 'package:intl/intl.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
-import '../../!helpers/app_theme.dart';
 
 class TicketList extends StatefulWidget {
   const TicketList({super.key});
@@ -94,14 +93,14 @@ class _TicketListState extends State<TicketList> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     Dialogs.materialDialog(
-      color: appColors?['backgroundCard'],
+      color: appColors!['backgroundCard'],
       customView: Container(
         padding: const EdgeInsets.all(16.0),
         width: screenWidth * 0.9,
         height: screenHeight * 0.72,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
-          color: appColors?['backgroundCard'],
+          color: appColors['backgroundCard'],
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -113,7 +112,7 @@ class _TicketListState extends State<TicketList> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: appColors?['updateDialogButtonColor'],
+                  color: appColors['updateDialogButtonColor'],
                 ),
               ),
               const SizedBox(height: 20),
@@ -169,9 +168,9 @@ class _TicketListState extends State<TicketList> {
           onPressed: () {},
           text: 'Hecho',
           iconData: Icons.confirmation_num,
-          color: appColors?['updateDialogButtonColor'],
-          textStyle: TextStyle(color: appColors?['background']),
-          iconColor: appColors?['background'],
+          color: appColors['updateDialogButtonColor'],
+          textStyle: TextStyle(color: appColors['background']),
+          iconColor: appColors['background'],
         ),
       ],
     );
@@ -181,7 +180,7 @@ class _TicketListState extends State<TicketList> {
     final appColors = AppColors(context: context).getColors();
 
     return TableRow(
-      decoration: BoxDecoration(color: appColors?['headBoardTableColor']),
+      decoration: BoxDecoration(color: appColors!['headBoardTableColor']),
       children: [
         TableCell(
           child: Padding(
@@ -198,13 +197,13 @@ class _TicketListState extends State<TicketList> {
         ),
         TableCell(
           child: Container(
-            color: appColors?['backgroundValueColor'],
+            color: appColors['backgroundValueColor'],
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 value,
                 style: TextStyle(
-                  color: appColors?['valueTableColor'],
+                  color: appColors['valueTableColor'],
                 ),
               ),
             ),
@@ -278,7 +277,7 @@ class _TicketListState extends State<TicketList> {
               showDropDown(tickets[index]);
             },
             child: Card(
-              color: appColors?['background'],
+              color: appColors!['background'],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -304,7 +303,7 @@ class _TicketListState extends State<TicketList> {
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: appColors?['dialogTitleColor']),
+                                  color: appColors['dialogTitleColor']),
                             ),
                             const SizedBox(height: 5),
                             Text(
