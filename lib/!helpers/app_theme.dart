@@ -23,8 +23,10 @@ class AppTheme {
           inversePrimary: Color(0xff3f3c3c),
           // Color primario inverso para ciertos controles
           onTertiary: Colors.black,
+          onPrimaryFixed: Color(0xff398357),
 
           onPrimaryContainer: Colors.white,
+          onInverseSurface: Colors.white,
 
           shadow: Colors.black),
       scaffoldBackgroundColor: const Color(0xFFF0F0F6),
@@ -45,20 +47,20 @@ class AppTheme {
 
   // Tema oscuro
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
-      colorScheme: const ColorScheme.dark(
-          primary: Color(0xffbb86fc),
+      colorScheme: ColorScheme.dark(
+          primary: const Color(0xffbb86fc),
           // Violeta
-          onPrimary: Color(0xFF232222),
+          onPrimary: const Color(0xFF232222),
           // Contraste para texto/iconos sobre el primario
-          secondary: Color(0xff03dac6),
+          secondary: const Color(0xff03dac6),
           // Verde menta
           onSecondary: Colors.black,
           // Contraste para texto/iconos sobre el secundario
-          surface: Color(0xFF232222),
+          surface: const Color(0xFF232222),
           // Fondo general oscuro
-          onSurface: Color(0xff03dac6),
+          onSurface: const Color(0xff03dac6),
           // Texto general sobre fondo oscuro
-          error: Color(0xff99e7df),
+          error: const Color(0xff99e7df),
           // Rojo error
           onError: Colors.white,
           // Contraste para texto/iconos sobre el error
@@ -66,6 +68,9 @@ class AppTheme {
           // Color primario inverso para ciertos controles
           onTertiary: Colors.white,
           onPrimaryContainer: Colors.black87,
+
+          onPrimaryFixed: Colors.blueGrey[800],
+          onInverseSurface: Colors.white,
           // Color
 
           shadow: Colors.black),
@@ -150,10 +155,13 @@ class AppColors {
       'unSelectedTitleCard': Theme.of(context).colorScheme.secondary,
       'selectedIconCard': Theme.of(context).colorScheme.onSecondary,
       'unSelectedIconCard': Theme.of(context).colorScheme.secondary,
-      'selectedContentCard': Theme.of(context).colorScheme.onSecondary,
-      'unSelectedContentCard': Theme.of(context).colorScheme.onError,
+      'selectedContentCard': Theme.of(context).colorScheme.onInverseSurface,
+      'unSelectedContentCard': Theme.of(context).colorScheme.onInverseSurface,
+      'selectedHeaderCard': Theme.of(context).colorScheme.onPrimaryContainer,
+      'unSelectedHeaderCard': Theme.of(context).colorScheme.onError,
       'unSelectedTableBorder': Theme.of(context).colorScheme.inversePrimary,
       'valueTableColumn': Theme.of(context).colorScheme.surface,
+      'rightColumn': Theme.of(context).colorScheme.onPrimaryFixed,
       //! COLOR DE FONDO DEL PANEL
       'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
     });

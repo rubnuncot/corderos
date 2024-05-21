@@ -53,31 +53,36 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       }
     });
 
+    //! EDITAR PARA VARIOS PRODUCTOS
     on<FetchProductTickets>((event, emit) async {
       emit(ClientLoading());
       try {
         int selectedTicket = event.idTicket;
-        ProductTicket selectedProductTicket = ProductTicket();
-        ProductTicketModel productTicketModel = ProductTicketModel();
+        List<ProductTicket> productsTickets = [];
+        List<ProductTicketModel> productsTicketModel = [];
         DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
 
         await deliveryTicketModel.fromEntity(
             await DatabaseRepository.getEntityById(
                 DeliveryTicket(), event.idTicket));
 
-        selectedProductTicket = (await ProductTicket().getData<ProductTicket>(
+        productsTickets = (await ProductTicket().getData<ProductTicket>(
           where: [
             'idTicket',
             SqlBuilder.constOperators['equals']!,
             '$selectedTicket'
           ],
-        )).first;
+        ));
 
-        productTicketModel.fromEntity(selectedProductTicket);
+        for (var product in productsTickets) {
+          ProductTicketModel productTicketModel = ProductTicketModel();
+          await productTicketModel.fromEntity(product);
+          productsTicketModel.add(productTicketModel);
+        }
 
         emit(ClientSuccess(
             message: 'Product Tickets obtenidos con éxito',
-            data: [productTicketModel, deliveryTicketModel],
+            data: [productsTicketModel, deliveryTicketModel],
             event: 'FetchProductTickets'));
       } catch (e) {
         emit(ClientError(
@@ -85,6 +90,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       }
     });
 
+    //! EDITAR PARA VARIOS PRODUCTOS
     on<SelectSendTicket>((event, emit) {
       if (selectedTickets.contains(event.ticket)) {
         selectedTickets.remove(event.ticket);
