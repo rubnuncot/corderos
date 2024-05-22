@@ -55,6 +55,7 @@ class ReportBloc extends Cubit<ReportState> {
     String today = '${DateTime.now().toString().split(" ")[0]} $seconds';
     String tomorrow =
         '${DateTime.now().add(const Duration(days: 1)).toString().split(" ")[0]} $seconds';
+
     List<ModelDao> data = await deliveryTicket.getData(where: [
       'date',
       SqlBuilder.constOperators['greaterThan']!,
@@ -64,26 +65,24 @@ class ReportBloc extends Cubit<ReportState> {
       SqlBuilder.constOperators['lessThan']!,
       '"$tomorrow"'
     ]);
-    ProductDeliveryNote product = ProductDeliveryNote();
-    List<ProductDeliveryNote> products = [];
+
+    ProductTicket product = ProductTicket();
 
     for (var ticket in data) {
-      var productAux = await product.getData<ProductDeliveryNote>(where: [
-        'idDeliveryNote',
+      List<ProductTicket> productLines = await product.getData<ProductTicket>(where: [
+        'idTicket',
         SqlBuilder.constOperators['equals']!,
         '"${ticket.id}"'
       ]);
-      if (productAux.isNotEmpty) {
-        products.add(productAux.first);
-      }
-    }
 
-    for (var product in products) {
-      totalUnits += product.units!;
+      for (var productLine in productLines) {
+        totalUnits += productLine.numAnimals ?? 0;
+      }
     }
 
     return totalUnits;
   }
+
 
   Future<void> _getReportDatabaseValues() async {
     DeliveryTicket deliveryTicket = DeliveryTicket();

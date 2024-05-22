@@ -166,7 +166,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
         productTicket.add(ProductTicket()
           ..idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id
           ..idProduct = product.product!.id
-          ..nameClassification = product.nameClassification
+          ..nameClassification = product.classification!.name
           ..numAnimals = product.numAnimals
           ..weight = product.weight
           ..idPerformance = product.performance!.id
@@ -251,7 +251,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
     for (final productTicket in productTicketModel) {
       if (productTicket.losses != 0) {
         ticket['number'].add(productTicket.numAnimals);
-        ticket['classification'].add(productTicket.nameClassification);
+        ticket['classification'].add(productTicket.classification!.name);
         ticket['performance'].add(productTicket.performance!.performance);
         ticket['kilograms'].add(productTicket.weight);
         ticket['color'].add(productTicket.color);

@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 class TableTicket extends StatefulWidget {
   const TableTicket({super.key});
@@ -191,16 +192,16 @@ class _TableTicketState extends State<TableTicket> {
   }
 
   Widget _buildDialogContent(
-    BuildContext context,
-    String title,
-    String currentValue,
-    bool isDropDown,
-    bool isEditable,
-    DropDownBloc dropdownBloc,
-    Map<String, String> dropDownValues,
-    Function(String) onChanged,
-    Map<String, dynamic>? appColors,
-    int index,
+      BuildContext context,
+      String title,
+      String currentValue,
+      bool isDropDown,
+      bool isEditable,
+      DropDownBloc dropdownBloc,
+      Map<String, String> dropDownValues,
+      Function(String) onChanged,
+      Map<String, dynamic>? appColors,
+      int index,
       {bool number = false}) {
     return SizedBox(
       width: double.maxFinite,
@@ -209,7 +210,8 @@ class _TableTicketState extends State<TableTicket> {
           ? _buildDropDownContent(
               title, currentValue, dropDownValues, dropdownBloc, context, index)
           : _buildTextFieldContent(
-              isEditable, currentValue, onChanged, appColors, number: number),
+              isEditable, currentValue, onChanged, appColors,
+              number: number),
     );
   }
 
@@ -238,11 +240,8 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget _buildTextFieldContent(
-      bool isEditable,
-      String currentValue,
-      Function(String) onChanged,
-      Map<String, dynamic>? appColors,
+  Widget _buildTextFieldContent(bool isEditable, String currentValue,
+      Function(String) onChanged, Map<String, dynamic>? appColors,
       {bool number = false}) {
     if (!isEditable) return Container();
     textController.selection =
@@ -277,7 +276,8 @@ class _TableTicketState extends State<TableTicket> {
           onUpdate(textController.text);
           _updateDropDownBloc(dropDownBloc, title, index);
           dropDownBloc.filterSelectedClassification(
-              productTickets[index].nameClassification ?? '');
+            productTickets.isEmpty ? '' :
+              productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
           setState(() {});
         },
@@ -289,15 +289,36 @@ class _TableTicketState extends State<TableTicket> {
     ];
   }
 
-  void _updateDropDownBloc(DropDownBloc dropDownBloc, String title, int index) {
+  void _updateDropDownBloc(
+      DropDownBloc dropDownBloc, String title, int index) async {
     dropDownBloc.filterSelectedProduct();
+    Classification classificationEntity = Classification();
 
     if (title == 'Producto') {
       productTickets = [];
       for (var x in dropDownBloc.state.values["classification"]!) {
+        var product = await Product().getData<Product>(where: [
+          'name',
+          SqlBuilder.constOperators['equals']!,
+          "'${dropDownBloc.state.selectedValues['product']!}'"
+        ]);
+        final classifications =
+            await classificationEntity.getData<Classification>(
+          where: [
+            'name',
+            SqlBuilder.constOperators['like']!,
+            "'%${x.replaceAll('\r', '')}%'",
+            SqlBuilder.constOperators['and']!,
+            'productId',
+            SqlBuilder.constOperators['equals']!,
+            "'${product[0].id!}'"
+          ],
+        );
+        ClassificationModel classificationModel = ClassificationModel();
+        await classificationModel.fromEntity(classifications[0]);
         productTickets.addAll([
           ProductTicketModel()
-              .updateValue<ProductTicketModel>('nameClassification', x)
+              .updateValue<ProductTicketModel>('classification', classificationModel)
               .updateValue<ProductTicketModel>(
                   'product',
                   dropDownBloc.state.models['product']!
@@ -306,6 +327,9 @@ class _TableTicketState extends State<TableTicket> {
                           dropDownBloc.state.selectedValues['product'])
                       .first)
         ]);
+        setState(() {
+
+        });
       }
     }
   }
@@ -407,10 +431,7 @@ class _TableTicketState extends State<TableTicket> {
                   {'NºCorderos': 'numAnimals'},
                   tableIndex - 1),
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].nameClassification}' ==
-                          'null'
-                      ? ''
-                      : '${productTickets[tableIndex - 1].nameClassification}',
+                  '${productTickets[tableIndex - 1].classification == null ? '' : productTickets[tableIndex - 1].classification!.name}',
                   {'Clasif': 'nameClassification'},
                   tableIndex - 1),
             ]),
