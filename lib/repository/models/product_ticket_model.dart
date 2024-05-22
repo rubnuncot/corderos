@@ -1,18 +1,21 @@
 import 'package:corderos_app/data/!data.dart';
+import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
+import 'package:corderos_app/repository/models/classification_model.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
+import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 import '!models.dart';
 import '!!model_base.dart';
 import '../../data/database/entities/!!model_dao.dart';
 
 @reflector
-class ProductTicketModel extends ModelBase{
+class ProductTicketModel extends ModelBase {
   int? id;
   DeliveryTicketModel? deliveryTicket;
   ProductModel? product;
-  String? nameClassification;
+  ClassificationModel? classification;
   int? numAnimals;
   double? weight;
   PerformanceModel? performance;
@@ -25,7 +28,7 @@ class ProductTicketModel extends ModelBase{
     required this.id,
     required this.deliveryTicket,
     required this.product,
-    required this.nameClassification,
+    required this.classification,
     required this.numAnimals,
     required this.weight,
     required this.performance,
@@ -35,51 +38,85 @@ class ProductTicketModel extends ModelBase{
 
   // Getters
   int? get getId => id;
+
   DeliveryTicketModel? get getDeliveryTicket => deliveryTicket;
+
   ProductModel? get getProduct => product;
-  String? get getNameClassification => nameClassification;
+
+  ClassificationModel? get getClassification => classification;
+
   int? get getNumAnimals => numAnimals;
+
   double? get getWeight => weight;
+
   PerformanceModel? get getPerformance => performance;
+
   String? get getColor => color;
+
   int? get getLosses => losses;
 
   // Setters
   set setId(int? id) => this.id = id;
-  set setDeliveryTicket(DeliveryTicketModel? deliveryTicket) => this.deliveryTicket = deliveryTicket;
+
+  set setDeliveryTicket(DeliveryTicketModel? deliveryTicket) =>
+      this.deliveryTicket = deliveryTicket;
+
   set setProduct(ProductModel? product) => this.product = product;
-  set setNameClassification(String? nameClassification) => this.nameClassification = nameClassification;
+
+  set setClassification(ClassificationModel? classification) =>
+      this.classification = classification;
+
   set setNumAnimals(int? numAnimals) => this.numAnimals = numAnimals;
+
   set setWeight(double? weight) => this.weight = weight;
-  set setPerformance(PerformanceModel? performance) => this.performance = performance;
+
+  set setPerformance(PerformanceModel? performance) =>
+      this.performance = performance;
+
   set setColor(String? color) => this.color = color;
+
   set setLosses(int? losses) => this.losses = losses;
 
   @override
   Future<void> fromEntity(ModelDao entity) async {
     ProductTicket productTicket = entity as ProductTicket;
+    Classification classificationEntity = Classification();
     id = productTicket.id;
     DeliveryTicketModel deliveryTicketModel = DeliveryTicketModel();
-    await deliveryTicketModel.fromEntity(
-        await DatabaseRepository.getEntityById(
-            DeliveryTicket(), productTicket.idTicket!) as DeliveryTicket);
+    await deliveryTicketModel.fromEntity(await DatabaseRepository.getEntityById(
+        DeliveryTicket(), productTicket.idTicket!) as DeliveryTicket);
 
     deliveryTicket = deliveryTicketModel;
 
     ProductModel productModel = ProductModel();
-    await productModel.fromEntity(
-        await DatabaseRepository.getEntityById(
-            Product(), productTicket.idProduct!) as Product);
+    await productModel.fromEntity(await DatabaseRepository.getEntityById(
+        Product(), productTicket.idProduct!) as Product);
     product = productModel;
 
-    nameClassification = productTicket.nameClassification;
+    final classifications = await classificationEntity.getData<Classification>(
+      where: [
+        'name',
+        SqlBuilder.constOperators['like']!,
+        "'%${productTicket.nameClassification!.replaceAll('\r', '')}%'",
+        SqlBuilder.constOperators['and']!,
+        'productId',
+        SqlBuilder.constOperators['equals']!,
+        '${productTicket.idProduct}'
+      ],
+    );
+
+    ClassificationModel classificationModel = ClassificationModel();
+    await classificationModel.fromEntity(
+        classifications[0]);
+
+    classification = classificationModel;
+
     numAnimals = productTicket.numAnimals;
     weight = productTicket.weight;
 
     PerformanceModel performanceModel = PerformanceModel();
-    await performanceModel.fromEntity(
-        await DatabaseRepository.getEntityById(
-            Performance(), productTicket.idPerformance!) as Performance);
+    await performanceModel.fromEntity(await DatabaseRepository.getEntityById(
+        Performance(), productTicket.idPerformance!) as Performance);
 
     performance = performanceModel;
 
@@ -90,6 +127,7 @@ class ProductTicketModel extends ModelBase{
 
   @override
   String toString() {
-    return '$id\t${deliveryTicket!.id}\t${product!.code}\t$nameClassification\t$numAnimals\t$weight\t${performance?.performance}\t$color\t$losses'.replaceAll('\r', '');
+    return '$id\t${product!.id}\t${product!.name}\t${classification!.id}\t${classification!.name}\t$numAnimals\t$weight\t${performance?.performance}\t$color\t${losses ?? 0}'
+        .replaceAll('\r', '');
   }
 }

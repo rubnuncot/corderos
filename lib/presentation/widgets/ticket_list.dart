@@ -252,7 +252,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       _buildTableRow('Producto', productTicketModel.product?.name ?? '', isSelected),
       _buildTableRow('Nº Animales', '${productTicketModel.numAnimals ?? ' '}', isSelected),
       _buildTableRow('Peso', '${productTicketModel.weight ?? ' '}', isSelected),
-      _buildTableRow('Clasificación', productTicketModel.nameClassification ?? '', isSelected),
+      _buildTableRow('Clasificación', productTicketModel.classification!.name ?? '', isSelected),
       _buildTableRow('Rendimiento', '${productTicketModel.performance?.performance ?? ''}', isSelected),
       _buildTableRow('Color', productTicketModel.color ?? '', isSelected),
       _buildTableRow('Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),

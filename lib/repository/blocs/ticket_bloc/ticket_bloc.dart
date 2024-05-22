@@ -217,7 +217,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     for (final productTicket in productTicketModel) {
       if (productTicket.losses != 0) {
         ticket['number'].add(productTicket.numAnimals);
-        ticket['classification'].add(productTicket.nameClassification);
+        ticket['classification'].add(productTicket.classification!.name);
         ticket['performance'].add(productTicket.performance!.performance);
         ticket['kilograms'].add(productTicket.weight);
         ticket['color'].add(productTicket.color);

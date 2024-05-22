@@ -79,6 +79,6 @@ class DeliveryTicketModel extends ModelBase{
 
   @override
   String toString() {
-    return '$id\t${vehicleRegistration!.clientDeliveryNote}\t$number\t$date\t ${driver?.nif} \t ${vehicleRegistration?.vehicleRegistrationNum} \t ${slaughterhouse?.code} \t ${rancher?.code} \t ${rancher?.code}'.replaceAll('\r', '');
+    return '$id\t${vehicleRegistration!.clientDeliveryNote}\t$number\t$date\t${driver?.nif}\t${driver?.name}\t${vehicleRegistration?.vehicleRegistrationNum}\t${slaughterhouse?.code}\t${rancher?.code}\t${rancher?.name}'.replaceAll('\r', '');
   }
 }

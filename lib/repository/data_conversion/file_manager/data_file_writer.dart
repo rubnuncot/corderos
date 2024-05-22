@@ -115,7 +115,7 @@ class DataFileWriter {
         var instanceMirrorProductData = classMirror.newInstance('', []) as ModelBase;
         await instanceMirrorProductData.fromEntity(product);
 
-        if (product.id == data.id) {
+        if (product.idTicket == data.id) {
           dataString += 'L\t${instanceMirrorProductData.toString()}\n';
         }
       }

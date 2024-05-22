@@ -156,7 +156,7 @@ class _TicketListState extends State<TicketList> {
                           _buildRow("Producto",
                               '${productTicketModel.first.product!.name}'),
                           _buildRow("Unidades", '${x.numAnimals}'),
-                          _buildRow("Clasificación", '${x.nameClassification}'),
+                          _buildRow("Clasificación", '${x.classification!.name}'),
                           _buildRow("Kilogramos", '${x.weight}'),
                           _buildRow("Color", '${x.color}'),
                           _buildRow(
@@ -228,7 +228,7 @@ class _TicketListState extends State<TicketList> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Clasificación: ${productTickets[index].nameClassification}',
+                          'Clasificación: ${productTickets[index].classification!.name}',
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.blueGrey[800],
