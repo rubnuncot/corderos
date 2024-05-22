@@ -142,6 +142,8 @@ class _TableTicketState extends State<TableTicket> {
       'Rend': 'performance'
     };
 
+    List<String> number = ['NºCorderos', 'Kg'];
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -161,6 +163,7 @@ class _TableTicketState extends State<TableTicket> {
             (value) => editedValue = value,
             appColors,
             index,
+            number: number.contains(title),
           ),
           actions: _buildDialogActions(
             context,
@@ -198,7 +201,7 @@ class _TableTicketState extends State<TableTicket> {
     Function(String) onChanged,
     Map<String, dynamic>? appColors,
     int index,
-  ) {
+      {bool number = false}) {
     return SizedBox(
       width: double.maxFinite,
       height: MediaQuery.of(context).size.height * 0.1,
@@ -206,7 +209,7 @@ class _TableTicketState extends State<TableTicket> {
           ? _buildDropDownContent(
               title, currentValue, dropDownValues, dropdownBloc, context, index)
           : _buildTextFieldContent(
-              isEditable, currentValue, onChanged, appColors),
+              isEditable, currentValue, onChanged, appColors, number: number),
     );
   }
 
@@ -236,18 +239,19 @@ class _TableTicketState extends State<TableTicket> {
   }
 
   Widget _buildTextFieldContent(
-    bool isEditable,
-    String currentValue,
-    Function(String) onChanged,
-    Map<String, dynamic>? appColors,
-  ) {
+      bool isEditable,
+      String currentValue,
+      Function(String) onChanged,
+      Map<String, dynamic>? appColors,
+      {bool number = false}) {
     if (!isEditable) return Container();
-    textController.selection = TextSelection(
-        baseOffset: 0, extentOffset: textController.text.length);
+    textController.selection =
+        TextSelection(baseOffset: 0, extentOffset: textController.text.length);
     return TextField(
       cursorColor: appColors!['dialogTitleColor'],
       style: TextStyle(color: appColors['dialogHintColor']),
       controller: textController,
+      keyboardType: number ? TextInputType.number : TextInputType.text,
       autofocus: true,
       decoration: InputDecoration(
         hintText: "Ingresa nuevo valor",

@@ -9,7 +9,7 @@ import '../../data/database/entities/!!model_dao.dart';
 
 @reflector
 class DeliveryTicketModel extends ModelBase{
-  int? id;  // Agregado campo id
+  int? id;
   String? deliveryTicket;
   DateTime? date;
   DriverModel? driver;
@@ -23,7 +23,7 @@ class DeliveryTicketModel extends ModelBase{
   DeliveryTicketModel();
 
   DeliveryTicketModel.all({
-    required this.id,  // Agregado parámetro id en constructor
+    required this.id,
     required this.number,
     required this.deliveryTicket,
     required this.date,
@@ -38,7 +38,7 @@ class DeliveryTicketModel extends ModelBase{
   @override
   Future<void> fromEntity(ModelDao entity) async {
     DeliveryTicket deliveryTicketEntity = entity as DeliveryTicket;
-    id = deliveryTicketEntity.id;  // Asignación del id desde la entidad
+    id = deliveryTicketEntity.id;
     deliveryTicket = deliveryTicketEntity.deliveryTicket;
     date = deliveryTicketEntity.date;
 

@@ -22,6 +22,8 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     on<GetTicketInfo>(_onGetTicketInfo);
     on<PrintTicketEvent>(_onPrintTicketEvent);
     on<FetchRancherAndProductInfo>(_onFetchRancherAndProductInfo);
+    on<AddLosses>(_addLosses);
+    on<OpenProductTicketList>(_openPanel);
   }
 
   Future<void> _onFetchTicketsScreen(
@@ -244,9 +246,24 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     return model;
   }
 
-  Future<List<ProductTicketModel>> _addingLosses(DeliveryTicket deliveryTicket) async {
+  Future<void> _openPanel(OpenProductTicketList event, Emitter<TicketState> emit) async {
     final productTicketModel =
-    await _getProductTicketModelByTicketId(deliveryTicket.id!);
-    return productTicketModel;
+    await _getProductTicketModelByTicketId(event.ticketId);
+    emit(TicketSuccess(
+      message: 'Tickets de productos obtenidos correctamente',
+      data: [productTicketModel],
+      event: "OpenProductTicketList",
+    ));
+  }
+
+  Future<void> _addLosses(AddLosses event, Emitter<TicketState> emit) async {
+    final productTicket = await DatabaseRepository.getEntityById(ProductTicket(), event.productTicketId);
+    productTicket.losses = event.losses;
+    await productTicket.update();
+    emit(TicketSuccess(
+      message: 'Pérdidas añadidas correctamente',
+      data: [productTicket],
+      event: 'AddLosses',
+    ));
   }
 }

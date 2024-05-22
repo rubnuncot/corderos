@@ -31,6 +31,12 @@ class _TicketListState extends State<TicketList> {
   IconData icon = Icons.radio_button_unchecked;
 
   List<DeliveryTicket> tickets = [];
+  List<ProductTicketModel> productTickets = [];
+
+  int losses = 0;
+
+  bool openedList = false;
+  bool openedTicket= false;
 
   @override
   void initState() {
@@ -65,11 +71,21 @@ class _TicketListState extends State<TicketList> {
             break;
           case 'GetTicketInfo':
             setState(() {
-              //! 0 --> ProductTicket | 1 --> DeliveryTicket
-              showAlertDialog(state.data[0], state.data[1]);
+              if (!openedTicket) {
+                //! 0 --> ProductTicket | 1 --> DeliveryTicket
+                showAlertDialog(state.data[0], state.data[1]);
+              }
             });
             break;
           case 'GetTicketLines':
+            break;
+          case 'OpenProductTicketList':
+            productTickets = state.data[0] as List<ProductTicketModel>;
+            if (!openedList) {
+              _showTicket();
+            }
+            break;
+          case 'AddLosses':
             break;
           case 'FetchRancherAndProductInfo':
             setState(() {
@@ -91,8 +107,12 @@ class _TicketListState extends State<TicketList> {
     final appColors = AppColors(context: context).getColors();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    openedTicket = true;
 
     Dialogs.materialDialog(
+      onClose: (value) {
+        openedTicket = false;
+      },
       color: appColors!['backgroundCard'],
       customView: Container(
         padding: const EdgeInsets.all(16.0),
@@ -163,14 +183,130 @@ class _TicketListState extends State<TicketList> {
         ),
       ),
       context: context,
+    );
+  }
+
+  _showTicket() {
+    openedTicket = true;
+    Dialogs.materialDialog(
+        context: context,
+        onClose: (value) {
+          openedTicket = false;
+        },
+        customView: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: ListView.builder(
+            itemCount: productTickets.length,
+            itemBuilder: (context, index) {
+              return ZoomTapAnimation(
+                onTap: () {
+                  Navigator.pop(context);
+                  _showLossesDialog(index);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.blueGrey[50],
+                    ),
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Producto: ${productTickets[index].product!.name}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.blueGrey[800],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Clasificación: ${productTickets[index].nameClassification}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueGrey[800],
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              );
+            },
+          ),
+        ));
+  }
+
+  _showLossesDialog(int index) {
+    Dialogs.materialDialog(
+      context: context,
+      customView: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.2,
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Añadir Bajas',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.blueGrey[800],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Bajas',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    losses = int.parse(value);
+                  },
+                ),
+              ),
+            ],
+          )),
       actions: [
         IconsButton(
-          onPressed: () {},
+          onPressed: () {
+            ticketBloc!.add(AddLosses(
+              productTicketId: productTickets[index].id!,
+              losses: losses,
+            ));
+            Navigator.pop(context);
+            _showTicket();
+          },
           text: 'Hecho',
-          iconData: Icons.confirmation_num,
-          color: appColors['updateDialogButtonColor'],
-          textStyle: TextStyle(color: appColors['background']),
-          iconColor: appColors['background'],
+          iconData: Icons.save_alt,
+          color: Colors.blueGrey[800],
+          textStyle: const TextStyle(color: Colors.white),
+          iconColor: Colors.white,
+        ),
+        IconsButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _showTicket();
+          },
+          text: 'Cancelar',
+          iconData: Icons.cancel,
+          color: Colors.redAccent,
+          textStyle: const TextStyle(color: Colors.white),
+          iconColor: Colors.white,
         ),
       ],
     );
@@ -247,6 +383,7 @@ class _TicketListState extends State<TicketList> {
               ticketBloc!.add(
                   PrintTicketEvent(context: context, deliveryTicket: ticket));
             case 'addLosses':
+              ticketBloc!.add(OpenProductTicketList(ticketId: ticket.id!));
             default:
               LogHelper.logger.d('Evento no reconocido');
           }

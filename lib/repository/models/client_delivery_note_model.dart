@@ -50,7 +50,6 @@ class ClientDeliveryNoteModel extends ModelBase {
     ClientDeliveryNote clientDeliveryNote = entity as ClientDeliveryNote;
     idDeliveryNote = clientDeliveryNote.id;
 
-    // Esperamos el resultado del Future antes de hacer el cast.
     ClientModel clientModel = ClientModel();
     await clientModel.fromEntity(await DatabaseRepository.getEntityById(
         Client(), clientDeliveryNote.clientId!) as Client);

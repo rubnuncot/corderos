@@ -2,7 +2,6 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
-import 'package:meta/meta.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
 import '!models.dart';

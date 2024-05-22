@@ -42,3 +42,16 @@ class FetchRancherAndProductInfo extends TicketEvent {
 
   FetchRancherAndProductInfo({required this.rancherId, required this.productId});
 }
+
+class AddLosses extends TicketEvent {
+  final int productTicketId;
+  final int losses;
+
+  AddLosses({required this.productTicketId, required this.losses});
+}
+
+class OpenProductTicketList extends TicketEvent {
+  final int ticketId;
+
+  OpenProductTicketList({required this.ticketId});
+}
