@@ -21,7 +21,6 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     on<DeleteTicket>(_onDeleteTicket);
     on<GetTicketInfo>(_onGetTicketInfo);
     on<PrintTicketEvent>(_onPrintTicketEvent);
-    on<FetchRancherAndProductInfo>(_onFetchRancherAndProductInfo);
     on<AddLosses>(_addLosses);
     on<OpenProductTicketList>(_openPanel);
   }
@@ -31,16 +30,31 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     emit(TicketLoading());
     try {
       final tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
-      emit(TicketSuccess(
-        message: 'Tickets recibidos con éxito',
-        data: tickets,
-        event: 'FetchTicketsScreen',
-      ));
+
+      if (tickets.isNotEmpty) {
+        final firstTicket = tickets.first;
+        final rancher = await DatabaseRepository.getEntityById(
+          Rancher(),
+          firstTicket.idRancher!,
+        );
+        final product = await DatabaseRepository.getEntityById(
+          Product(),
+          firstTicket.idProduct!,
+        );
+
+        emit(TicketSuccess(
+          message: 'Tickets, rancher y product recibidos con éxito',
+          data: [tickets, rancher, product],
+          event: 'FetchTicketsScreen',
+        ));
+      }
     } catch (e) {
-      emit(
-          TicketError('Ha ocurrido un error a la hora de cargar los tickets.'));
+      emit(TicketError(
+        'Ha ocurrido un error a la hora de cargar los tickets: $e',
+      ));
     }
   }
+
 
   Future<void> _onSelectTicket(
       SelectTicket event, Emitter<TicketState> emit) async {
@@ -121,24 +135,8 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     }
   }
 
-  Future<void> _onFetchRancherAndProductInfo(
-      FetchRancherAndProductInfo event, Emitter<TicketState> emit) async {
-    emit(TicketLoading());
-    try {
-      final rancher =
-      await DatabaseRepository.getEntityById(Rancher(), event.rancherId);
-      final product =
-      await DatabaseRepository.getEntityById(Product(), event.productId);
-      emit(TicketSuccess(
-        message: 'Información del ganadero y producto obtenida con éxito',
-        data: [rancher, product],
-        event: 'FetchRancherAndProductInfo',
-      ));
-    } catch (e) {
-      emit(TicketError(
-          'Ha ocurrido un error a la hora de obtener la información del ganadero y producto'));
-    }
-  }
+
+
 
   Future<DeliveryTicket?> _fetchDeliveryTicketById(int ticketId) async {
     final results = await DeliveryTicket().select(

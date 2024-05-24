@@ -48,13 +48,14 @@ class _TicketListState extends State<TicketList> {
         switch (state.event) {
           case 'FetchTicketsScreen':
             setState(() {
-              tickets = state.data as List<DeliveryTicket>;
+              tickets = state.data[0] as List<DeliveryTicket>;
+              rancher = state.data[1] as Rancher;
+              product = state.data[2] as Product;
             });
             break;
           case 'SelectTicket':
             setState(() {
-              int updatedIndex = tickets
-                  .indexWhere((ticket) => ticket.id == state.data.first.id);
+              int updatedIndex = tickets.indexWhere((ticket) => ticket.id == state.data.first.id);
               if (updatedIndex != -1) {
                 tickets[updatedIndex].isSend = !tickets[updatedIndex].isSend!;
               }
@@ -62,8 +63,7 @@ class _TicketListState extends State<TicketList> {
             break;
           case 'DeleteTicket':
             setState(() {
-              int ticketIndex = tickets
-                  .indexWhere((ticket) => ticket.id == state.data.first.id);
+              int ticketIndex = tickets.indexWhere((ticket) => ticket.id == state.data.first.id);
               if (ticketIndex != -1) {
                 tickets.removeAt(ticketIndex);
               }
@@ -72,7 +72,6 @@ class _TicketListState extends State<TicketList> {
           case 'GetTicketInfo':
             setState(() {
               if (!openedTicket) {
-                //! 0 --> ProductTicket | 1 --> DeliveryTicket
                 showAlertDialog(state.data[0], state.data[1]);
               }
             });
@@ -87,19 +86,13 @@ class _TicketListState extends State<TicketList> {
             break;
           case 'AddLosses':
             break;
-          case 'FetchRancherAndProductInfo':
-            setState(() {
-              var data = state.data as Map<String, dynamic>;
-              rancher = data['rancher'] as Rancher;
-              product = data['product'] as Product;
-            });
-            break;
           default:
         }
       }
     });
     super.initState();
   }
+
 
   //! DETALLES TICKET
   void showAlertDialog(List<ProductTicketModel> productTicketModel,
@@ -444,7 +437,7 @@ class _TicketListState extends State<TicketList> {
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              '${product.name}',
+                              'Producto: ${product.name}',
                               style: const TextStyle(
                                 fontSize: 14,
                               ),
