@@ -33,7 +33,7 @@ class PrintHelper {
     if (mac != '') {
       getBluetooth();
       final bool resultBool =
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+      await PrintBluetoothThermal.connect(macPrinterAddress: mac);
       if (resultBool) {
         result.addAll({'Conexión exitosa.': true});
         connected = true;
@@ -51,7 +51,7 @@ class PrintHelper {
   Future<Map<String, List<BluetoothInfo>>> getBluetooth() async {
     Map<String, List<BluetoothInfo>> result = {};
     final List<BluetoothInfo> listResult =
-        await PrintBluetoothThermal.pairedBluetooths;
+    await PrintBluetoothThermal.pairedBluetooths;
 
     if (listResult.isEmpty) {
       result.addAll({
@@ -160,14 +160,7 @@ class PrintHelper {
         ));
     bytes += generator.emptyLines(1);
     bytes += generator.hr();
-    // bytes += generator.text(
-    //     'Serie: ${deliveryTicketNumberSplitted[0]} -- No: ${deliveryTicketNumberSplitted[1]}',
-    //     styles: const PosStyles(
-    //         bold: true,
-    //         width: PosTextSize.size2,
-    //         height: PosTextSize.size2,
-    //         align: PosAlign.left));
-    // bytes += generator.hr();
+
     bytes += generator.text(
       'Conductor: ${tickets['driver']}',
       styles: const PosStyles(
@@ -212,8 +205,8 @@ class PrintHelper {
         align: PosAlign.left,
       ),
     );
+
     bytes += generator.emptyLines(1);
-    bytes += generator.hr();
     bytes += generator.text(
       'Producto: ${tickets['product']}',
       styles: const PosStyles(
@@ -225,67 +218,69 @@ class PrintHelper {
         align: PosAlign.center,
       ),
     );
+    bytes += generator.emptyLines(1);
+    bytes += generator.hr();
+
+    // Header for the items
+    bytes += generator.row([
+      PosColumn(
+        text: 'No',
+        width: 3,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          align: PosAlign.center,
+        ),
+      ),
+      PosColumn(
+        text: 'Clase',
+        width: 2,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          codeTable: 'CP1252',
+          align: PosAlign.center,
+        ),
+      ),
+      PosColumn(
+        text: 'Kgs.',
+        width: 3,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          codeTable: 'CP1252',
+          align: PosAlign.center,
+        ),
+      ),
+      PosColumn(
+        text: 'Rendimiento',
+        width: 2,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          codeTable: 'CP1252',
+          align: PosAlign.center,
+        ),
+      ),
+      PosColumn(
+        text: 'Color',
+        width: 2,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          codeTable: 'CP1252',
+          align: PosAlign.center,
+        ),
+      ),
+    ]);
+
     int i = 0;
     for (var x in tickets['number']) {
-      bytes += generator.hr();
-      bytes += generator.emptyLines(1);
-      bytes += generator.row([
-        PosColumn(
-          text: 'No',
-          width: 3,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: 'Clase',
-          width: 2,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: 'Kgs.',
-          width: 3,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: 'Rendimiento',
-          width: 2,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: 'Color',
-          width: 2,
-          styles: const PosStyles(
-            bold: true,
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-      ]);
-      bytes += generator.emptyLines(1);
       bytes += generator.row([
         PosColumn(
           text: '$x',
@@ -337,10 +332,9 @@ class PrintHelper {
           ),
         ),
       ]);
-      bytes += generator.emptyLines(1);
-      bytes += generator.hr();
       i++;
     }
+    bytes += generator.hr();
     bytes += generator.text(
         'Fecha: ${Jiffy.parse(tickets['date']).format(pattern: 'dd/MM/yyyy')}',
         styles: const PosStyles(
