@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -16,6 +17,7 @@ class ClientList extends StatefulWidget {
 
 class _ClientListState extends State<ClientList> {
   ClientBloc? clientBloc;
+  SendBloc? sendBloc;
   StreamSubscription? clientSubscription;
 
   List<Client> clients = [];
@@ -23,6 +25,7 @@ class _ClientListState extends State<ClientList> {
   @override
   void initState() {
     clientBloc = BlocProvider.of<ClientBloc>(context);
+    sendBloc = BlocProvider.of<SendBloc>(context);
     clientBloc!.add(FetchClients());
 
     clientSubscription = clientBloc!.stream.listen((state) {
@@ -34,6 +37,7 @@ class _ClientListState extends State<ClientList> {
             });
             break;
           case 'SelectClient':
+            sendBloc!.add(SelectEmailClient(state.selectedClient));
             print('Cliente seleccionado: ${state.selectedClient}');
             break;
           default:

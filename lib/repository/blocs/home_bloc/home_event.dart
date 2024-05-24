@@ -23,6 +23,13 @@ class SendFiles extends HomeEvent {
   });
 }
 
+class UpdateApp extends HomeEvent {
+  final bool isRead;
+
+  UpdateApp({
+    this.isRead = false
+  });
+}
 
 
 

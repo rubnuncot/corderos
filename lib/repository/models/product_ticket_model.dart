@@ -2,7 +2,6 @@ import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
-import 'package:corderos_app/repository/models/classification_model.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
@@ -78,7 +77,7 @@ class ProductTicketModel extends ModelBase {
   set setLosses(int? losses) => this.losses = losses;
 
   @override
-  Future<void> fromEntity(ModelDao entity) async {
+  Future<ProductTicketModel> fromEntity(ModelDao entity) async {
     ProductTicket productTicket = entity as ProductTicket;
     Classification classificationEntity = Classification();
     id = productTicket.id;
@@ -123,6 +122,7 @@ class ProductTicketModel extends ModelBase {
     color = productTicket.color;
 
     losses = productTicket.losses;
+    return this;
   }
 
   @override

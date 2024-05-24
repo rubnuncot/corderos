@@ -38,5 +38,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeError('Error enviando datos'));
       }
     });
+
+    on<UpdateApp>((event, emit) {
+      emit(HomeLoading());
+
+      try {
+        dataFileReader.executeApp();
+        emit(HomeSuccess('App actualizada correctamente', [], 'UpdateApp'));
+
+      } catch (e) {
+        LogHelper.logger.d(e);
+        emit(HomeError('Error actualizando app'));
+      }
+    });
   }
 }

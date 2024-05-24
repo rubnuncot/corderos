@@ -1,14 +1,13 @@
-import 'package:corderos_app/data/database/!database.dart';
-import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
 
-import '!models.dart';
 import '!!model_base.dart';
+import '!models.dart';
 import '../../data/!data.dart';
 import '../../data/database/entities/!!model_dao.dart';
+import '../data_conversion/!data_conversion.dart';
 
 @reflector
-class DeliveryTicketModel extends ModelBase{
+class DeliveryTicketModel extends ModelBase {
   int? id;
   String? deliveryTicket;
   DateTime? date;
@@ -36,49 +35,60 @@ class DeliveryTicketModel extends ModelBase{
   });
 
   @override
-  Future<void> fromEntity(ModelDao entity) async {
+  Future<DeliveryTicketModel> fromEntity(ModelDao entity) async {
     DeliveryTicket deliveryTicketEntity = entity as DeliveryTicket;
     id = deliveryTicketEntity.id;
     deliveryTicket = deliveryTicketEntity.deliveryTicket;
     date = deliveryTicketEntity.date;
 
-    DriverModel driverModel = DriverModel();
-    await driverModel.fromEntity(await DatabaseRepository.getEntityById(
-        Driver(), deliveryTicketEntity.idDriver!) as Driver);
+    driver = await _loadModel<Driver, DriverModel>(
+      deliveryTicketEntity.idDriver!,
+          () => DriverModel(),
+      Driver(),
+    );
 
-    driver = driverModel;
+    vehicleRegistration = await _loadModel<VehicleRegistration, VehicleRegistrationModel>(
+      deliveryTicketEntity.idVehicleRegistration!,
+          () => VehicleRegistrationModel(),
+      VehicleRegistration(),
+    );
 
-    VehicleRegistrationModel vehicleRegistrationModel = VehicleRegistrationModel();
-    await vehicleRegistrationModel.fromEntity(await DatabaseRepository.getEntityById(
-        VehicleRegistration(), deliveryTicketEntity.idVehicleRegistration!) as VehicleRegistration);
+    slaughterhouse = await _loadModel<Slaughterhouse, SlaughterhouseModel>(
+      deliveryTicketEntity.idSlaughterhouse!,
+          () => SlaughterhouseModel(),
+      Slaughterhouse(),
+    );
 
-    vehicleRegistration = vehicleRegistrationModel;
+    rancher = await _loadModel<Rancher, RancherModel>(
+      deliveryTicketEntity.idRancher!,
+          () => RancherModel(),
+      Rancher(),
+    );
 
-    SlaughterhouseModel slaughterhouseModel = SlaughterhouseModel();
-    await slaughterhouseModel.fromEntity(await DatabaseRepository.getEntityById(
-        Slaughterhouse(), deliveryTicketEntity.idSlaughterhouse!) as Slaughterhouse);
-
-    slaughterhouse = slaughterhouseModel;
-
-    RancherModel rancherModel = RancherModel();
-    await rancherModel.fromEntity(await DatabaseRepository.getEntityById(
-        Rancher(), deliveryTicketEntity.idRancher!) as Rancher);
-
-    rancher = rancherModel;
-
-    ProductModel productModel = ProductModel();
-    await productModel.fromEntity(await DatabaseRepository.getEntityById(
-        Product(), deliveryTicketEntity.idProduct!) as Product);
-
-    product = productModel;
+    product = await _loadModel<Product, ProductModel>(
+      deliveryTicketEntity.idProduct!,
+          () => ProductModel(),
+      Product(),
+    );
 
     number = deliveryTicketEntity.number;
-
     isSend = deliveryTicketEntity.isSend!;
+
+    return this;
+  }
+
+  Future<TModel?> _loadModel<TEntity extends ModelDao, TModel extends ModelBase>(
+      int id, TModel Function() modelConstructor, TEntity entity) async {
+    final model = modelConstructor();
+    final dbEntity = await DatabaseRepository.getEntityById(entity, id) as TEntity;
+    await model.fromEntity(dbEntity);
+    return model;
   }
 
   @override
   String toString() {
-    return '$id\t${vehicleRegistration!.clientDeliveryNote}\t$number\t$date\t${driver?.nif}\t${driver?.name}\t${vehicleRegistration?.vehicleRegistrationNum}\t${slaughterhouse?.code}\t${rancher?.code}\t${rancher?.name}'.replaceAll('\r', '');
+    return '$id\t${vehicleRegistration?.clientDeliveryNote}\t$number\t$date\t'
+        '${driver?.nif}\t${driver?.name}\t${vehicleRegistration?.vehicleRegistrationNum}\t'
+        '${slaughterhouse?.code}\t${rancher?.code}\t${rancher?.name}'.replaceAll('\r', '');
   }
 }

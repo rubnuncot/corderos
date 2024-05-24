@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:corderos_app/repository/blocs/!blocs.dart';
+import 'package:corderos_app/repository/blocs/client_bloc/client_bloc.dart';
+import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,9 +23,13 @@ class _HomeContentState extends State<HomeContent> {
   OpenPanelBloc? openPanel;
   DropDownBloc? dropDownBloc;
   NavigatorBloc? navigatorBloc;
+  SendBloc? sendBloc;
   dynamic navigatorState = '';
+  bool panelOpen = false;
 
   StreamSubscription? _subscription;
+  StreamSubscription? _panelSubscription;
+  StreamSubscription? _sendSubscription;
 
   final labelStyle = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
@@ -36,34 +42,39 @@ class _HomeContentState extends State<HomeContent> {
     openPanel = context.read<OpenPanelBloc>();
     dropDownBloc = context.read<DropDownBloc>();
     navigatorBloc = context.read<NavigatorBloc>();
+    sendBloc = context.read<SendBloc>();
 
     _subscription = homeBloc!.stream.listen((event) {
       if (event is HomeSuccess) {
         setState(() {
           loading = false;
         });
-        SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: "Proceso terminado...",
-            contentType: ContentType.success,
-            message: event.message,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "Proceso terminado...",
+              contentType: ContentType.success,
+              message: event.message,
+            ),
           ),
         );
-      } else if(event is HomeError) {
+      } else if (event is HomeError) {
         setState(() {
           loading = false;
         });
-        SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: "¡Error!",
-            contentType: ContentType.failure,
-            message: event.message,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "¡Error!",
+              contentType: ContentType.failure,
+              message: event.message,
+            ),
           ),
         );
       } else {
@@ -72,12 +83,51 @@ class _HomeContentState extends State<HomeContent> {
         });
       }
     });
-  }
 
+    _panelSubscription = openPanel!.stream.listen((panelState) {
+      setState(() {
+        panelOpen = panelState.isOpen;
+      });
+    });
+
+    _sendSubscription = sendBloc!.stream.listen((event) {
+      if (event is SendSuccess) {
+        if(event.event == 'SendClientEmail'){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.transparent,
+              content: AwesomeSnackbarContent(
+                title: "Proceso terminado...",
+                contentType: ContentType.success,
+                message: event.message,
+              ),
+            ),
+          );
+        }
+      } else if (event is SendError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: "¡Error!",
+              contentType: ContentType.failure,
+              message: event.message,
+            ),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
     _subscription?.cancel();
+    _panelSubscription?.cancel();
+    _sendSubscription?.cancel();
     super.dispose();
   }
 
@@ -96,7 +146,6 @@ class _HomeContentState extends State<HomeContent> {
               child: Stack(
                 children: [
                   SingleChildScrollView(
-                    // Usa SingleChildScrollView aquí
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -111,7 +160,8 @@ class _HomeContentState extends State<HomeContent> {
                         CustomButton(
                           text: 'Cargar',
                           onPressed: () async {
-                            navigatorState = context.watch<NavigatorBloc>().state;
+                            navigatorState =
+                                context.watch<NavigatorBloc>().state;
                             navigatorBloc!.push(
                                 const BurdenScreen(),
                                 1,
@@ -127,6 +177,7 @@ class _HomeContentState extends State<HomeContent> {
                           text: 'Descargar',
                           onPressed: () {
                             openPanel!.openPanel();
+                            setState(() {});
                           },
                           textColor: Colors.indigoAccent,
                         ),
@@ -147,7 +198,8 @@ class _HomeContentState extends State<HomeContent> {
                               child: CustomButton(
                                 text: 'Recibir',
                                 onPressed: () async {
-                                  homeBloc!.add(GetFtpData(dropDownBloc: dropDownBloc!));
+                                  homeBloc!.add(
+                                      GetFtpData(dropDownBloc: dropDownBloc!));
                                 },
                                 textColor: Colors.lightGreen,
                               ),
@@ -164,10 +216,15 @@ class _HomeContentState extends State<HomeContent> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          //TODO: ACTUALIZAR DATOS.
-        },
-        child: const Icon(Icons.refresh),
+        backgroundColor: panelOpen ? Colors.redAccent : null,
+        onPressed: !panelOpen
+            ? () async {
+                homeBloc!.add(UpdateApp());
+              }
+            : () {
+                sendBloc!.add(SendClientEmail());
+              },
+        child: !panelOpen ? const Icon(Icons.refresh) : const Icon(Icons.send),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../!helpers/app_theme.dart';
@@ -16,6 +17,7 @@ class TicketList extends StatefulWidget {
 class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   ClientBloc? clientBloc;
   StreamSubscription? clientSubscription;
+  SendBloc? sendBloc;
   List<bool> isOpen = [];
   List<AnimationController> animationControllers = [];
   Map<int, List<ProductTicketModel>> productTicketModels = {};
@@ -31,6 +33,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
 
   void _initializeBloc() {
     clientBloc = BlocProvider.of<ClientBloc>(context);
+    sendBloc = BlocProvider.of<SendBloc>(context);
     clientBloc!.add(FetchTickets());
 
     clientSubscription = clientBloc!.stream.listen((state) {
@@ -88,6 +91,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
 
   void _toggleSelection(DeliveryTicket ticket) {
     clientBloc!.add(SelectSendTicket(ticket: ticket));
+    sendBloc!.add(AddSelected(ticket));
   }
 
   @override

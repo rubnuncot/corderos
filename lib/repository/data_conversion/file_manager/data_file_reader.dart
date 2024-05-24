@@ -33,7 +33,7 @@ class DataFileReader {
 
   final separator = ';';
 
-  dynamic last_preferences_id = [];
+  dynamic lasPreferencesId = [];
 
   /// ### `readFile`
   ///
@@ -57,78 +57,91 @@ class DataFileReader {
   /// ```dart
   /// TODO:
   /// ```
-
   Future<void> readFile() async {
     Directory directory = await getApplicationDocumentsDirectory();
 
     try {
       await ftpDataTransfer.getFtpData();
       for (dynamic file in files.keys) {
-        File storedFile = File("${directory.path}/${files[file]}");
-
-        if (await storedFile.exists()) {
-          String data = await storedFile.readAsString();
-          List<String> lines = data.split("\n");
-          var classMirror =
-              reflector.reflectType(file.runtimeType) as ClassMirror;
-
-          Iterable<String> names =
-              classMirror.invokeGetter('names') as Iterable<String>;
-
-          Map<String, String> fields =
-              classMirror.invokeGetter('fields') as Map<String, String>;
-          List<String> listNames = names.toList();
-          var instanceMirrorEmptyObject =
-              classMirror.newInstance('', []) as ModelDao;
-
-          var tableName =
-              instanceMirrorEmptyObject.getTableName(instanceMirrorEmptyObject);
-
-          await instanceMirrorEmptyObject.truncate<ModelDao>();
-
-          int lastId = await Preferences.getValue('last_${tableName}_id');
-
-          List<ModelDao> daoList = [];
-
-          for (var x in lines) {
-            if (x.isNotEmpty || x != '') {
-              Map<Symbol, dynamic> constructor = {};
-              int index = 1;
-              List<String> line = x.split(separator);
-              if (line.length == names.length - 1) {
-                for (var value in line) {
-                  if (listNames[index] != 'id') {
-                    constructor.addAll({
-                      Symbol(listNames[index]):
-                          _castElements(listNames[index], value, fields)
-                    });
-                  }
-                  index++;
-                }
-                lastId++;
-                LogHelper.logger.d(constructor);
-                var instanceMirror =
-                    classMirror.newInstance('all', [], constructor) as ModelDao;
-
-                if (!await instanceMirror.existsInDatabase()) {
-                  daoList.add(instanceMirror);
-                }
-              }
-            }
-          }
-
-          await instanceMirrorEmptyObject.listInsert(daoList);
-
-
-          await Preferences.setValue('last_${tableName}_id', lastId);
-        } else {
-          LogHelper.logger.d('File $storedFile does not exist');
-        }
+        await _processFile(directory, file);
       }
     } catch (e) {
       LogHelper.logger.d('Error: $e');
     }
   }
+
+  Future<void> _processFile(Directory directory, dynamic file) async {
+    File storedFile = File("${directory.path}/${files[file]}");
+
+    if (await storedFile.exists()) {
+      String data = await storedFile.readAsString();
+      List<String> lines = data.split("\n");
+
+      var classMirror = reflector.reflectType(file.runtimeType) as ClassMirror;
+      Iterable<String> names = classMirror.invokeGetter('names') as Iterable<String>;
+      Map<String, String> fields = classMirror.invokeGetter('fields') as Map<String, String>;
+      List<String> listNames = names.toList();
+
+      var instanceMirrorEmptyObject = classMirror.newInstance('', []) as ModelDao;
+      var tableName = instanceMirrorEmptyObject.getTableName(instanceMirrorEmptyObject);
+
+      await instanceMirrorEmptyObject.truncate<ModelDao>();
+
+      int lastId = await Preferences.getValue('last_${tableName}_id');
+      List<ModelDao> daoList = await _processLines(lines, listNames, fields, classMirror, lastId);
+
+      await instanceMirrorEmptyObject.listInsert(daoList);
+      await Preferences.setValue('last_${tableName}_id', lastId);
+    } else {
+      LogHelper.logger.d('File $storedFile does not exist');
+    }
+  }
+
+  Future<List<ModelDao>> _processLines(
+      List<String> lines,
+      List<String> listNames,
+      Map<String, String> fields,
+      ClassMirror classMirror,
+      int lastId) async {
+    List<ModelDao> daoList = [];
+
+    for (var line in lines) {
+      if (line.isNotEmpty) {
+        var instanceMirror = await _processLine(line, listNames, fields, classMirror, lastId);
+        if (instanceMirror != null && !await instanceMirror.existsInDatabase()) {
+          daoList.add(instanceMirror);
+        }
+      }
+    }
+
+    return daoList;
+  }
+
+  Future<ModelDao?> _processLine(
+      String line,
+      List<String> listNames,
+      Map<String, String> fields,
+      ClassMirror classMirror,
+      int lastId) async {
+    Map<Symbol, dynamic> constructor = {};
+    List<String> lineParts = line.split(separator);
+
+    if (lineParts.length == listNames.length - 1) {
+      int index = 1;
+      for (var value in lineParts) {
+        if (listNames[index] != 'id') {
+          constructor[Symbol(listNames[index])] = _castElements(listNames[index], value, fields);
+        }
+        index++;
+      }
+      lastId++;
+      LogHelper.logger.d(constructor);
+      return classMirror.newInstance('all', [], constructor) as ModelDao;
+    }
+
+    return null;
+  }
+
 
   /// ### `executeApp`
 
