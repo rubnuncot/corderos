@@ -7,6 +7,7 @@ import 'package:drop_down_list/drop_down_list.dart';
 import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -48,9 +49,9 @@ class _TicketListState extends State<TicketList> {
         switch (state.event) {
           case 'FetchTicketsScreen':
             setState(() {
-              tickets = state.data[0] as List<DeliveryTicket>;
-              ranchers = state.data[1] as List<Rancher>;
-              products = state.data[2] as List<Product>;
+              tickets = (state.data[0] as List<DeliveryTicket>).reversed.toList();
+              ranchers = (state.data[1] as List<Rancher>).reversed.toList();
+              products = (state.data[2] as List<Product>).reversed.toList();
             });
             break;
           case 'SelectTicket':
@@ -68,6 +69,8 @@ class _TicketListState extends State<TicketList> {
                   .indexWhere((ticket) => ticket.id == state.data.first.id);
               if (ticketIndex != -1) {
                 tickets.removeAt(ticketIndex);
+                ranchers.removeAt(ticketIndex);
+                products.removeAt(ticketIndex);
               }
             });
             break;
@@ -117,6 +120,9 @@ class _TicketListState extends State<TicketList> {
     final appColors = AppColors(context: context).getColors();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final formattedDate = Jiffy.parse(deliveryTicketModel.date.toString()).format(pattern: 'dd/MM/yyyy');
+
+
     openedTicket = true;
 
     Dialogs.materialDialog(
@@ -137,7 +143,7 @@ class _TicketListState extends State<TicketList> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Serie Nº: ${deliveryTicketModel.number}',
+                'Ticket ${deliveryTicketModel.number}',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -172,9 +178,7 @@ class _TicketListState extends State<TicketList> {
                           _buildRow("Color", '${x.color}'),
                           _buildRow(
                               "Rendimiento", '${x.performance!.performance}'),
-                          _buildRow("Número del ticket",
-                              '${deliveryTicketModel.number}'),
-                          _buildRow("Fecha", '${deliveryTicketModel.date}'),
+                          _buildRow("Fecha", formattedDate),
                           _buildRow(
                               "Vehículo",
                               deliveryTicketModel.vehicleRegistration
@@ -445,11 +449,11 @@ class _TicketListState extends State<TicketList> {
     DropDownState(
       DropDown(
         isSearchVisible: false,
-        bottomSheetTitle: Padding(
-          padding: const EdgeInsets.all(8),
+        bottomSheetTitle: const Padding(
+          padding: EdgeInsets.all(8),
           child: Text(
-            'Serie Nº: ${ticket.id!}',
-            style: const TextStyle(
+            'Menú de Opciones:',
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
             ),
@@ -699,11 +703,10 @@ class _TicketListState extends State<TicketList> {
             : ListView.builder(
           itemCount: tickets.length,
           itemBuilder: (context, index) {
-            final reversedTickets = List.from(tickets.reversed);
-            final ticket = reversedTickets[index];
+            final ticket = tickets[index];
             final rancher = ranchers[index];
             final product = products[index];
-            String formattedDate = dateFormat.format(ticket.date);
+            String formattedDate = dateFormat.format(ticket.date!);
             return ZoomTapAnimation(
               onTap: () {
                 showDropDown(ticket);
