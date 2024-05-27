@@ -23,6 +23,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     on<PrintTicketEvent>(_onPrintTicketEvent);
     on<AddLosses>(_addLosses);
     on<OpenProductTicketList>(_openPanel);
+    on<DeleteAllTickets>(_onDeleteAllTickets);
   }
 
   Future<void> _onFetchTicketsScreen(
@@ -32,19 +33,25 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
 
       if (tickets.isNotEmpty) {
-        final firstTicket = tickets.first;
-        final rancher = await DatabaseRepository.getEntityById(
-          Rancher(),
-          firstTicket.idRancher!,
-        );
-        final product = await DatabaseRepository.getEntityById(
-          Product(),
-          firstTicket.idProduct!,
-        );
+        final List<Rancher> ranchers = [];
+        final List<Product> products = [];
+
+        for (var ticket in tickets) {
+          final rancher = await DatabaseRepository.getEntityById(
+            Rancher(),
+            ticket.idRancher!,
+          );
+          final product = await DatabaseRepository.getEntityById(
+            Product(),
+            ticket.idProduct!,
+          );
+          ranchers.add(rancher);
+          products.add(product);
+        }
 
         emit(TicketSuccess(
           message: 'Tickets, rancher y product recibidos con éxito',
-          data: [tickets, rancher, product],
+          data: [tickets, ranchers, products],
           event: 'FetchTicketsScreen',
         ));
       }
@@ -54,6 +61,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       ));
     }
   }
+
 
 
   Future<void> _onSelectTicket(
@@ -264,4 +272,29 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       event: 'AddLosses',
     ));
   }
+
+  Future<void> _onDeleteAllTickets(
+      DeleteAllTickets event, Emitter<TicketState> emit) async {
+    try {
+      final allTickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+
+      for (var ticket in allTickets) {
+        final allProductTickets = await ProductTicket().getData<ProductTicket>(
+            where: ['idTicket', SqlBuilder.constOperators['equals']!, '${ticket.id}']
+        );
+
+        DeliveryTicket().batchDelete(objectsToDelete: allTickets);
+        ProductTicket().batchDelete(objectsToDelete: allProductTickets);
+      }
+
+      emit(TicketSuccess(
+        message: 'Todos los tickets borrados correctamente',
+        data: [],
+        event: 'DeleteAllTickets',
+      ));
+    } catch (e) {
+      emit(TicketError('Ha habido un error al borrar todos los tickets'));
+    }
+  }
+
 }
