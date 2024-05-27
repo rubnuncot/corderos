@@ -158,6 +158,8 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           await _getLastOrNewDeliveryTicket(event.deliveryTicket);
       if (event.deliveryTicket != null &&
           event.deliveryTicket != lastDeliveryTicket) {
+        List<DeliveryTicket> listDeliveryTickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+        event.deliveryTicket!.number = listDeliveryTickets.length + 1;
         await event.deliveryTicket!.insert();
       }
 
