@@ -17,6 +17,7 @@ class AppTheme {
       onSurface: Color(0xff398357),
       // Texto general sobre fondo claro
       error: Color(0xffb0eeaa),
+      onErrorContainer: Color(0xFFDBDBE1),
       // Rojo error
       onError: Colors.black,
       // Contraste para texto/iconos sobre el error
@@ -56,6 +57,7 @@ class AppTheme {
       onSecondary: Colors.black,
       // Contraste para texto/iconos sobre el secundario
       surface: Color(0xFF232222),
+      onErrorContainer: Color(0xff2d2b2b),
       // Fondo general oscuro
       onSurface: Color(0xff03dac6),
       // Texto general sobre fondo oscuro
@@ -159,6 +161,7 @@ class AppColors {
       'unSelectedTableBorder': Theme.of(context).colorScheme.inversePrimary,
       'valueTableColumn': Theme.of(context).colorScheme.surface,
       'rightColumn': Theme.of(context).colorScheme.onSurface,
+      'lineTicketBackground': Theme.of(context).colorScheme.onErrorContainer,
       //! COLOR DE FONDO DEL PANEL
       'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
     });

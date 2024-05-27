@@ -55,3 +55,7 @@ class OpenProductTicketList extends TicketEvent {
 
   OpenProductTicketList({required this.ticketId});
 }
+
+class DeleteAllTickets extends TicketEvent {
+
+}
