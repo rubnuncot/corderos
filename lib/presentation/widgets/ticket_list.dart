@@ -63,8 +63,10 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     setState(() {
       tickets = state.data as List<DeliveryTicket>;
       isOpen = List.generate(tickets.length, (_) => false);
-      animationControllers = List.generate(tickets.length, (_) =>
-          AnimationController(duration: const Duration(milliseconds: 300), vsync: this));
+      animationControllers = List.generate(
+          tickets.length,
+          (_) => AnimationController(
+              duration: const Duration(milliseconds: 300), vsync: this));
     });
     _fetchProductTickets();
   }
@@ -117,7 +119,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTicketCard(BuildContext context, int index, Map<String, dynamic>? appColors) {
+  Widget _buildTicketCard(
+      BuildContext context, int index, Map<String, dynamic>? appColors) {
     final ticket = tickets[index];
     final productTicketModelsList = productTicketModels[ticket.id];
     final deliveryTicketModel = deliveryTicketModels[ticket.id];
@@ -128,21 +131,29 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       color: isSelected ? appColors!['selectedBackgroundCard'] : null,
       child: Column(
         children: [
-          _buildListTile(ticket, index, isSelected, appColors, animationController),
+          _buildListTile(deliveryTicketModel!, index, isSelected, appColors,
+              animationController, ticket),
           AnimatedSize(
             duration: const Duration(milliseconds: 1000),
             curve: Curves.fastLinearToSlowEaseIn,
-            child: _buildExpandedContent(isSelected, productTicketModelsList, deliveryTicketModel, appColors, index),
+            child: _buildExpandedContent(isSelected, productTicketModelsList,
+                deliveryTicketModel, appColors, index),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildListTile(DeliveryTicket ticket, int index, bool isSelected, Map<String, dynamic>? appColors, AnimationController animationController) {
+  Widget _buildListTile(
+      DeliveryTicketModel ticket,
+      int index,
+      bool isSelected,
+      Map<String, dynamic>? appColors,
+      AnimationController animationController,
+      DeliveryTicket deliveryTicket) {
     return ListTile(
       title: Text(
-        '${ticket.number!}',
+        '${ticket.rancher!.name}',
         style: TextStyle(
           color: isSelected
               ? appColors!['selectedTitleCard']
@@ -150,21 +161,26 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
         ),
       ),
       subtitle: Text(
-        'Description $index',
+        '${ticket.product!.name}',
         style: TextStyle(
           color: isSelected
               ? appColors['selectedTitleCard']
               : appColors['unSelectedTitleCard'],
         ),
       ),
-      trailing: _buildAnimatedIcon(isSelected, animationController, index, appColors),
+      trailing:
+          _buildAnimatedIcon(isSelected, animationController, index, appColors),
       onTap: () {
-        _toggleSelection(ticket);
+        _toggleSelection(deliveryTicket);
       },
     );
   }
 
-  Widget _buildAnimatedIcon(bool isSelected, AnimationController animationController, int index, Map<String, dynamic>? appColors) {
+  Widget _buildAnimatedIcon(
+      bool isSelected,
+      AnimationController animationController,
+      int index,
+      Map<String, dynamic>? appColors) {
     return IconButton(
       icon: AnimatedIcon(
         icon: AnimatedIcons.menu_close,
@@ -186,8 +202,15 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildExpandedContent(bool isSelected, List<ProductTicketModel>? productTicketModelsList, DeliveryTicketModel? deliveryTicketModel, Map<String, dynamic>? appColors, int index) {
-    if (isOpen[index] && productTicketModelsList != null && deliveryTicketModel != null) {
+  Widget _buildExpandedContent(
+      bool isSelected,
+      List<ProductTicketModel>? productTicketModelsList,
+      DeliveryTicketModel? deliveryTicketModel,
+      Map<String, dynamic>? appColors,
+      int index) {
+    if (isOpen[index] &&
+        productTicketModelsList != null &&
+        deliveryTicketModel != null) {
       return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -196,7 +219,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
             children: [
               _buildDeliveryDetails(deliveryTicketModel, isSelected, appColors),
               const SizedBox(height: 8.0),
-              _buildProductDetails(productTicketModelsList, isSelected, appColors),
+              _buildProductDetails(
+                  productTicketModelsList, isSelected, appColors),
             ],
           ),
         ),
@@ -205,7 +229,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     return Container();
   }
 
-  Widget _buildDeliveryDetails(DeliveryTicketModel deliveryTicketModel, bool isSelected, Map<String, dynamic>? appColors) {
+  Widget _buildDeliveryDetails(DeliveryTicketModel deliveryTicketModel,
+      bool isSelected, Map<String, dynamic>? appColors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -229,7 +254,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildProductDetails(List<ProductTicketModel> productTicketModelsList, bool isSelected, Map<String, dynamic>? appColors) {
+  Widget _buildProductDetails(List<ProductTicketModel> productTicketModelsList,
+      bool isSelected, Map<String, dynamic>? appColors) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -251,15 +277,21 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  List<TableRow> _buildProductTableRows(ProductTicketModel productTicketModel, bool isSelected) {
+  List<TableRow> _buildProductTableRows(
+      ProductTicketModel productTicketModel, bool isSelected) {
     return [
-      _buildTableRow('Producto', productTicketModel.product?.name ?? '', isSelected),
-      _buildTableRow('Nº Animales', '${productTicketModel.numAnimals ?? ' '}', isSelected),
+      _buildTableRow(
+          'Producto', productTicketModel.product?.name ?? '', isSelected),
+      _buildTableRow(
+          'Nº Animales', '${productTicketModel.numAnimals ?? ' '}', isSelected),
       _buildTableRow('Peso', '${productTicketModel.weight ?? ' '}', isSelected),
-      _buildTableRow('Clasificación', productTicketModel.classification!.name ?? '', isSelected),
-      _buildTableRow('Rendimiento', '${productTicketModel.performance?.performance ?? ''}', isSelected),
+      _buildTableRow('Clasificación',
+          productTicketModel.classification!.name ?? '', isSelected),
+      _buildTableRow('Rendimiento',
+          '${productTicketModel.performance?.performance ?? ''}', isSelected),
       _buildTableRow('Color', productTicketModel.color ?? '', isSelected),
-      _buildTableRow('Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),
+      _buildTableRow(
+          'Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),
     ];
   }
 

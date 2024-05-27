@@ -26,7 +26,7 @@ class SendBloc extends Bloc<SendEvent, SendState> {
       var email = Email(
         body: emailBody,
         subject: 'Ticket de entrega',
-        recipients: ['nunezcotanoruben@gmail.com'],
+        recipients: [client.email ?? ''],
       );
 
       await FlutterEmailSender.send(email);
