@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/presentation/!presentation.dart';
@@ -7,6 +6,7 @@ import 'package:corderos_app/presentation/widgets/bluetooth_list.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/presentation/widgets/searchable_dropdown.dart';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:corderos_app/repository/blocs/!blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,14 +22,14 @@ class TableTicket extends StatefulWidget {
 }
 
 class _TableTicketState extends State<TableTicket> {
-  int _tableCount = 1;
-  String _selectedRancher = ''; // Nueva variable de estado
-
+  String _selectedRancher = '';
   DatabaseBloc? databaseBloc;
   BurdenBloc? burdenBloc;
+  DropDownBloc? dropDownBloc;
   bool isLoading = false;
   StreamSubscription? databaseBlocSubscription;
   StreamSubscription? tableItemDatabaseSubscription;
+  StreamSubscription? performanceSubscription;
   final ScrollController _scrollController = ScrollController();
   bool dialogShown = false;
 
@@ -44,6 +44,7 @@ class _TableTicketState extends State<TableTicket> {
   void initState() {
     super.initState();
     burdenBloc = context.read<BurdenBloc>();
+    dropDownBloc = context.read<DropDownBloc>();
     tableItemDatabaseSubscription = burdenBloc!.stream.listen((state) {
       setState(() {
         isLoading = state is BurdenLoading;
@@ -51,11 +52,13 @@ class _TableTicketState extends State<TableTicket> {
           switch (state.event) {
             case "IncrementTableIndex":
             case "GetTableIndex":
-              _tableCount = state.data.first.first;
               break;
           }
         }
       });
+    });
+    performanceSubscription = context.read<DropDownBloc>().stream.listen((state) {
+      dropDownBloc!.getSelectedModel();
     });
     burdenBloc!.add(GetTableIndex());
 
@@ -67,6 +70,7 @@ class _TableTicketState extends State<TableTicket> {
   @override
   void dispose() {
     tableItemDatabaseSubscription!.cancel();
+    performanceSubscription?.cancel();
     _scrollController.dispose();
     focusNode.dispose();
     super.dispose();
@@ -76,23 +80,18 @@ class _TableTicketState extends State<TableTicket> {
     burdenBloc?.add(UploadData(
         context: context,
         deliveryTicket: DeliveryTicket.all(
-          deliveryTicket:
-              list[VehicleRegistrationModel().runtimeType.toString()]
-                  .vehicleRegistrationNum,
+          deliveryTicket: list[VehicleRegistrationModel().runtimeType.toString()].vehicleRegistrationNum,
           idProduct: list[ProductModel().runtimeType.toString()].id,
           idRancher: list[RancherModel().runtimeType.toString()].id,
-          idSlaughterhouse:
-              list[SlaughterhouseModel().runtimeType.toString()].id,
+          idSlaughterhouse: list[SlaughterhouseModel().runtimeType.toString()].id,
           idDriver: list[DriverModel().runtimeType.toString()].id,
-          idVehicleRegistration:
-              list[VehicleRegistrationModel().runtimeType.toString()].id,
+          idVehicleRegistration: list[VehicleRegistrationModel().runtimeType.toString()].id,
           date: DateTime.now(),
           number: 0,
           isSend: false,
         ),
         productTicket: productTickets
-            .where((element) =>
-                (element.numAnimals != null && element.numAnimals! > 0))
+            .where((element) => (element.numAnimals != null && element.numAnimals! > 0))
             .toList()));
 
     burdenBloc!.stream
@@ -130,11 +129,11 @@ class _TableTicketState extends State<TableTicket> {
   }
 
   void showEditDialog(
-    String title,
-    int index,
-    String currentValue,
-    Function(String) onUpdate,
-  ) {
+      String title,
+      int index,
+      String currentValue,
+      Function(String) onUpdate,
+      ) {
     bool isDropDown = _isDropDownField(title);
     bool isEditable = title != 'Clasif';
     Map<String, String> dropDownValues = {
@@ -161,7 +160,7 @@ class _TableTicketState extends State<TableTicket> {
             isEditable,
             dropDownBloc,
             dropDownValues,
-            (value) => editedValue = value,
+                (value) => editedValue = value,
             appColors,
             index,
             number: number.contains(title),
@@ -208,34 +207,35 @@ class _TableTicketState extends State<TableTicket> {
       height: MediaQuery.of(context).size.height * 0.1,
       child: isDropDown
           ? _buildDropDownContent(
-              title, currentValue, dropDownValues, dropdownBloc, context, index)
+          title, currentValue, dropDownValues, dropdownBloc, context, index)
           : _buildTextFieldContent(
-              isEditable, currentValue, onChanged, appColors,
-              number: number),
+          isEditable, currentValue, onChanged, appColors,
+          number: number),
     );
   }
 
   Widget _buildDropDownContent(
-    String title,
-    String currentValue,
-    Map<String, String> dropDownValues,
-    DropDownBloc dropDownBloc,
-    BuildContext context,
-    int index,
-  ) {
+      String title,
+      String currentValue,
+      Map<String, String> dropDownValues,
+      DropDownBloc dropDownBloc,
+      BuildContext context,
+      int index,
+      ) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: title == 'Rend'
             ? NewDropDown(
-                values: performances,
-                initialValue: productTickets[index].performance != null
-                    ? productTickets[index].performance!.performance.toString()
-                    : performances.first,
-              )
+          values: performances,
+          mapKey: 'performance',
+          initialValue: productTickets[index].performance != null
+              ? productTickets[index].performance!.performance.toString()
+              : performances.first,
+        )
             : NewDropDown(
-                mapKey: dropDownValues[title]!,
-              ),
+          mapKey: dropDownValues[title]!,
+        ),
       ),
     );
   }
@@ -261,14 +261,14 @@ class _TableTicketState extends State<TableTicket> {
   }
 
   List<Widget> _buildDialogActions(
-    BuildContext context,
-    String title,
-    String editedValue,
-    Function(String) onUpdate,
-    DropDownBloc dropDownBloc,
-    Map<String, dynamic>? appColors,
-    int index,
-  ) {
+      BuildContext context,
+      String title,
+      String editedValue,
+      Function(String) onUpdate,
+      DropDownBloc dropDownBloc,
+      Map<String, dynamic>? appColors,
+      int index,
+      ) {
     return [
       TextButton(
         onPressed: () {
@@ -276,7 +276,7 @@ class _TableTicketState extends State<TableTicket> {
           onUpdate(textController.text);
           _updateDropDownBloc(dropDownBloc, title, index);
           dropDownBloc.filterSelectedClassification(
-            productTickets.isEmpty ? '' :
+              productTickets.isEmpty ? '' :
               productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
           setState(() {});
@@ -303,7 +303,7 @@ class _TableTicketState extends State<TableTicket> {
           "'${dropDownBloc.state.selectedValues['product']!}'"
         ]);
         final classifications =
-            await classificationEntity.getData<Classification>(
+        await classificationEntity.getData<Classification>(
           where: [
             'name',
             SqlBuilder.constOperators['like']!,
@@ -320,12 +320,12 @@ class _TableTicketState extends State<TableTicket> {
           ProductTicketModel()
               .updateValue<ProductTicketModel>('classification', classificationModel)
               .updateValue<ProductTicketModel>(
-                  'product',
-                  dropDownBloc.state.models['product']!
-                      .where((element) =>
-                          element.name ==
-                          dropDownBloc.state.selectedValues['product'])
-                      .first)
+              'product',
+              dropDownBloc.state.models['product']!
+                  .where((element) =>
+              element.name ==
+                  dropDownBloc.state.selectedValues['product'])
+                  .first)
         ]);
         setState(() {
 
@@ -367,7 +367,10 @@ class _TableTicketState extends State<TableTicket> {
           final dropDownBloc = context.read<DropDownBloc>();
           textController.text = value;
           Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
-          if (label.keys.first != 'Clasif') {
+
+          if (label.keys.first == 'Producto' ||
+              (label.keys.first == 'NºCorderos' && productTickets[listIndex].product != null) ||
+              (productTickets[listIndex].product != null && productTickets[listIndex].numAnimals != null && productTickets[listIndex].numAnimals! > 0)) {
             showEditDialog(label.keys.first, listIndex, value, (newValue) {
               setState(() {
                 dynamic requestValue = list;
@@ -379,8 +382,7 @@ class _TableTicketState extends State<TableTicket> {
                   case 'Color':
                     requestValue = newValue;
                   case 'Clasif':
-                    requestValue =
-                        list[ClassificationModel().runtimeType.toString()].name;
+                    requestValue = list[ClassificationModel().runtimeType.toString()].name;
                     break;
                   default:
                     requestValue = list;
@@ -389,9 +391,21 @@ class _TableTicketState extends State<TableTicket> {
                 value = newValue;
                 productTickets[listIndex] = productTickets[listIndex]
                     .updateValue<ProductTicketModel>(
-                        label.values.first, requestValue);
+                    label.values.first, requestValue);
               });
             });
+          } else if (label.keys.first != 'Producto' && productTickets[listIndex].product == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Primero selecciona un producto para poder seguir introduciendo datos.'),
+              ),
+            );
+          } else if (productTickets[listIndex].numAnimals == null || productTickets[listIndex].numAnimals! == 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Primero añade el número de animales.'),
+              ),
+            );
           }
 
           textController.selection = TextSelection(
@@ -409,7 +423,7 @@ class _TableTicketState extends State<TableTicket> {
         //! PRIMERA TABLA
         Table(
           border:
-              TableBorder.all(color: appColors!['borderTableColor'], width: 2),
+          TableBorder.all(color: appColors!['borderTableColor'], width: 2),
           columnWidths: const {
             0: FlexColumnWidth(2),
             1: FlexColumnWidth(3),
@@ -532,145 +546,145 @@ class _TableTicketState extends State<TableTicket> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
-              children: [
-                SingleChildScrollView(
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width,
-                      maxHeight: MediaQuery.of(context).size.height,
-                    ),
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width,
+                maxHeight: MediaQuery.of(context).size.height,
+              ),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  //! FILA 1 - DESPLEGABLES
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
                       children: [
-                        //! FILA 1 - DESPLEGABLES
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: InputSettings(
-                                  label: 'Fecha',
-                                  animate: false,
-                                  isNumeric: false,
-                                  isEditable: false,
-                                  valueNonEditable: formattedDate,
-                                ),
-                              ),
-                              const SizedBox(width: 16.0),
-                              const Expanded(
-                                child: NewDropDown(
-                                  mapKey: 'vehicle_registration',
-                                  labelText: 'Matrícula',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //! FILA 2 - DESPLEGABLES
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: NewDropDown(
-                                  mapKey: 'driver',
-                                  labelText: 'Conductor',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //! FILA 3 - DESPLEGABLES
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: NewDropDown(
-                                  mapKey: 'slaughterhouse',
-                                  labelText: 'Matadero',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //! FILA 4 - DESPLEGABLES
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: Text('Ganadero',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: appColors?[
-                                                  'labelInputColor'])),
-                                    ),
-                                    CustomButton(
-                                      text: _selectedRancher.isEmpty
-                                          ? dropDownState
-                                              .selectedValues['rancher']!
-                                          : _selectedRancher,
-                                      onPressed: () async {
-                                        searchableDropdownBloc.setItems(
-                                            dropDownState.values['rancher']!);
-                                        searchableDropdownBloc.setHeight(
-                                            screenHeight: MediaQuery.of(context)
-                                                .size
-                                                .height);
-                                        setState(() {});
-                                      },
-                                      textColor: appColors!['valueTableColor'],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 26.0),
-
-                        //! LISTA SCROLLEABLE DE TABLAS
                         Expanded(
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(
-                                decelerationRate:
-                                    ScrollDecelerationRate.normal),
-                            scrollDirection: Axis.horizontal,
-                            controller: _scrollController,
-                            itemCount: productTickets.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                  margin: const EdgeInsets.all(2.0),
-                                  width: tableWidth - 12,
-                                  child: Column(children: [
-                                    buildTable(dropDownState, index + 1),
-                                  ]));
-                            },
+                          child: InputSettings(
+                            label: 'Fecha',
+                            animate: false,
+                            isNumeric: false,
+                            isEditable: false,
+                            valueNonEditable: formattedDate,
                           ),
-                        )
+                        ),
+                        const SizedBox(width: 16.0),
+                        const Expanded(
+                          child: NewDropDown(
+                            mapKey: 'vehicle_registration',
+                            labelText: 'Matrícula',
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                SearchableDropdown(
-                  dropdownValue: 'rancher',
-                  titleText: 'Selecciona un ganadero',
-                  onItemSelected: (String selectedRancher) {
-                    setState(() {
-                      _selectedRancher = selectedRancher;
-                    });
-                  },
-                ),
-              ],
+                  //! FILA 2 - DESPLEGABLES
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: NewDropDown(
+                            mapKey: 'driver',
+                            labelText: 'Conductor',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  //! FILA 3 - DESPLEGABLES
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: NewDropDown(
+                            mapKey: 'slaughterhouse',
+                            labelText: 'Matadero',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  //! FILA 4 - DESPLEGABLES
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5),
+                                child: Text('Ganadero',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: appColors?[
+                                        'labelInputColor'])),
+                              ),
+                              CustomButton(
+                                text: _selectedRancher.isEmpty
+                                    ? dropDownState
+                                    .selectedValues['rancher']!
+                                    : _selectedRancher,
+                                onPressed: () async {
+                                  searchableDropdownBloc.setItems(
+                                      dropDownState.values['rancher']!);
+                                  searchableDropdownBloc.setHeight(
+                                      screenHeight: MediaQuery.of(context)
+                                          .size
+                                          .height);
+                                  setState(() {});
+                                },
+                                textColor: appColors!['valueTableColor'],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 26.0),
+
+                  //! LISTA SCROLLEABLE DE TABLAS
+                  Expanded(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(
+                          decelerationRate:
+                          ScrollDecelerationRate.normal),
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      itemCount: productTickets.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            margin: const EdgeInsets.all(2.0),
+                            width: tableWidth - 12,
+                            child: Column(children: [
+                              buildTable(dropDownState, index + 1),
+                            ]));
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
+          ),
+          SearchableDropdown(
+            dropdownValue: 'rancher',
+            titleText: 'Selecciona un ganadero',
+            onItemSelected: (String selectedRancher) {
+              setState(() {
+                _selectedRancher = selectedRancher;
+              });
+            },
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final dropDownBloc = context.read<DropDownBloc>();

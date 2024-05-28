@@ -38,9 +38,11 @@ class PrintHelper {
         result.addAll({'Conexión exitosa.': true});
         connected = true;
       } else {
+        await Preferences.setValue('mac', '');
         result.addAll({'No se ha podido conectar con el dispositivo.': false});
       }
     } else {
+      await Preferences.setValue('mac', '');
       result.addAll(
           {'No se puede identificar la dirección mac del dispositivo.': false});
     }

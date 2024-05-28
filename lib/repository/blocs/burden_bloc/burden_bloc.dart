@@ -156,12 +156,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
       DeliveryTicket lastDeliveryTicket =
           await _getLastOrNewDeliveryTicket(event.deliveryTicket);
-      if (event.deliveryTicket != null &&
-          event.deliveryTicket != lastDeliveryTicket) {
-        List<DeliveryTicket> listDeliveryTickets = await DeliveryTicket().selectAll<DeliveryTicket>();
-        event.deliveryTicket!.number = listDeliveryTickets.length + 1;
-        await event.deliveryTicket!.insert();
-      }
+
 
       List<ProductTicket> productTicket = [];
       for (var product in event.productTicket) {
@@ -176,11 +171,20 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           ..losses = product.losses);
       }
 
+      var cont = 0;
       for (var x in productTicket) {
         if (x.numAnimals! > 0) {
-          x.idTicket = event.deliveryTicket?.id ?? lastDeliveryTicket.id;
+          x.idTicket = event.deliveryTicket?.id ?? (lastDeliveryTicket.id == null ? 0 : lastDeliveryTicket.id! + 1);
           await x.insert();
+          cont++;
         }
+      }
+
+      if (event.deliveryTicket != null &&
+          event.deliveryTicket != lastDeliveryTicket && cont > 0) {
+        List<DeliveryTicket> listDeliveryTickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+        event.deliveryTicket!.number = listDeliveryTickets.length + 1;
+        await event.deliveryTicket!.insert();
       }
 
       final data =

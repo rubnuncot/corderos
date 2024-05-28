@@ -27,6 +27,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     }
 
     state.selectedValues[key] = value;
+    emit(state);
   }
 
   Future<void> _getDatabaseValues() async {
