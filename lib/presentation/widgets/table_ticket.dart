@@ -6,7 +6,6 @@ import 'package:corderos_app/presentation/widgets/bluetooth_list.dart';
 import 'package:corderos_app/presentation/widgets/new_drop_down.dart';
 import 'package:corderos_app/presentation/widgets/searchable_dropdown.dart';
 import 'package:corderos_app/repository/!repository.dart';
-import 'package:corderos_app/repository/blocs/!blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -57,9 +56,13 @@ class _TableTicketState extends State<TableTicket> {
         }
       });
     });
-    performanceSubscription = context.read<DropDownBloc>().stream.listen((state) {
-      dropDownBloc!.getSelectedModel();
-    });
+    performanceSubscription =
+        context
+            .read<DropDownBloc>()
+            .stream
+            .listen((state) {
+          dropDownBloc!.getSelectedModel();
+        });
     burdenBloc!.add(GetTableIndex());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -80,18 +83,23 @@ class _TableTicketState extends State<TableTicket> {
     burdenBloc?.add(UploadData(
         context: context,
         deliveryTicket: DeliveryTicket.all(
-          deliveryTicket: list[VehicleRegistrationModel().runtimeType.toString()].vehicleRegistrationNum,
+          deliveryTicket:
+          list[VehicleRegistrationModel().runtimeType.toString()]
+              .vehicleRegistrationNum,
           idProduct: list[ProductModel().runtimeType.toString()].id,
           idRancher: list[RancherModel().runtimeType.toString()].id,
-          idSlaughterhouse: list[SlaughterhouseModel().runtimeType.toString()].id,
+          idSlaughterhouse:
+          list[SlaughterhouseModel().runtimeType.toString()].id,
           idDriver: list[DriverModel().runtimeType.toString()].id,
-          idVehicleRegistration: list[VehicleRegistrationModel().runtimeType.toString()].id,
+          idVehicleRegistration:
+          list[VehicleRegistrationModel().runtimeType.toString()].id,
           date: DateTime.now(),
           number: 0,
           isSend: false,
         ),
         productTicket: productTickets
-            .where((element) => (element.numAnimals != null && element.numAnimals! > 0))
+            .where((element) =>
+        (element.numAnimals != null && element.numAnimals! > 0))
             .toList()));
 
     burdenBloc!.stream
@@ -128,12 +136,10 @@ class _TableTicketState extends State<TableTicket> {
     productTickets = [ProductTicketModel()];
   }
 
-  void showEditDialog(
-      String title,
+  void showEditDialog(String title,
       int index,
       String currentValue,
-      Function(String) onUpdate,
-      ) {
+      Function(String) onUpdate,) {
     bool isDropDown = _isDropDownField(title);
     bool isEditable = title != 'Clasif';
     Map<String, String> dropDownValues = {
@@ -190,8 +196,7 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget _buildDialogContent(
-      BuildContext context,
+  Widget _buildDialogContent(BuildContext context,
       String title,
       String currentValue,
       bool isDropDown,
@@ -204,7 +209,10 @@ class _TableTicketState extends State<TableTicket> {
       {bool number = false}) {
     return SizedBox(
       width: double.maxFinite,
-      height: MediaQuery.of(context).size.height * 0.1,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.1,
       child: isDropDown
           ? _buildDropDownContent(
           title, currentValue, dropDownValues, dropdownBloc, context, index)
@@ -214,14 +222,12 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget _buildDropDownContent(
-      String title,
+  Widget _buildDropDownContent(String title,
       String currentValue,
       Map<String, String> dropDownValues,
       DropDownBloc dropDownBloc,
       BuildContext context,
-      int index,
-      ) {
+      int index,) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -260,24 +266,22 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  List<Widget> _buildDialogActions(
-      BuildContext context,
+  List<Widget> _buildDialogActions(BuildContext context,
       String title,
       String editedValue,
       Function(String) onUpdate,
       DropDownBloc dropDownBloc,
       Map<String, dynamic>? appColors,
-      int index,
-      ) {
+      int index,) {
     return [
       TextButton(
         onPressed: () {
           Navigator.of(context).pop();
           onUpdate(textController.text);
           _updateDropDownBloc(dropDownBloc, title, index);
-          dropDownBloc.filterSelectedClassification(
-              productTickets.isEmpty ? '' :
-              productTickets[index].classification!.name ?? '');
+          dropDownBloc.filterSelectedClassification(productTickets.isEmpty
+              ? ''
+              : productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
           setState(() {});
         },
@@ -289,8 +293,8 @@ class _TableTicketState extends State<TableTicket> {
     ];
   }
 
-  void _updateDropDownBloc(
-      DropDownBloc dropDownBloc, String title, int index) async {
+  void _updateDropDownBloc(DropDownBloc dropDownBloc, String title,
+      int index) async {
     dropDownBloc.filterSelectedProduct();
     Classification classificationEntity = Classification();
 
@@ -318,7 +322,8 @@ class _TableTicketState extends State<TableTicket> {
         await classificationModel.fromEntity(classifications[0]);
         productTickets.addAll([
           ProductTicketModel()
-              .updateValue<ProductTicketModel>('classification', classificationModel)
+              .updateValue<ProductTicketModel>(
+              'classification', classificationModel)
               .updateValue<ProductTicketModel>(
               'product',
               dropDownBloc.state.models['product']!
@@ -327,9 +332,7 @@ class _TableTicketState extends State<TableTicket> {
                   dropDownBloc.state.selectedValues['product'])
                   .first)
         ]);
-        setState(() {
-
-        });
+        setState(() {});
       }
     }
   }
@@ -351,8 +354,8 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget buildEditableCell(
-      String value, Map<String, String> label, int listIndex) {
+  Widget buildEditableCell(String value, Map<String, String> label,
+      int listIndex) {
     final appColors = AppColors(context: context).getColors();
 
     return TableCell(
@@ -364,45 +367,54 @@ class _TableTicketState extends State<TableTicket> {
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         onPressed: () async {
-          final dropDownBloc = context.read<DropDownBloc>();
           textController.text = value;
-          Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
-
+          Map<String, dynamic> list = await dropDownBloc!.getSelectedModel();
+          setState(() {});
           if (label.keys.first == 'Producto' ||
-              (label.keys.first == 'NºCorderos' && productTickets[listIndex].product != null) ||
-              (productTickets[listIndex].product != null && productTickets[listIndex].numAnimals != null && productTickets[listIndex].numAnimals! > 0)) {
-            showEditDialog(label.keys.first, listIndex, value, (newValue) {
-              setState(() {
-                dynamic requestValue = list;
-                String key = label.keys.first;
+              (label.keys.first == 'NºCorderos' &&
+                  productTickets[listIndex].product != null) ||
+              (productTickets[listIndex].product != null &&
+                  productTickets[listIndex].numAnimals != null &&
+                  productTickets[listIndex].numAnimals! > 0)) {
+            showEditDialog(label.keys.first, listIndex, value,
+                    (newValue) async {
+                  dynamic requestValue = list;
+                  String key = label.keys.first;
+                  switch (key) {
+                    case 'NºCorderos':
+                    case 'Kg':
+                    case 'Color':
+                      requestValue = newValue;
+                    case 'Clasif':
+                      requestValue =
+                          list[ClassificationModel().runtimeType.toString()]
+                              .name;
+                      break;
+                    case 'Rend':
+                      requestValue = await dropDownBloc!.getSelectedModel();
+                      break;
+                    default:
+                      requestValue = list;
+                  }
 
-                switch (key) {
-                  case 'NºCorderos':
-                  case 'Kg':
-                  case 'Color':
-                    requestValue = newValue;
-                  case 'Clasif':
-                    requestValue = list[ClassificationModel().runtimeType.toString()].name;
-                    break;
-                  default:
-                    requestValue = list;
-                }
-
-                value = newValue;
-                productTickets[listIndex] = productTickets[listIndex]
-                    .updateValue<ProductTicketModel>(
-                    label.values.first, requestValue);
-              });
-            });
-          } else if (label.keys.first != 'Producto' && productTickets[listIndex].product == null) {
+                  value = newValue;
+                  productTickets[listIndex] = productTickets[listIndex]
+                      .updateValue<ProductTicketModel>(
+                      label.values.first, requestValue);
+                  setState(() {});
+                });
+          } else if (label.keys.first != 'Producto' &&
+              productTickets[listIndex].product == null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Primero selecciona un producto para poder seguir introduciendo datos.'),
+              const SnackBar(
+                content: Text(
+                    'Primero selecciona un producto para poder seguir introduciendo datos.'),
               ),
             );
-          } else if (productTickets[listIndex].numAnimals == null || productTickets[listIndex].numAnimals! == 0) {
+          } else if (productTickets[listIndex].numAnimals == null ||
+              productTickets[listIndex].numAnimals! == 0) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Primero añade el número de animales.'),
               ),
             );
@@ -437,7 +449,9 @@ class _TableTicketState extends State<TableTicket> {
             ]),
             TableRow(children: [
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].product == null ? '' : productTickets[tableIndex - 1].product!.name}',
+                  '${productTickets[tableIndex - 1].product == null
+                      ? ''
+                      : productTickets[tableIndex - 1].product!.name}',
                   {'Producto': 'product'},
                   tableIndex - 1),
               buildEditableCell(
@@ -445,7 +459,9 @@ class _TableTicketState extends State<TableTicket> {
                   {'NºCorderos': 'numAnimals'},
                   tableIndex - 1),
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].classification == null ? '' : productTickets[tableIndex - 1].classification!.name}',
+                  '${productTickets[tableIndex - 1].classification == null
+                      ? ''
+                      : productTickets[tableIndex - 1].classification!.name}',
                   {'Clasif': 'nameClassification'},
                   tableIndex - 1),
             ]),
@@ -489,7 +505,10 @@ class _TableTicketState extends State<TableTicket> {
             ]),
             TableRow(children: [
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].performance == null ? '' : productTickets[tableIndex - 1].performance!.performance}',
+                  '${productTickets[tableIndex - 1].performance == null
+                      ? ''
+                      : productTickets[tableIndex - 1].performance!
+                      .performance}',
                   {'Rend': 'performance'},
                   tableIndex - 1),
               buildEditableCell(
@@ -534,13 +553,28 @@ class _TableTicketState extends State<TableTicket> {
 
   @override
   Widget build(BuildContext context) {
-    double tableWidth = MediaQuery.of(context).size.width * 0.945;
+    double tableWidth = MediaQuery
+        .of(context)
+        .size
+        .width * 0.945;
     final appColors = AppColors(context: context).getColors();
-    final dropDownState = context.watch<DropDownBloc>().state;
+    final dropDownState = context
+        .watch<DropDownBloc>()
+        .state;
     final searchableDropdownBloc = context.read<SearchableDropdownBloc>();
 
     String formattedDate =
-        "${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}/${DateTime.now().year}";
+        "${DateTime
+        .now()
+        .day
+        .toString()
+        .padLeft(2, '0')}/${DateTime
+        .now()
+        .month
+        .toString()
+        .padLeft(2, '0')}/${DateTime
+        .now()
+        .year}";
 
     return Scaffold(
       body: isLoading
@@ -550,8 +584,14 @@ class _TableTicketState extends State<TableTicket> {
           SingleChildScrollView(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width,
-                maxHeight: MediaQuery.of(context).size.height,
+                maxWidth: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                maxHeight: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
               ),
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -636,7 +676,8 @@ class _TableTicketState extends State<TableTicket> {
                                   searchableDropdownBloc.setItems(
                                       dropDownState.values['rancher']!);
                                   searchableDropdownBloc.setHeight(
-                                      screenHeight: MediaQuery.of(context)
+                                      screenHeight: MediaQuery
+                                          .of(context)
                                           .size
                                           .height);
                                   setState(() {});
@@ -690,11 +731,21 @@ class _TableTicketState extends State<TableTicket> {
           final dropDownBloc = context.read<DropDownBloc>();
           Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
 
-          if (await Permission.bluetooth.request().isGranted &&
-              await Permission.bluetoothScan.request().isGranted &&
-              await Permission.location.request().isGranted &&
-              await Permission.bluetoothAdvertise.request().isGranted &&
-              await Permission.bluetoothConnect.request().isGranted) {
+          if (await Permission.bluetooth
+              .request()
+              .isGranted &&
+              await Permission.bluetoothScan
+                  .request()
+                  .isGranted &&
+              await Permission.location
+                  .request()
+                  .isGranted &&
+              await Permission.bluetoothAdvertise
+                  .request()
+                  .isGranted &&
+              await Permission.bluetoothConnect
+                  .request()
+                  .isGranted) {
             endTicket(list);
             burdenBloc!.add(IncrementTableIndex());
           }

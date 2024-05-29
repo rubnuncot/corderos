@@ -136,7 +136,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     }
   }
 
-  Future<Map<String, dynamic>>  getSelectedModel() async {
+  Future<Map<String, dynamic>>  getSelectedModel({dynamic selectedModel}) async {
     Map<String, dynamic> returnedList = {};
 
     state.models.forEach((modelListKey, modelList) {
@@ -147,7 +147,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
         if (model is VehicleRegistrationModel) {
           shouldAddModel = model.vehicleRegistrationNum == selectedValue;
         } else if (model is PerformanceModel) {
-          shouldAddModel = model.performance == int.tryParse(selectedValue!);
+          shouldAddModel = model.performance == int.tryParse(selectedModel ?? selectedValue);
         } else {
           shouldAddModel = model.name == selectedValue;
         }
