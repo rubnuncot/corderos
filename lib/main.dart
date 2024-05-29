@@ -1,6 +1,7 @@
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'data/preferences/preferences.dart';
 import 'main.reflectable.dart';
@@ -70,8 +71,6 @@ class BlocsProviders extends StatelessWidget {
   }
 }
 
-//Cuando entre en la app, tiene que leer de las preferencias el tema
-//y aplicarlo.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -79,7 +78,43 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  DateTime? _lastPressed;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
+
+  @override
+  Future<bool> didPopRoute() async {
+    final now = DateTime.now();
+    if (_lastPressed == null || now.difference(_lastPressed!) > const Duration(seconds: 2)) {
+      _lastPressed = now;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Presiona de nuevo para salir'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return true;
+    } else {
+      //! 2º Click en menos de 2 segundos
+      SystemNavigator.pop(); //! Cierra App
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeBlocState = context.watch<ThemeBloc>().state;
@@ -88,9 +123,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Corderos',
       routerConfig: context.read<RouterBloc>().state,
-      theme: themeBlocState.isDarkTheme
-          ? AppTheme.darkTheme
-          : AppTheme.lightTheme,
+      theme: themeBlocState.isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme,
     );
   }
 }
