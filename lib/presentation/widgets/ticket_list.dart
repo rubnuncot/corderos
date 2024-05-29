@@ -108,14 +108,18 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors(context: context).getColors();
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: ListView.builder(
-        itemCount: tickets.length,
-        itemBuilder: (context, index) {
-          return _buildTicketCard(context, index, appColors);
-        },
-      ),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: tickets.length,
+            itemBuilder: (context, index) {
+              return _buildTicketCard(context, index, appColors);
+            },
+          ),
+        ),
+      ],
     );
   }
 

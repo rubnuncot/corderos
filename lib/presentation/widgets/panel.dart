@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../!helpers/app_theme.dart';
 import '../../repository/!repository.dart';
+import '../../repository/blocs/send_bloc/send_bloc.dart';
 
 class Panel extends StatelessWidget {
   final Size size;
@@ -15,6 +16,7 @@ class Panel extends StatelessWidget {
     final appColors = AppColors(context: context).getColors();
     final openPanel = context.read<OpenPanelBloc>();
     final openPanelState = context.watch<OpenPanelBloc>().state;
+    final sendBloc = context.read<SendBloc>();
 
     final screens = {
       0 : const ClientList(),
@@ -42,6 +44,12 @@ class Panel extends StatelessWidget {
             Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
+                title: Text(
+                  sendBloc.client.name != null
+                      ? sendBloc.client.name!
+                      : 'Seleccionar cliente',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 leading: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => openPanel.closePanel(),
