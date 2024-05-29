@@ -48,7 +48,7 @@ class Panel extends StatelessWidget {
                   sendBloc.client.name != null
                       ? sendBloc.client.name!
                       : 'Seleccionar cliente',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: appColors['dialogTitleColorPanel']!),
                 ),
                 leading: IconButton(
                   icon: const Icon(Icons.close),

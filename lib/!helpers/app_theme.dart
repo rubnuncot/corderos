@@ -164,6 +164,7 @@ class AppColors {
       'lineTicketBackground': Theme.of(context).colorScheme.onErrorContainer,
       //! COLOR DE FONDO DEL PANEL
       'backgroundPanel': Theme.of(context).colorScheme.onPrimaryContainer,
+      'dialogTitleColorPanel': Theme.of(context).colorScheme.onSurface,
     });
     return colors;
   }
