@@ -34,7 +34,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   void _initializeBloc() {
     clientBloc = BlocProvider.of<ClientBloc>(context);
     sendBloc = BlocProvider.of<SendBloc>(context);
-    clientBloc!.add(FetchTickets());
+    clientBloc!.add(FetchTicketsEmail());
 
     clientSubscription = clientBloc!.stream.listen((state) {
       if (state is ClientSuccess) {
@@ -45,7 +45,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
 
   void _handleClientSuccess(ClientSuccess state) {
     switch (state.event) {
-      case 'FetchTickets':
+      case 'FetchTicketsEmail':
         _handleFetchTickets(state);
         break;
       case 'FetchProductTickets':
@@ -111,6 +111,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     return Column(
       children: [
         Container(
+          constraints: const BoxConstraints(maxHeight: 200),
           padding: const EdgeInsets.all(8),
           child: ListView.builder(
             itemCount: tickets.length,
@@ -135,7 +136,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       color: isSelected ? appColors!['selectedBackgroundCard'] : null,
       child: Column(
         children: [
-          _buildListTile(deliveryTicketModel!, index, isSelected, appColors,
+          _buildListTile(deliveryTicketModel ?? DeliveryTicketModel(), index, isSelected, appColors,
               animationController, ticket),
           AnimatedSize(
             duration: const Duration(milliseconds: 1000),

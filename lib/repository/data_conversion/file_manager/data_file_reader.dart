@@ -173,7 +173,7 @@ class DataFileReader {
   /// del método [checkVersion()] y mediante un try catch, ejecuta el método
   /// [downloadApk()] para descargar el APK. Comprueba que se han aceptado
   /// los permisos para instalar paquetes y abre la app (app-release.apk).
-  /// En caso de error, muestra un log con su respectivo mensaje de erro.
+  /// En caso de error, muestra un log con su respectivo mensaje.
   ///
   /// ----------------------------------------------------------------
   ///

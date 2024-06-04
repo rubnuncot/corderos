@@ -49,3 +49,7 @@ class SelectSendTicket extends ClientEvent {
 
   SelectSendTicket({required this.ticket});
 }
+
+class FetchTicketsEmail extends ClientEvent {
+  FetchTicketsEmail();
+}

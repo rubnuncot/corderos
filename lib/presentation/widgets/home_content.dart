@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:corderos_app/repository/blocs/!blocs.dart';
-import 'package:corderos_app/repository/blocs/client_bloc/client_bloc.dart';
 import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
