@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:corderos_app/data/preferences/preferences.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import '../../../data/!data.dart';
@@ -36,8 +37,26 @@ class SendBloc extends Bloc<SendEvent, SendState> {
 
       clientDeliveryNote.clientId = client.id;
       clientDeliveryNote.date = DateTime.now();
-      var lastClient = await clientDeliveryNote.selectLast<ClientDeliveryNote>();
-      clientDeliveryNote.number = lastClient.number! + 1;
+      List<ClientDeliveryNote> clients = await clientDeliveryNote.selectAll<ClientDeliveryNote>();
+
+      if(clients.isNotEmpty) {
+        var lastClient = await clientDeliveryNote.selectLast<ClientDeliveryNote>();
+        clientDeliveryNote.number = lastClient.number! + 1;
+      }else {
+        clientDeliveryNote.number = 1;
+      }
+
+      int slaughterhouseId = await Preferences.getValue('slaughterhouse');
+
+      String vehicleRegistrationPreferences = await Preferences.getValue('vehicle_registration');
+      List<VehicleRegistration> listVehicleRegistration = await VehicleRegistration().getData<VehicleRegistration>(
+          where: ['vehicleRegistrationNum', SqlBuilder.constOperators['equals']!, vehicleRegistrationPreferences]
+      );
+      VehicleRegistration vehicleRegistration = listVehicleRegistration.first;
+
+      clientDeliveryNote.series = vehicleRegistration.deliveryTicket;
+      //clientDeliveryNote.idProduct = ;
+      clientDeliveryNote.slaughterhouseId = slaughterhouseId;
       clientDeliveryNote.isSend = true;
       await clientDeliveryNote.insert();
 

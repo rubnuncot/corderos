@@ -60,11 +60,13 @@ class ModelDao extends Dao {
       builder.queryLimit(limit: '$limit');
     }
 
-    return await super.select<T>(sqlBuilder: builder, model: this) as List<T>;
+    return await super.
+    select<T>(sqlBuilder: builder, model: this) as List<T>;
   }
 
   Future<List<T>> selectAll<T>() async {
-    return await getData<T>();
+    List<T> data = await getData<T>();
+    return data.isEmpty ? [] : data;
   }
 
   Future<T> selectLast<T>() async {
