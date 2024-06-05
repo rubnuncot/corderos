@@ -59,3 +59,9 @@ class OpenProductTicketList extends TicketEvent {
 class DeleteAllTickets extends TicketEvent {
 
 }
+
+class SetIconTicketState extends TicketEvent {
+  final int number;
+
+  SetIconTicketState({required this.number});
+}

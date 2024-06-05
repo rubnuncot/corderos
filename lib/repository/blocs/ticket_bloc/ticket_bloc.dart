@@ -24,6 +24,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     on<AddLosses>(_addLosses);
     on<OpenProductTicketList>(_openPanel);
     on<DeleteAllTickets>(_onDeleteAllTickets);
+    on<SetIconTicketState>(_onSetIconTicketState);
   }
 
   Future<void> _onFetchTicketsScreen(
@@ -62,13 +63,11 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     }
   }
 
-
-
   Future<void> _onSelectTicket(
       SelectTicket event, Emitter<TicketState> emit) async {
     try {
       final selectedDeliveryTicket =
-      await _fetchDeliveryTicketById(event.ticketId);
+          await _fetchDeliveryTicketById(event.ticketId);
       if (selectedDeliveryTicket != null) {
         selectedDeliveryTicket.isSend = !selectedDeliveryTicket.isSend!;
         await selectedDeliveryTicket.update();
@@ -90,11 +89,11 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       DeleteTicket event, Emitter<TicketState> emit) async {
     try {
       final selectedDeliveryTicket =
-      await _fetchDeliveryTicketById(event.ticketId);
+          await _fetchDeliveryTicketById(event.ticketId);
       final selectedProductTicket =
-      await _fetchProductTicketByTicketId(event.ticketId);
+          await _fetchProductTicketByTicketId(event.ticketId);
       await selectedDeliveryTicket?.delete();
-      for(var productTicket in selectedProductTicket!){
+      for (var productTicket in selectedProductTicket!) {
         await productTicket.delete();
       }
       emit(TicketSuccess(
@@ -112,9 +111,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     emit(TicketLoading());
     try {
       final deliveryTicketModel =
-      await _getDeliveryTicketModelById(event.ticketId);
+          await _getDeliveryTicketModelById(event.ticketId);
       final productTicketModel =
-      await _getProductTicketModelByTicketId(event.ticketId);
+          await _getProductTicketModelByTicketId(event.ticketId);
       emit(TicketSuccess(
         message: 'Tickets de productos obtenidos correctamente',
         data: [productTicketModel, deliveryTicketModel],
@@ -143,9 +142,6 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     }
   }
 
-
-
-
   Future<DeliveryTicket?> _fetchDeliveryTicketById(int ticketId) async {
     final results = await DeliveryTicket().select(
       model: DeliveryTicket(),
@@ -153,10 +149,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
           .querySelect(fields: ["*"])
           .queryFrom(table: DeliveryTicket().getTableName(DeliveryTicket()))
           .queryWhere(conditions: [
-        'id',
-        SqlBuilder.constOperators['equals']!,
-        '$ticketId'
-      ]),
+            'id',
+            SqlBuilder.constOperators['equals']!,
+            '$ticketId'
+          ]),
     );
     return results.isNotEmpty ? results.first as DeliveryTicket : null;
   }
@@ -164,15 +160,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   Future<List<ProductTicket>?> _fetchProductTicketByTicketId(
       int ticketId) async {
     final results = await ProductTicket().getData<ProductTicket>(
-      where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId']
-    );
+        where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId']);
     return results.isNotEmpty ? results : null;
   }
 
   Future<DeliveryTicketModel> _getDeliveryTicketModelById(int ticketId) async {
     final model = DeliveryTicketModel();
     final entity =
-    await DatabaseRepository.getEntityById(DeliveryTicket(), ticketId);
+        await DatabaseRepository.getEntityById(DeliveryTicket(), ticketId);
     await model.fromEntity(entity);
     return model;
   }
@@ -194,30 +189,30 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   Future<Map<String, dynamic>> _gatherPrintData(
       DeliveryTicket deliveryTicket) async {
     final productTicketModel =
-    await _getProductTicketModelByTicketId(deliveryTicket.id!);
+        await _getProductTicketModelByTicketId(deliveryTicket.id!);
     final vehicleRegistrationModel =
-    await _getModelById<VehicleRegistrationModel>(
-        VehicleRegistration(), deliveryTicket.idVehicleRegistration!);
+        await _getModelById<VehicleRegistrationModel>(
+            VehicleRegistration(), deliveryTicket.idVehicleRegistration!);
     final driverModel =
-    await _getModelById<DriverModel>(Driver(), deliveryTicket.idDriver!);
+        await _getModelById<DriverModel>(Driver(), deliveryTicket.idDriver!);
     final rancherModel =
-    await _getModelById<RancherModel>(Rancher(), deliveryTicket.idRancher!);
+        await _getModelById<RancherModel>(Rancher(), deliveryTicket.idRancher!);
     final slaughterhouseModel = await _getModelById<SlaughterhouseModel>(
         Slaughterhouse(), deliveryTicket.idSlaughterhouse!);
 
     Map<String, dynamic> ticket = {
       'date': deliveryTicket.date.toString(),
-      'deliveryTicketNumber' : deliveryTicket.deliveryTicket,
+      'deliveryTicketNumber': deliveryTicket.deliveryTicket,
       'vehicleRegistrationNum': vehicleRegistrationModel.vehicleRegistrationNum,
       'driver': driverModel.name,
       'slaughterHouse': slaughterhouseModel.name,
       'rancher': rancherModel.name,
-      'product' : productTicketModel.first.product!.name,
-      'number' : [],
-      'classification' : [],
-      'performance' : [],
-      'kilograms' : [],
-      'color' : [],
+      'product': productTicketModel.first.product!.name,
+      'number': [],
+      'classification': [],
+      'performance': [],
+      'kilograms': [],
+      'color': [],
     };
 
     for (final productTicket in productTicketModel) {
@@ -252,9 +247,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     return model;
   }
 
-  Future<void> _openPanel(OpenProductTicketList event, Emitter<TicketState> emit) async {
+  Future<void> _openPanel(
+      OpenProductTicketList event, Emitter<TicketState> emit) async {
     final productTicketModel =
-    await _getProductTicketModelByTicketId(event.ticketId);
+        await _getProductTicketModelByTicketId(event.ticketId);
     emit(TicketSuccess(
       message: 'Tickets de productos obtenidos correctamente',
       data: [productTicketModel],
@@ -263,7 +259,8 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _addLosses(AddLosses event, Emitter<TicketState> emit) async {
-    final productTicket = await DatabaseRepository.getEntityById(ProductTicket(), event.productTicketId);
+    final productTicket = await DatabaseRepository.getEntityById(
+        ProductTicket(), event.productTicketId);
     productTicket.losses = event.losses;
     await productTicket.update();
     emit(TicketSuccess(
@@ -280,8 +277,11 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
 
       for (var ticket in allTickets) {
         final allProductTickets = await ProductTicket().getData<ProductTicket>(
-            where: ['idTicket', SqlBuilder.constOperators['equals']!, '${ticket.id}']
-        );
+            where: [
+              'idTicket',
+              SqlBuilder.constOperators['equals']!,
+              '${ticket.id}'
+            ]);
 
         DeliveryTicket().batchDelete(objectsToDelete: allTickets);
         ProductTicket().batchDelete(objectsToDelete: allProductTickets);
@@ -297,4 +297,30 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     }
   }
 
+  Future<void> _onSetIconTicketState(
+      SetIconTicketState event, Emitter<TicketState> emit) async {
+
+    try {
+      int deliveryTicketNumber = event.number;
+      bool isTicketSend;
+
+      final selectedTicket =  await ClientDeliveryNote().getData<ClientDeliveryNote>(
+        where: ['number', SqlBuilder.constOperators['equals']!, '$deliveryTicketNumber']
+      );
+
+      if (selectedTicket.isEmpty) {
+        isTicketSend = false;
+      } else {
+        isTicketSend = true;
+      }
+
+      emit(TicketSuccess(
+          message: 'Icono de ticket establecido correctamente',
+          data: [isTicketSend],
+          event: 'SetIconTicketState')
+      );
+    } catch(e) {
+      emit(TicketError('Ha habido un error al establecer el estado del icono'));
+    }
+  }
 }

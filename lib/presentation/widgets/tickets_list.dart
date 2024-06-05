@@ -36,6 +36,7 @@ class _TicketListState extends State<TicketList> {
 
   int losses = 0;
 
+  bool isTicketSend = false;
   bool openedList = false;
   bool openedTicket = false;
 
@@ -98,6 +99,12 @@ class _TicketListState extends State<TicketList> {
               ranchers = [];
               products = [];
               _showSuccessDialog();
+            });
+            break;
+
+          case 'SetIconTicketState':
+            setState(() {
+              isTicketSend = state.data[0];
             });
             break;
 
@@ -707,6 +714,8 @@ class _TicketListState extends State<TicketList> {
             final rancher = ranchers[index];
             final product = products[index];
             String formattedDate = dateFormat.format(ticket.date!);
+            ticketBloc!.add(SetIconTicketState(
+                number: ticket.number!));
             return ZoomTapAnimation(
               onTap: () {
                 showDropDown(ticket);
@@ -722,9 +731,15 @@ class _TicketListState extends State<TicketList> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Icon(FontAwesomeIcons.file, size: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        //FontAwesomeIcons.file, size: 24
+                        child: Icon(
+                          isTicketSend
+                              ? FontAwesomeIcons.check
+                              : FontAwesomeIcons.file,
+                          size: 24,
+                        ),
                       ),
                       Expanded(
                         child: Padding(
