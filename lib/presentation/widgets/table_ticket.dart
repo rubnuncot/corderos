@@ -31,6 +31,7 @@ class _TableTicketState extends State<TableTicket> {
   StreamSubscription? performanceSubscription;
   final ScrollController _scrollController = ScrollController();
   bool dialogShown = false;
+  bool activateButton = false;
 
   List<ProductTicketModel> productTickets = [ProductTicketModel()];
 
@@ -85,7 +86,7 @@ class _TableTicketState extends State<TableTicket> {
         deliveryTicket: DeliveryTicket.all(
           deliveryTicket:
           list[VehicleRegistrationModel().runtimeType.toString()]
-              .vehicleRegistrationNum,
+              .clientDeliveryNote,
           idProduct: list[ProductModel().runtimeType.toString()].id,
           idRancher: list[RancherModel().runtimeType.toString()].id,
           idSlaughterhouse:
@@ -96,6 +97,7 @@ class _TableTicketState extends State<TableTicket> {
           date: DateTime.now(),
           number: 0,
           isSend: false,
+          idOut: null,
         ),
         productTicket: productTickets
             .where((element) =>
@@ -283,6 +285,8 @@ class _TableTicketState extends State<TableTicket> {
               ? ''
               : productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
+
+          activateButton = (title == 'Kg');
           setState(() {});
         },
         child: Text(
@@ -366,7 +370,7 @@ class _TableTicketState extends State<TableTicket> {
           foregroundColor: appColors['valueTableColor'],
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
-        onPressed: () async {
+        onPressed: label.keys.first == "Clasificacion" ? null : () async {
           textController.text = value;
           Map<String, dynamic> list = await dropDownBloc!.getSelectedModel();
           setState(() {});
@@ -383,7 +387,6 @@ class _TableTicketState extends State<TableTicket> {
                   switch (key) {
                     case 'NºCorderos':
                     case 'Kg':
-                    case 'Color':
                       requestValue = newValue;
                     case 'Clasif':
                       requestValue =
@@ -501,7 +504,6 @@ class _TableTicketState extends State<TableTicket> {
             TableRow(children: [
               buildTableHeader('Rend'),
               buildTableHeader('Kg'),
-              buildTableHeader('Color'),
             ]),
             TableRow(children: [
               buildEditableCell(
@@ -514,12 +516,6 @@ class _TableTicketState extends State<TableTicket> {
               buildEditableCell(
                   '${productTickets[tableIndex - 1].weight ?? '0'}',
                   {'Kg': 'weight'},
-                  tableIndex - 1),
-              buildEditableCell(
-                  '${productTickets[tableIndex - 1].color}' == 'null'
-                      ? ''
-                      : '${productTickets[tableIndex - 1].color}',
-                  {'Color': 'color'},
                   tableIndex - 1),
             ]),
           ],
@@ -727,7 +723,7 @@ class _TableTicketState extends State<TableTicket> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
+        onPressed: !activateButton ? null : () async {
           final dropDownBloc = context.read<DropDownBloc>();
           Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
 

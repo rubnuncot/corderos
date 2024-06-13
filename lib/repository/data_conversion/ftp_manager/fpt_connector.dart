@@ -84,9 +84,9 @@ class FtpConnector {
         '82.223.98.115',
         port: 21,
         user: 'android',
-        pass: 'Android2023/*-',
+        pass: 'Gaeinf2017/*-',
       );
-      path = '/corderos';
+      path = '/appcorderos';
     }
 
     try {

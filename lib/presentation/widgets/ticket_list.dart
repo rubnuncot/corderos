@@ -65,7 +65,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       isOpen = List.generate(tickets.length, (_) => false);
       animationControllers = List.generate(
           tickets.length,
-          (_) => AnimationController(
+              (_) => AnimationController(
               duration: const Duration(milliseconds: 300), vsync: this));
     });
     _fetchProductTickets();
@@ -111,8 +111,8 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     return Column(
       children: [
         Container(
-          constraints: const BoxConstraints(maxHeight: 200),
           padding: const EdgeInsets.all(8),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
           child: ListView.builder(
             itemCount: tickets.length,
             itemBuilder: (context, index) {
@@ -158,7 +158,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       DeliveryTicket deliveryTicket) {
     return ListTile(
       title: Text(
-        '${ticket.rancher!.name}',
+        '${ticket.rancher == null ? '' : ticket.rancher!.name}',
         style: TextStyle(
           color: isSelected
               ? appColors!['selectedTitleCard']
@@ -166,7 +166,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
         ),
       ),
       subtitle: Text(
-        '${ticket.product!.name}',
+        '${ticket.product == null ? '' : ticket.product!.name}',
         style: TextStyle(
           color: isSelected
               ? appColors['selectedTitleCard']
@@ -174,7 +174,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
         ),
       ),
       trailing:
-          _buildAnimatedIcon(isSelected, animationController, index, appColors),
+      _buildAnimatedIcon(isSelected, animationController, index, appColors),
       onTap: () {
         _toggleSelection(deliveryTicket);
       },
@@ -294,7 +294,6 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
           productTicketModel.classification!.name ?? '', isSelected),
       _buildTableRow('Rendimiento',
           '${productTicketModel.performance?.performance ?? ''}', isSelected),
-      _buildTableRow('Color', productTicketModel.color ?? '', isSelected),
       _buildTableRow(
           'Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),
     ];

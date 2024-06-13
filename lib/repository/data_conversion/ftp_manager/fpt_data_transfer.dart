@@ -137,11 +137,15 @@ class FtpDataTransfer {
   /// ```
 
   Future<void> downloadApk () async {
-    FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
-    Directory directory = await getApplicationDocumentsDirectory();
-    File apk = File('${directory.path}/app-release.apk');
-    await ftpConnect.downloadFile('app-release.apk', apk);
-    ftp.closeConnection();
+    try{
+      FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
+      Directory directory = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+      File apk = File('${directory.path}/app-release.apk');
+      await ftpConnect.downloadFile('app-release.apk', apk);
+      ftp.closeConnection();
+    } catch(e) {
+      LogHelper.logger.d('Error downloading APK: $e');
+    }
   }
 
   /// ### `sendFilesToFTP()`

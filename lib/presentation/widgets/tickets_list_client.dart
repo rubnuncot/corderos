@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:corderos_app/repository/blocs/!blocs.dart';
+import 'package:corderos_app/repository/blocs/ticket_client_bloc/ticket_client_bloc.dart';
 import 'package:drop_down_list/drop_down_list.dart';
 import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
@@ -14,23 +16,23 @@ import 'package:intl/intl.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class TicketsList extends StatefulWidget {
-  const TicketsList({super.key});
+class TicketListClient extends StatefulWidget {
+  const TicketListClient({super.key});
 
   @override
-  State<TicketsList> createState() => _TicketsListState();
+  State<TicketListClient> createState() => _TicketListClientState();
 }
 
-class _TicketsListState extends State<TicketsList> {
-  TicketBloc? ticketBloc;
+class _TicketListClientState extends State<TicketListClient> {
+  TicketClientBloc? ticketBloc;
   DateFormat dateFormat = DateFormat('dd/MM/yyyy');
   DateFormat timeFormat = DateFormat('HH:mm:ss');
   StreamSubscription? ticketSubscription;
 
   IconData icon = Icons.radio_button_unchecked;
 
-  List<DeliveryTicket> tickets = [];
-  List<Rancher> ranchers = [];
+  List<ClientDeliveryNote> tickets = [];
+  List<Client> clients = [];
   List<Product> products = [];
   List<ProductTicketModel> productTickets = [];
 
@@ -42,20 +44,19 @@ class _TicketsListState extends State<TicketsList> {
 
   @override
   void initState() {
-    ticketBloc = BlocProvider.of<TicketBloc>(context);
-    ticketBloc!.add(FetchTicketsScreen());
+    ticketBloc = BlocProvider.of<TicketClientBloc>(context);
+    ticketBloc!.add(FetchTicketsClientScreen());
 
     ticketSubscription = ticketBloc!.stream.listen((state) {
-      if (state is TicketSuccess) {
+      if (state is TicketClientSuccess) {
         switch (state.event) {
-          case 'FetchTicketsScreen':
+          case 'FetchTicketsClientScreen':
             setState(() {
-              tickets = (state.data[0] as List<DeliveryTicket>).reversed.toList();
-              ranchers = (state.data[1] as List<Rancher>).reversed.toList();
-              products = (state.data[2] as List<Product>).reversed.toList();
+              tickets = (state.data[0] as List<ClientDeliveryNote>).reversed.toList();
+              clients = (state.data[1] as List<Client>).reversed.toList();
             });
             break;
-          case 'SelectTicket':
+          case 'SelectTicketClient':
             setState(() {
               int updatedIndex = tickets
                   .indexWhere((ticket) => ticket.id == state.data.first.id);
@@ -64,50 +65,36 @@ class _TicketsListState extends State<TicketsList> {
               }
             });
             break;
-          case 'DeleteTicket':
+          case 'DeleteTicketClient':
             setState(() {
               int ticketIndex = tickets
                   .indexWhere((ticket) => ticket.id == state.data.first.id);
               if (ticketIndex != -1) {
                 tickets.removeAt(ticketIndex);
-                ranchers.removeAt(ticketIndex);
-                products.removeAt(ticketIndex);
               }
             });
             break;
-          case 'GetTicketInfo':
+          case 'GetTicketClientInfo':
             setState(() {
               if (!openedTicket) {
                 showAlertDialog(state.data[0], state.data[1]);
               }
             });
             break;
-          case 'GetTicketLines':
-            break;
-          case 'OpenProductTicketList':
+          case 'OpenProductTicketClientList':
             productTickets = state.data[0] as List<ProductTicketModel>;
             if (!openedList) {
               _showTicket();
             }
             break;
-          case 'AddLosses':
-            break;
-
-          case 'DeleteAllTickets':
+          case 'DeleteAllTicketsClients':
             setState(() {
               tickets = [];
-              ranchers = [];
+              clients = [];
               products = [];
               _showSuccessDialog();
             });
             break;
-
-          case 'SetIconTicketState':
-            setState(() {
-              isTicketSend = state.data[0];
-            });
-            break;
-
           default:
         }
       }
@@ -122,8 +109,8 @@ class _TicketsListState extends State<TicketsList> {
   }
 
   //! DETALLES TICKET
-  void showAlertDialog(List<ProductTicketModel> productTicketModel,
-      DeliveryTicketModel deliveryTicketModel) {
+  void showAlertDialog(List<ProductDeliveryNoteModel> productTicketModel,
+      ClientDeliveryNoteModel deliveryTicketModel) {
     final appColors = AppColors(context: context).getColors();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -178,23 +165,14 @@ class _TicketsListState extends State<TicketsList> {
                         children: [
                           _buildRow("Producto",
                               '${productTicketModel.first.product!.name}'),
-                          _buildRow("Unidades", '${x.numAnimals}'),
+                          _buildRow("Unidades", '${x.units}'),
                           _buildRow(
                               "Clasificación", '${x.classification!.name}'),
-                          _buildRow("Kilogramos", '${x.weight}'),
-                          _buildRow(
-                              "Rendimiento", '${x.performance!.performance}'),
+                          _buildRow("Kilogramos", '${x.kilograms}'),
+                          _buildRow("Color", '${x.color}'),
                           _buildRow("Fecha", formattedDate),
-                          _buildRow(
-                              "Vehículo",
-                              deliveryTicketModel.vehicleRegistration
-                                  ?.vehicleRegistrationNum ??
-                                  ""),
                           _buildRow("Conductor",
                               deliveryTicketModel.driver?.name ?? ""),
-                          _buildRow("Ganadero",
-                              deliveryTicketModel.rancher?.name ?? ""),
-                          _buildRow("Bajas", '${x.losses ?? 0}'),
                         ],
                       ),
                     ),
@@ -355,56 +333,6 @@ class _TicketsListState extends State<TicketsList> {
                       losses = int.parse(value);
                     },
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          ticketBloc!.add(AddLosses(
-                            productTicketId: productTickets[index].id!,
-                            losses: losses,
-                          ));
-                          Navigator.pop(context);
-                          Fluttertoast.showToast(
-                            msg: "Bajas añadidas correctamente",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            backgroundColor: Colors.green,
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
-                          _showTicket();
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.blueGrey[800],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                        ),
-                        child: const Text('Hecho'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _showTicket();
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.redAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                        ),
-                        child: const Text('Cancelar'),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -452,7 +380,7 @@ class _TicketsListState extends State<TicketsList> {
   }
 
   //! MENÚ DE OPCIONES DROPDOWN
-  void showDropDown(DeliveryTicket ticket) {
+  void showDropDown(ClientDeliveryNote ticket) {
     DropDownState(
       DropDown(
         isSearchVisible: false,
@@ -470,22 +398,18 @@ class _TicketsListState extends State<TicketsList> {
         data: [
           SelectedListItem(name: 'Borrar', value: 'delete'),
           SelectedListItem(name: 'Ver Ticket', value: 'showTicket'),
-          SelectedListItem(name: 'Imprimir', value: 'print'),
-          SelectedListItem(name: 'Añadir Bajas', value: 'addLosses'),
+          SelectedListItem(name: 'Enviar', value: 'send'),
         ],
         selectedItems: (selectedItems) {
           switch (selectedItems.first.value) {
             case 'delete':
-              ticketBloc!.add(DeleteTicket(ticketId: ticket.id!));
+              ticketBloc!.add(DeleteTicketClient(ticketId: ticket.id!));
               break;
             case 'showTicket':
-              ticketBloc!.add(GetTicketInfo(ticketId: ticket.id!));
+              ticketBloc!.add(GetTicketClientInfo(ticketId: ticket.id!));
               break;
-            case 'print':
-              ticketBloc!.add(PrintTicketEvent(
-                  context: context, deliveryTicket: ticket));
-            case 'addLosses':
-              ticketBloc!.add(OpenProductTicketList(ticketId: ticket.id!));
+            case 'send':
+              ticketBloc!.add(SendTicket(ticketId: ticket.id!));
             default:
               LogHelper.logger.d('Evento no reconocido');
           }
@@ -536,7 +460,7 @@ class _TicketsListState extends State<TicketsList> {
             TextButton(
               onPressed: () {
                 if (tickets.isNotEmpty) {
-                  ticketBloc!.add(DeleteAllTickets());
+                  ticketBloc!.add(DeleteAllTicketsClients());
                   Navigator.of(context).pop();
                 } else {
                   Navigator.of(context).pop();
@@ -711,10 +635,8 @@ class _TicketsListState extends State<TicketsList> {
           itemCount: tickets.length,
           itemBuilder: (context, index) {
             final ticket = tickets[index];
-            final rancher = ranchers[index];
-            final product = products[index];
             String formattedDate = dateFormat.format(ticket.date!);
-            ticketBloc!.add(SetIconTicketState(
+            ticketBloc!.add(SetIconTicketClientState(
                 number: ticket.number!));
             return ZoomTapAnimation(
               onTap: () {
@@ -731,46 +653,56 @@ class _TicketsListState extends State<TicketsList> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        //FontAwesomeIcons.file, size: 24
                         child: Icon(
-                          FontAwesomeIcons.file,
+                          isTicketSend
+                              ? FontAwesomeIcons.check
+                              : FontAwesomeIcons.file,
                           size: 24,
                         ),
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0),
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Fecha: $formattedDate\nGanadero: ${rancher.name}',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: appColors['dialogTitleColor']),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Producto: ${product.name}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text('Serie: ${ticket.series}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: appColors['labelInputColor'])),
+                                Text('Num: ${ticket.number}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: appColors['labelInputColor'])),
+                              ],
+                            ),
+                            Text(
+                              'Cliente: ${clients[index].name}',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: appColors['labelInputColor']),
+                            ),
+                            Text(
+                              'Fecha: $formattedDate',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: appColors['labelInputColor']),
+                            ),
+                          ],
+                        )
                       ),
                       Padding(
                         padding:
                         const EdgeInsets.symmetric(horizontal: 10.0),
                         child: IconButton(
                           onPressed: () {
-                            ticketBloc!.add(SelectTicket(
+                            ticketBloc!.add(SelectTicketClient(
                                 ticketId: ticket.id!));
                           },
                           icon: Icon(

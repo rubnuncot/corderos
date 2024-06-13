@@ -49,6 +49,8 @@ class ClientDeliveryNote extends ModelDao {
       'slaughterhouseId': slaughterhouseId,
       'idProduct': idProduct,
       'isSend': isSend,
+      'series': series,
+      'number': number,
     };
   }
 

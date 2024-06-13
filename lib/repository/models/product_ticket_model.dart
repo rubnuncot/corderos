@@ -1,5 +1,6 @@
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/!database.dart';
+import 'package:corderos_app/data/database/entities/!entities.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:sqflite_simple_dao_backend/database/database/reflectable.dart';
@@ -20,6 +21,7 @@ class ProductTicketModel extends ModelBase {
   PerformanceModel? performance;
   String? color;
   int? losses;
+  ClientDeliveryNoteModel? outDelivery;
 
   ProductTicketModel();
 
@@ -33,6 +35,7 @@ class ProductTicketModel extends ModelBase {
     required this.performance,
     required this.color,
     required this.losses,
+    required this.outDelivery,
   });
 
   // Getters
@@ -53,6 +56,8 @@ class ProductTicketModel extends ModelBase {
   String? get getColor => color;
 
   int? get getLosses => losses;
+
+  ClientDeliveryNoteModel? get getOutDelivery => outDelivery;
 
   // Setters
   set setId(int? id) => this.id = id;
@@ -75,6 +80,8 @@ class ProductTicketModel extends ModelBase {
   set setColor(String? color) => this.color = color;
 
   set setLosses(int? losses) => this.losses = losses;
+
+  set setOutDelivery(ClientDeliveryNoteModel? outDelivery) => this.outDelivery = outDelivery;
 
   @override
   Future<ProductTicketModel> fromEntity(ModelDao entity) async {
@@ -122,6 +129,13 @@ class ProductTicketModel extends ModelBase {
     color = productTicket.color;
 
     losses = productTicket.losses;
+
+    if(productTicket.idOutDelivery == null) return this;
+
+    ClientDeliveryNoteModel clientDeliveryNoteModel = ClientDeliveryNoteModel();
+    await clientDeliveryNoteModel.fromEntity(await DatabaseRepository.getEntityById(
+        ClientDeliveryNote(), productTicket.idOutDelivery!) as ClientDeliveryNote);
+    outDelivery = clientDeliveryNoteModel;
     return this;
   }
 

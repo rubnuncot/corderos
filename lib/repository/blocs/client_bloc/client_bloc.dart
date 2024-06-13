@@ -133,8 +133,8 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   void _getSelectedTickets(List<DeliveryTicket> tickets, List<ClientDeliveryNote> deliveryNotes) {
     for (var ticket in tickets) {
       for (var deliveryNote in deliveryNotes) {
-        if (ticket.number == deliveryNote.number) {
-          tickets.remove(ticket);
+        if (ticket.idOut == deliveryNote.id) {
+          tickets.removeWhere((element) => element.id == ticket.id);
         }
       }
     }

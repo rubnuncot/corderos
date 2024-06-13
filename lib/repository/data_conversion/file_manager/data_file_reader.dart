@@ -146,13 +146,14 @@ class DataFileReader {
   /// ### `executeApp`
 
   Future<void> executeApp() async {
-    Directory directory = await getApplicationDocumentsDirectory();
+    Directory directory = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
 
     if (await ftpDataTransfer.checkVersion()) {
       try {
         ftpDataTransfer.downloadApk();
-        if (await Permission.requestInstallPackages.request().isGranted) {
-          await OpenFile.open('${directory.path}/app-release.apk');
+        if (await Permission.requestInstallPackages.request().isGranted && await Permission.manageExternalStorage.request().isGranted) {
+          final result = await OpenFile.open('${directory.path}/app-release.apk');
+          LogHelper.logger.d('Result: $result');
         } else {
           LogHelper.logger.d('Permiso denegado');
         }

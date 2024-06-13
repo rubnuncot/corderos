@@ -11,6 +11,7 @@ export './custom_button.dart';
 export './home_content.dart';
 export './client_list.dart';
 export './ticket_list.dart';
-
-
+export './tickets_list.dart';
+export './tickets_list_client.dart';
+export './report_screen_content.dart';
 

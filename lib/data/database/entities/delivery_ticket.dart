@@ -16,6 +16,7 @@ class DeliveryTicket extends ModelDao {
   int? idProduct;
   int? number;
   bool? isSend;
+  int? idOut;
 
   DeliveryTicket();
 
@@ -30,6 +31,7 @@ class DeliveryTicket extends ModelDao {
     @required required this.idRancher,
     @required required this.idProduct,
     @required required this.isSend,
+    @required required this.idOut,
   }){
     super.id = id;
   }
@@ -45,6 +47,7 @@ class DeliveryTicket extends ModelDao {
     'idProduct': Constants.bigint,
     'deliveryTicket': Constants.varchar['255']!,
     'isSend': Constants.boolean,
+    'idOut': Constants.bigint,
   };
 
   Map<String, dynamic> toJson() {
@@ -59,6 +62,7 @@ class DeliveryTicket extends ModelDao {
       'idRancher': idRancher,
       'idProduct': idProduct,
       'isSend': isSend,
+      'idOut': idOut,
     };
   }
 
@@ -77,6 +81,7 @@ class DeliveryTicket extends ModelDao {
       idRancher: map['idRancher'],
       idProduct: map['idProduct'],
       isSend: map['isSend'] == 0 ? false : true,
+      idOut: map['idOut'],
     );
   }
 
@@ -114,6 +119,7 @@ class DeliveryTicket extends ModelDao {
         other.idSlaughterhouse == idSlaughterhouse &&
         other.idRancher == idRancher &&
         other.idProduct == idProduct &&
+        other.idOut == idOut &&
         other.isSend == isSend;
   }
 
@@ -128,6 +134,7 @@ class DeliveryTicket extends ModelDao {
         idSlaughterhouse.hashCode ^
         idRancher.hashCode ^
         idProduct.hashCode ^
+        idOut.hashCode ^
         isSend.hashCode;
   }
 

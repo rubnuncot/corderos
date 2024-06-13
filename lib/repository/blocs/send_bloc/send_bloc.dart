@@ -50,18 +50,19 @@ class SendBloc extends Bloc<SendEvent, SendState> {
 
       String vehicleRegistrationPreferences = await Preferences.getValue('vehicle_registration');
       List<VehicleRegistration> listVehicleRegistration = await VehicleRegistration().getData<VehicleRegistration>(
-          where: ['vehicleRegistrationNum', SqlBuilder.constOperators['equals']!, vehicleRegistrationPreferences]
+          where: ['vehicleRegistrationNum', SqlBuilder.constOperators['equals']!, "'$vehicleRegistrationPreferences'"]
       );
       VehicleRegistration vehicleRegistration = listVehicleRegistration.first;
 
       clientDeliveryNote.series = vehicleRegistration.deliveryTicket;
-      //clientDeliveryNote.idProduct = ;
       clientDeliveryNote.slaughterhouseId = slaughterhouseId;
-      clientDeliveryNote.isSend = true;
+
       await clientDeliveryNote.insert();
+
 
       for (var ticket in ticketModels) {
         List<ProductTicketModel> productTicketModels = await _getProductTickets(ticket.id!);
+        clientDeliveryNote.idProduct = ticket.product!.id;
         for(var x in productTicketModels){
           productDeliveryNote.idDeliveryNote = clientDeliveryNote.id;
           productDeliveryNote.idProduct = x.product!.id;
@@ -72,6 +73,10 @@ class SendBloc extends Bloc<SendEvent, SendState> {
           productDeliveryNote.color = x.color;
         }
         await productDeliveryNote.insert();
+      }
+      for(var x in tickets) {
+        x.idOut = clientDeliveryNote.id;
+        await x.update();
       }
       emit(SendSuccess('Correo enviado', [], 'SendEmail'));
     } catch (e) {
@@ -129,8 +134,7 @@ class SendBloc extends Bloc<SendEvent, SendState> {
       productTicketsString += '-----------------------------\n';
       productTicketsString += 'Animales: ${(productTicket.numAnimals! - (productTicket.losses ?? 0))}\n'
           'Peso: ${productTicket.weight ?? 'N/A'} kg\n'
-          'Rendimiento: ${productTicket.performance?.performance ?? 'N/A'}\n'
-          'Color: ${productTicket.color ?? 'N/A'}\n';
+          'Rendimiento: ${productTicket.performance?.performance ?? 'N/A'}\n';
     }
     return productTicketsString;
   }

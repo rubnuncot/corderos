@@ -1,3 +1,4 @@
+import 'package:corderos_app/presentation/!presentation.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/blocs/send_bloc/send_bloc.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,9 @@ class BlocsProviders extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SendBloc(),
+        ),
+        BlocProvider(
+          create: (context) => TicketClientBloc(),
         ),
       ],
       child: const MyApp(),

@@ -9,7 +9,7 @@ class PrintHelper {
   String mac = 'none';
   static bool connected = false;
 
-  void _getPreferences() async {
+  Future<void> _getPreferences() async {
     mac = await Preferences.getValue("mac");
     if (mac == 'none') {
       mac = 'NO DISPONIBLE';
@@ -21,14 +21,14 @@ class PrintHelper {
     connected = false;
 
     if (mac == 'none') {
-      _getPreferences();
+      await _getPreferences();
     } else if (mac != "NO DISPONIBLE") {
       await Preferences.setValue("mac", mac);
     } else {
       result.addAll(
           {'No se puede identificar la dirección mac del dispositivo.': false});
     }
-    _getPreferences();
+    await _getPreferences();
 
     if (mac != '') {
       getBluetooth();
@@ -124,8 +124,8 @@ class PrintHelper {
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm80, profile);
 
-    // var deliveryTicketNumberSplitted =
-    //     tickets['deliveryTicketNumber'].split('-');
+    var deliveryTicketNumberSplitted =
+        tickets['deliveryTicketNumber'].split('-');
 
     bytes += generator.setGlobalFont(PosFontType.fontA);
     bytes += generator.reset();
@@ -142,7 +142,7 @@ class PrintHelper {
           bold: true,
           align: PosAlign.center,
         ));
-    bytes += generator.text('Avda. Tres Cruces, 35 · Entpta. A',
+    bytes += generator.text('Avda. Tres Cruces, 35 · Entpta. A, Zamora',
         styles: const PosStyles(
           bold: true,
           codeTable: 'CP1252',
@@ -154,7 +154,16 @@ class PrintHelper {
           codeTable: 'CP1252',
           align: PosAlign.center,
         ));
-    bytes += generator.text('Fax: 980 55 79 13',
+    bytes += generator.emptyLines(1);
+    bytes += generator.hr();
+
+    bytes += generator.text('Serie: ${deliveryTicketNumberSplitted[0]}',
+        styles: const PosStyles(
+          bold: true,
+          codeTable: 'CP1252',
+          align: PosAlign.center,
+        ));
+    bytes += generator.text('Número: ${deliveryTicketNumberSplitted[1]}',
         styles: const PosStyles(
           bold: true,
           codeTable: 'CP1252',
@@ -226,8 +235,18 @@ class PrintHelper {
     // Header for the items
     bytes += generator.row([
       PosColumn(
+        text: '',
+        width: 2,
+        styles: const PosStyles(
+          bold: true,
+          width: PosTextSize.size2,
+          height: PosTextSize.size2,
+          align: PosAlign.center,
+        ),
+      ),
+      PosColumn(
         text: 'No',
-        width: 3,
+        width: 2,
         styles: const PosStyles(
           bold: true,
           width: PosTextSize.size2,
@@ -237,7 +256,7 @@ class PrintHelper {
       ),
       PosColumn(
         text: 'Clase',
-        width: 2,
+        width: 3,
         styles: const PosStyles(
           bold: true,
           width: PosTextSize.size2,
@@ -268,25 +287,23 @@ class PrintHelper {
           align: PosAlign.center,
         ),
       ),
-      PosColumn(
-        text: 'Color',
-        width: 2,
-        styles: const PosStyles(
-          bold: true,
-          width: PosTextSize.size2,
-          height: PosTextSize.size2,
-          codeTable: 'CP1252',
-          align: PosAlign.center,
-        ),
-      ),
     ]);
 
     int i = 0;
     for (var x in tickets['number']) {
       bytes += generator.row([
         PosColumn(
+          text: '',
+          width: 2,
+          styles: const PosStyles(
+            width: PosTextSize.size2,
+            height: PosTextSize.size2,
+            align: PosAlign.center,
+          ),
+        ),
+        PosColumn(
           text: '$x',
-          width: 3,
+          width: 2,
           styles: const PosStyles(
             width: PosTextSize.size2,
             height: PosTextSize.size2,
@@ -295,7 +312,7 @@ class PrintHelper {
         ),
         PosColumn(
           text: '${tickets['classification'][i]}',
-          width: 2,
+          width: 3,
           styles: const PosStyles(
             width: PosTextSize.size2,
             height: PosTextSize.size2,
@@ -315,16 +332,6 @@ class PrintHelper {
         ),
         PosColumn(
           text: '${tickets['performance'][i]}',
-          width: 2,
-          styles: const PosStyles(
-            width: PosTextSize.size2,
-            height: PosTextSize.size2,
-            codeTable: 'CP1252',
-            align: PosAlign.center,
-          ),
-        ),
-        PosColumn(
-          text: '${tickets['color'][i]}',
           width: 2,
           styles: const PosStyles(
             width: PosTextSize.size2,

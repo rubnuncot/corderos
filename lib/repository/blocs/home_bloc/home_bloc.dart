@@ -39,11 +39,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     });
 
-    on<UpdateApp>((event, emit) {
+    on<UpdateApp>((event, emit) async {
       emit(HomeLoading());
 
       try {
-        dataFileReader.executeApp();
+        await dataFileReader.executeApp();
         emit(HomeSuccess('App actualizada correctamente', [], 'UpdateApp'));
 
       } catch (e) {

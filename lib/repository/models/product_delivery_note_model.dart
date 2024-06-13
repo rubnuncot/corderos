@@ -71,13 +71,13 @@ class ProductDeliveryNoteModel extends ModelBase{
   set color(String? color) => _color = color;
 
   @override
-  Future<void> fromEntity(ModelDao entity) async {
+  Future<ProductDeliveryNoteModel> fromEntity(ModelDao entity) async {
     ProductDeliveryNote productDeliveryNote = entity as ProductDeliveryNote;
     id = productDeliveryNote.id;
 
     ClientDeliveryNoteModel clientDeliveryNoteModel = ClientDeliveryNoteModel();
     await clientDeliveryNoteModel.fromEntity(
-        await DatabaseRepository.getEntityById(ClientDeliveryNoteModel(), productDeliveryNote.idDeliveryNote!) as ClientDeliveryNote
+        await DatabaseRepository.getEntityById(ClientDeliveryNote(), productDeliveryNote.idDeliveryNote!) as ClientDeliveryNote
     );
     clientDeliveryNote = clientDeliveryNoteModel;
 
@@ -97,6 +97,8 @@ class ProductDeliveryNoteModel extends ModelBase{
     units = productDeliveryNote.units;
     kilograms = productDeliveryNote.kilograms;
     color = productDeliveryNote.color;
+
+    return this;
   }
 
   @override

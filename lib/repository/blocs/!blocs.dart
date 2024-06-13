@@ -3,4 +3,5 @@ export 'package:corderos_app/repository/blocs/burden_bloc/burden_bloc.dart';
 export 'package:corderos_app/repository/blocs/home_bloc/home_bloc.dart';
 export 'package:corderos_app/repository/blocs/client_bloc/client_bloc.dart';
 export 'package:corderos_app/repository/blocs/ticket_bloc/ticket_bloc.dart';
+export 'package:corderos_app/repository/blocs/ticket_client_bloc/ticket_client_bloc.dart';
 export './cubits/!cubits.dart';

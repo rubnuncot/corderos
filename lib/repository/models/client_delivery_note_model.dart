@@ -46,7 +46,7 @@ class ClientDeliveryNoteModel extends ModelBase {
   }
 
   @override
-  Future<void> fromEntity(ModelDao entity) async {
+  Future<ClientDeliveryNoteModel> fromEntity(ModelDao entity) async {
     ClientDeliveryNote clientDeliveryNote = entity as ClientDeliveryNote;
     idDeliveryNote = clientDeliveryNote.id;
 
@@ -64,12 +64,6 @@ class ClientDeliveryNoteModel extends ModelBase {
 
     slaughterhouse = slaughterhouseModel;
 
-    ProductModel productModel = ProductModel();
-    await productModel.fromEntity(await DatabaseRepository.getEntityById(
-        Product(), clientDeliveryNote.idProduct!) as Product);
-
-    product = productModel;
-
     vehicleRegistration = await Preferences.getValue('vehicle_registration');
     String driverName = await Preferences.getValue('name');
 
@@ -82,6 +76,8 @@ class ClientDeliveryNoteModel extends ModelBase {
     series = clientDeliveryNote.series;
     number = clientDeliveryNote.number;
     isSend = clientDeliveryNote.isSend;
+
+    return this;
   }
 
   @override

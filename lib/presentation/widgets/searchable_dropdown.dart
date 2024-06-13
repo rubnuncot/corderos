@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../!helpers/!helpers.dart';
 import '../../repository/!repository.dart';
 
 class SearchableDropdown extends StatefulWidget {
@@ -25,6 +26,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
     SearchableDropdownBloc searchableDropdown = context.read<SearchableDropdownBloc>();
     SearchableDropdownState state = context.watch<SearchableDropdownBloc>().state;
     DropDownBloc dropDownBloc = context.read<DropDownBloc>();
+    final appColors = AppColors(context: context).getColors();
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -50,6 +52,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
         body: Column(
           children: [
             TextFormField(
+              style: TextStyle(color: appColors!['valueTableColor']),
               decoration: InputDecoration(
                 labelText: widget.titleText,
               ),

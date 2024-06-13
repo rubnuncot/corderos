@@ -159,8 +159,7 @@ class _HomeContentState extends State<HomeContent> {
                         CustomButton(
                           text: 'Cargar',
                           onPressed: () async {
-                            navigatorState =
-                                context.watch<NavigatorBloc>().state;
+                            navigatorState = BlocProvider.of<NavigatorBloc>(context, listen: false).state;
                             navigatorBloc!.push(
                                 const BurdenScreen(),
                                 1,

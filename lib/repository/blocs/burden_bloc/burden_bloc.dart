@@ -241,7 +241,7 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
     Map<String, dynamic> ticket = {
       'date': deliveryTicket.date.toString(),
-      'deliveryTicketNumber': deliveryTicket.deliveryTicket,
+      'deliveryTicketNumber': '${deliveryTicket.deliveryTicket} - ${deliveryTicket.number}',
       'vehicleRegistrationNum': vehicleRegistrationModel.vehicleRegistrationNum,
       'driver': driverModel.name,
       'slaughterHouse': slaughterhouseModel.name,

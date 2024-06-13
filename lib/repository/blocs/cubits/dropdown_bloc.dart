@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
 import 'package:corderos_app/repository/!repository.dart';
@@ -32,65 +33,69 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
 
   Future<void> _getDatabaseValues() async {
     // Ejecución en paralelo de todas las consultas de selección
-    var fetchResults = await Future.wait([
-      Driver().selectAll<Driver>(),
-      Rancher().selectAll<Rancher>(),
-      Slaughterhouse().selectAll<Slaughterhouse>(),
-      VehicleRegistration().selectAll<VehicleRegistration>(),
-      Product().selectAll<Product>(),
-      Classification().selectAll<Classification>(),
-      Performance().selectAll<Performance>(),
-    ]);
+    try {
+      var fetchResults = await Future.wait([
+        Driver().selectAll<Driver>(),
+        Rancher().selectAll<Rancher>(),
+        Slaughterhouse().selectAll<Slaughterhouse>(),
+        VehicleRegistration().selectAll<VehicleRegistration>(),
+        Product().selectAll<Product>(),
+        Classification().selectAll<Classification>(),
+        Performance().selectAll<Performance>(),
+      ]);
 
-    // Convertir entidades a modelos en paralelo
-    var modelResults = await Future.wait([
-      DriverModel().fromEntityList<DriverModel>(fetchResults[0]),
-      RancherModel().fromEntityList<RancherModel>(fetchResults[1]),
-      SlaughterhouseModel()
-          .fromEntityList<SlaughterhouseModel>(fetchResults[2]),
-      VehicleRegistrationModel()
-          .fromEntityList<VehicleRegistrationModel>(fetchResults[3]),
-      ProductModel().fromEntityList<ProductModel>(fetchResults[4]),
-      ClassificationModel()
-          .fromEntityList<ClassificationModel>(fetchResults[5]),
-      PerformanceModel().fromEntityList<PerformanceModel>(fetchResults[6]),
-    ]);
+      // Convertir entidades a modelos en paralelo
+      var modelResults = await Future.wait([
+        DriverModel().fromEntityList<DriverModel>(fetchResults[0]),
+        RancherModel().fromEntityList<RancherModel>(fetchResults[1]),
+        SlaughterhouseModel()
+            .fromEntityList<SlaughterhouseModel>(fetchResults[2]),
+        VehicleRegistrationModel()
+            .fromEntityList<VehicleRegistrationModel>(fetchResults[3]),
+        ProductModel().fromEntityList<ProductModel>(fetchResults[4]),
+        ClassificationModel()
+            .fromEntityList<ClassificationModel>(fetchResults[5]),
+        PerformanceModel().fromEntityList<PerformanceModel>(fetchResults[6]),
+      ]);
 
-    // Asignación simplificada de modelos a state
-    List<String> modelKeys = [
-      'driver',
-      'rancher',
-      'slaughterhouse',
-      'vehicle_registration',
-      'product',
-      'classification',
-      'performance'
-    ];
+      // Asignación simplificada de modelos a state
+      List<String> modelKeys = [
+        'driver',
+        'rancher',
+        'slaughterhouse',
+        'vehicle_registration',
+        'product',
+        'classification',
+        'performance'
+      ];
 
-    Map<String, List> models = Map.fromIterables(modelKeys, modelResults);
-    state.models = models;
+      Map<String, List> models = Map.fromIterables(modelKeys, modelResults);
+      state.models = models;
 
-    // Procesamiento de datos de modelos para almacenar valores específicos
-    Map<String, List<String>> values = {};
-    for (var key in modelKeys) {
-      values[key] = state.models[key]!.map<String>((e) {
-        if (key == 'vehicle_registration') {
-          return e.vehicleRegistrationNum;
-        } else if (key == 'performance') {
-          return e.performance.toString();
-        }
-        return e.name;
-      }).toList();
-    }
+      // Procesamiento de datos de modelos para almacenar valores específicos
+      Map<String, List<String>> values = {};
+      for (var key in modelKeys) {
+        values[key] = state.models[key]!.map<String>((e) {
+          if (key == 'vehicle_registration') {
+            return e.vehicleRegistrationNum;
+          } else if (key == 'performance') {
+            return e.performance.toString();
+          }
+          return e.name;
+        }).toList();
+      }
 
-    // Asignación condicional a los valores seleccionados
-    if (state.selectedValues['driver']! == '') {
-      state.values = values;
-      state.selectedValues = {
-        for (var key in modelKeys) key: values[key]!.first
-      };
-    } else {
-      state.values = values;
+      // Asignación condicional a los valores seleccionados
+      if (state.selectedValues['driver']! == '') {
+        state.values = values;
+        state.selectedValues = {
+          for (var key in modelKeys) key: values[key]!.first
+        };
+      } else {
+        state.values = values;
+      }
+    } catch (e) {
+      LogHelper.logger.d(e);
     }
   }
 
@@ -128,11 +133,15 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
   }
 
   Future<void> _getPreferenceValue() async {
-    for (var entry in preferencesKeys.entries) {
-      final value = await Preferences.getValue(entry.value);
-      if (values[entry.key] != null && preferencesKeys.containsKey(entry.key)) {
-        state.selectedValues[entry.key] = value;
+    try {
+      for (var entry in preferencesKeys.entries) {
+        final value = await Preferences.getValue(entry.value);
+        if (values[entry.key] != null && preferencesKeys.containsKey(entry.key)) {
+          state.selectedValues[entry.key] = value;
+        }
       }
+    } catch (e) {
+      LogHelper.logger.d(e);
     }
   }
 
@@ -162,9 +171,13 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
   }
 
   Future<void> getData() async {
-    await _getDatabaseValues();
-    await _getPreferenceValue();
-    emit(state);
+    try {
+      await _getDatabaseValues();
+      await _getPreferenceValue();
+      emit(state);
+    } catch (e) {
+      LogHelper.logger.d(e);
+    }
   }
 
   void reset() {

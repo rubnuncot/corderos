@@ -33,7 +33,7 @@ class PerformanceModel extends ModelBase{
     product = productModel;
 
     ClassificationModel classificationModel = ClassificationModel();
-    await classificationModel.fromEntity(await DatabaseRepository.getEntityById(
+    await classificationModel.fromEntity(await DatabaseRepository.getEntityByCode(
         Classification(), performanceEntity.idClassification!) as Classification);
 
     classification = classificationModel;
