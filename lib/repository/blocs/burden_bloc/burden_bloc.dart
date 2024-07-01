@@ -157,7 +157,6 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       DeliveryTicket lastDeliveryTicket =
           await _getLastOrNewDeliveryTicket(event.deliveryTicket);
 
-
       List<ProductTicket> productTicket = [];
       for (var product in event.productTicket) {
         productTicket.add(ProductTicket()
@@ -174,15 +173,18 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       var cont = 0;
       for (var x in productTicket) {
         if (x.numAnimals! > 0) {
-          x.idTicket = event.deliveryTicket?.id ?? (lastDeliveryTicket.id == null ? 0 : lastDeliveryTicket.id! + 1);
+          x.idTicket = event.deliveryTicket?.id ??
+              (lastDeliveryTicket.id == null ? 0 : lastDeliveryTicket.id! + 1);
           await x.insert();
           cont++;
         }
       }
 
       if (event.deliveryTicket != null &&
-          event.deliveryTicket != lastDeliveryTicket && cont > 0) {
-        List<DeliveryTicket> listDeliveryTickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+          event.deliveryTicket != lastDeliveryTicket &&
+          cont > 0) {
+        List<DeliveryTicket> listDeliveryTickets =
+            await DeliveryTicket().selectAll<DeliveryTicket>();
         event.deliveryTicket!.number = listDeliveryTickets.length + 1;
         await event.deliveryTicket!.insert();
       }
@@ -241,7 +243,8 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
     Map<String, dynamic> ticket = {
       'date': deliveryTicket.date.toString(),
-      'deliveryTicketNumber': '${deliveryTicket.deliveryTicket} - ${deliveryTicket.number}',
+      'deliveryTicketNumber':
+          '${deliveryTicket.deliveryTicket} - ${deliveryTicket.number}',
       'vehicleRegistrationNum': vehicleRegistrationModel.vehicleRegistrationNum,
       'driver': driverModel.name,
       'slaughterHouse': slaughterhouseModel.name,
@@ -252,16 +255,18 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
       'performance': [],
       'kilograms': [],
       'color': [],
+      'losses': [],
+      'lossesWeight': [],
     };
 
     for (final productTicket in productTicketModel) {
-      if (productTicket.losses != 0) {
-        ticket['number'].add(productTicket.numAnimals);
-        ticket['classification'].add(productTicket.classification!.name);
-        ticket['performance'].add(productTicket.performance!.performance);
-        ticket['kilograms'].add(productTicket.weight);
-        ticket['color'].add(productTicket.color);
-      }
+      ticket['number'].add(productTicket.numAnimals);
+      ticket['classification'].add(productTicket.classification!.name);
+      ticket['performance'].add(productTicket.performance!.performance);
+      ticket['kilograms'].add(productTicket.weight);
+      ticket['color'].add(productTicket.color);
+      ticket['losses'].add(productTicket.losses);
+      ticket['lossesWeight'].add(productTicket.weightLosses);
     }
 
     return ticket;

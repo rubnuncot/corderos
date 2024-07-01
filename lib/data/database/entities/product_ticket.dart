@@ -15,6 +15,7 @@ class ProductTicket extends ModelDao {
   int? idPerformance;
   String? color;
   int? losses;
+  double? weightLosses;
   int? idOutDelivery;
 
   ProductTicket();
@@ -30,6 +31,7 @@ class ProductTicket extends ModelDao {
     @required required this.color,
     @required required this.losses,
     @required required this.idOutDelivery,
+    @required this.weightLosses,
   }){
     super.id = id;
   }
@@ -45,6 +47,7 @@ class ProductTicket extends ModelDao {
     'color': Constants.varchar['255']!,
     'losses': Constants.bigint,
     'idOutDelivery': Constants.bigint,
+    'weightLosses': Constants.decimal['9,2']!,
   };
 
   Map<String, dynamic> toJson() {
@@ -59,6 +62,7 @@ class ProductTicket extends ModelDao {
       'color': color,
       'losses': losses,
       'idOutDelivery': idOutDelivery,
+      'weightLosses': weightLosses,
     };
   }
 
@@ -77,6 +81,7 @@ class ProductTicket extends ModelDao {
       color: map['color'],
       losses: map['losses'],
       idOutDelivery: map['idOutDelivery'],
+      weightLosses: map['weightLosses']?.toDouble(),
     );
   }
 
@@ -115,6 +120,7 @@ class ProductTicket extends ModelDao {
         other.idPerformance == idPerformance &&
         other.color == color &&
         other.idOutDelivery == idOutDelivery &&
+        other.weightLosses == weightLosses &&
         other.losses == losses;
   }
 
@@ -129,6 +135,7 @@ class ProductTicket extends ModelDao {
         idPerformance.hashCode ^
         color.hashCode ^
         idOutDelivery.hashCode ^
+        weightLosses.hashCode ^
         losses.hashCode;
   }
 

@@ -88,6 +88,13 @@ class TicketClientBloc extends Bloc<TicketClientEvent, TicketClientState> {
   Future<void> _onDeleteTicket(
       DeleteTicketClient event, Emitter<TicketClientState> emit) async {
     try {
+      List <DeliveryTicket> deliveryTickets = await DeliveryTicket().getData<DeliveryTicket>(
+          where: ['idOut', SqlBuilder.constOperators['equals']!, '${event.ticketId}']
+      );
+      for(var deliveryTicket in deliveryTickets) {
+        deliveryTicket.idOut = null;
+        await deliveryTicket.update();
+      }
       final selectedClientDeliveryNote =
       await _fetchClientDeliveryNoteById(event.ticketId);
       final selectedProductTicket =

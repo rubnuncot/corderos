@@ -23,7 +23,7 @@ class PerformanceModel extends ModelBase{
       @required required this.performance});
 
   @override
-  Future<void> fromEntity(ModelDao entity) async{
+  Future<PerformanceModel> fromEntity(ModelDao entity) async{
     final performanceEntity = entity as Performance;
     id = performanceEntity.id;
     ProductModel productModel = ProductModel();
@@ -39,5 +39,6 @@ class PerformanceModel extends ModelBase{
     classification = classificationModel;
 
     performance = performanceEntity.performance;
+    return this;
   }
 }

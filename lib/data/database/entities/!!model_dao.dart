@@ -48,10 +48,10 @@ class ModelDao extends Dao {
     SqlBuilder builder = SqlBuilder();
     builder.querySelect(fields: ['*']).queryFrom(table: getTableName(this));
     if (where.isNotEmpty) {
+      if (subSelect != null) {
+        where.add('(${subSelect.build()})');
+      }
       builder.queryWhere(conditions: where);
-    }
-    if (subSelect != null) {
-      builder.queryWhere(conditions: [SqlBuilder.querySubSelect(subSelect)]);
     }
     if (orderBy.isNotEmpty) {
       builder.queryOrder(fields: [orderBy]);

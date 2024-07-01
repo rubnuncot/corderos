@@ -1,6 +1,9 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite_simple_dao_backend/database/utilities/print_handle.dart';
 
 import '../../data_conversion/!data_conversion.dart';
 
@@ -49,6 +52,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch (e) {
         LogHelper.logger.d(e);
         emit(HomeError('Error actualizando app'));
+      }
+    });
+
+    on<PrintResume>((event, emit) async {
+      emit(HomeLoading());
+
+      try {
+        PrintHelper printHelper = PrintHelper();
+        final itemsMap = await printHelper.getBluetooth();
+        await printHelper.printResume(event.context, itemsMap.values.toList().first);
+        emit(HomeSuccess('Resumen impreso correctamente', [], 'PrintResume'));
+
+      } catch (e) {
+        LogHelper.logger.d(e);
+        emit(HomeError('Error imprimiendo resumen'));
       }
     });
   }

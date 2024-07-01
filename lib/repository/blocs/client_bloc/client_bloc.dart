@@ -49,6 +49,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     emit(ClientLoading());
     try {
       tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
+      selectedTickets = tickets;
       emit(ClientSuccess(
           message: 'Tickets recibidos con éxito',
           data: tickets,
@@ -119,7 +120,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       final tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
       final deliveryNotes = await ClientDeliveryNote().selectAll<ClientDeliveryNote>();
       _getSelectedTickets(tickets, deliveryNotes);
-
+      selectedTickets = tickets.map((e) => e).toList();
       emit(ClientSuccess(
           message: 'Tickets recibidos con éxito',
           data: tickets,
@@ -131,12 +132,14 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   }
 
   void _getSelectedTickets(List<DeliveryTicket> tickets, List<ClientDeliveryNote> deliveryNotes) {
+    List<DeliveryTicket> removedTickets = [];
     for (var ticket in tickets) {
       for (var deliveryNote in deliveryNotes) {
         if (ticket.idOut == deliveryNote.id) {
-          tickets.removeWhere((element) => element.id == ticket.id);
+          removedTickets.add(ticket);
         }
       }
     }
+    tickets.removeWhere((element) => removedTickets.contains(element));
   }
 }

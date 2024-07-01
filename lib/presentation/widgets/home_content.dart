@@ -204,6 +204,14 @@ class _HomeContentState extends State<HomeContent> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 20),
+                        CustomButton(
+                          text: 'Imp. Resumen',
+                          onPressed: () {
+                            homeBloc!.add(PrintResume(context: context));
+                          },
+                          textColor: Colors.indigoAccent,
+                        ),
                       ],
                     ),
                   ),
@@ -220,7 +228,7 @@ class _HomeContentState extends State<HomeContent> {
                 homeBloc!.add(UpdateApp());
               }
             : () {
-                sendBloc!.add(SendClientEmail());
+                sendBloc!.add(SendClientEmail(context));
               },
         child: !panelOpen ? const Icon(Icons.refresh) : const Icon(Icons.send),
       ),

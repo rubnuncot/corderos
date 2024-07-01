@@ -46,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
                 )
             ),
           ),
-          const Text('Version: 1.0.3')
+          const Text('Version: 1.2.2')
         ],
       ),
     );

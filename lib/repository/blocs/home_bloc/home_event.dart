@@ -31,6 +31,13 @@ class UpdateApp extends HomeEvent {
   });
 }
 
+class PrintResume extends HomeEvent {
+  final BuildContext context;
+
+  PrintResume({
+    required this.context
+  });
+}
 
 
 

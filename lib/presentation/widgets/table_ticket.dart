@@ -58,12 +58,9 @@ class _TableTicketState extends State<TableTicket> {
       });
     });
     performanceSubscription =
-        context
-            .read<DropDownBloc>()
-            .stream
-            .listen((state) {
-          dropDownBloc!.getSelectedModel();
-        });
+        context.read<DropDownBloc>().stream.listen((state) {
+      dropDownBloc!.getSelectedModel();
+    });
     burdenBloc!.add(GetTableIndex());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,15 +82,15 @@ class _TableTicketState extends State<TableTicket> {
         context: context,
         deliveryTicket: DeliveryTicket.all(
           deliveryTicket:
-          list[VehicleRegistrationModel().runtimeType.toString()]
-              .clientDeliveryNote,
+              list[VehicleRegistrationModel().runtimeType.toString()]
+                  .clientDeliveryNote,
           idProduct: list[ProductModel().runtimeType.toString()].id,
           idRancher: list[RancherModel().runtimeType.toString()].id,
           idSlaughterhouse:
-          list[SlaughterhouseModel().runtimeType.toString()].id,
+              list[SlaughterhouseModel().runtimeType.toString()].id,
           idDriver: list[DriverModel().runtimeType.toString()].id,
           idVehicleRegistration:
-          list[VehicleRegistrationModel().runtimeType.toString()].id,
+              list[VehicleRegistrationModel().runtimeType.toString()].id,
           date: DateTime.now(),
           number: 0,
           isSend: false,
@@ -101,7 +98,7 @@ class _TableTicketState extends State<TableTicket> {
         ),
         productTicket: productTickets
             .where((element) =>
-        (element.numAnimals != null && element.numAnimals! > 0))
+                (element.numAnimals != null && element.numAnimals! > 0))
             .toList()));
 
     burdenBloc!.stream
@@ -138,10 +135,12 @@ class _TableTicketState extends State<TableTicket> {
     productTickets = [ProductTicketModel()];
   }
 
-  void showEditDialog(String title,
-      int index,
-      String currentValue,
-      Function(String) onUpdate,) {
+  void showEditDialog(
+    String title,
+    int index,
+    String currentValue,
+    Function(String) onUpdate,
+  ) {
     bool isDropDown = _isDropDownField(title);
     bool isEditable = title != 'Clasif';
     Map<String, String> dropDownValues = {
@@ -168,7 +167,7 @@ class _TableTicketState extends State<TableTicket> {
             isEditable,
             dropDownBloc,
             dropDownValues,
-                (value) => editedValue = value,
+            (value) => editedValue = value,
             appColors,
             index,
             number: number.contains(title),
@@ -198,7 +197,8 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget _buildDialogContent(BuildContext context,
+  Widget _buildDialogContent(
+      BuildContext context,
       String title,
       String currentValue,
       bool isDropDown,
@@ -211,39 +211,38 @@ class _TableTicketState extends State<TableTicket> {
       {bool number = false}) {
     return SizedBox(
       width: double.maxFinite,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.1,
+      height: MediaQuery.of(context).size.height * 0.1,
       child: isDropDown
           ? _buildDropDownContent(
-          title, currentValue, dropDownValues, dropdownBloc, context, index)
+              title, currentValue, dropDownValues, dropdownBloc, context, index)
           : _buildTextFieldContent(
-          isEditable, currentValue, onChanged, appColors,
-          number: number),
+              isEditable, currentValue, onChanged, appColors,
+              number: number),
     );
   }
 
-  Widget _buildDropDownContent(String title,
-      String currentValue,
-      Map<String, String> dropDownValues,
-      DropDownBloc dropDownBloc,
-      BuildContext context,
-      int index,) {
+  Widget _buildDropDownContent(
+    String title,
+    String currentValue,
+    Map<String, String> dropDownValues,
+    DropDownBloc dropDownBloc,
+    BuildContext context,
+    int index,
+  ) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: title == 'Rend'
             ? NewDropDown(
-          values: performances,
-          mapKey: 'performance',
-          initialValue: productTickets[index].performance != null
-              ? productTickets[index].performance!.performance.toString()
-              : performances.first,
-        )
+                values: performances,
+                mapKey: 'performance',
+                initialValue: productTickets[index].performance != null
+                    ? productTickets[index].performance!.performance.toString()
+                    : performances.first,
+              )
             : NewDropDown(
-          mapKey: dropDownValues[title]!,
-        ),
+                mapKey: dropDownValues[title]!,
+              ),
       ),
     );
   }
@@ -268,24 +267,25 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  List<Widget> _buildDialogActions(BuildContext context,
-      String title,
-      String editedValue,
-      Function(String) onUpdate,
-      DropDownBloc dropDownBloc,
-      Map<String, dynamic>? appColors,
-      int index,) {
+  List<Widget> _buildDialogActions(
+    BuildContext context,
+    String title,
+    String editedValue,
+    Function(String) onUpdate,
+    DropDownBloc dropDownBloc,
+    Map<String, dynamic>? appColors,
+    int index,
+  ) {
     return [
       TextButton(
         onPressed: () {
           Navigator.of(context).pop();
-          onUpdate(textController.text);
           _updateDropDownBloc(dropDownBloc, title, index);
           dropDownBloc.filterSelectedClassification(productTickets.isEmpty
               ? ''
               : productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
-
+          onUpdate(textController.text);
           activateButton = (title == 'Kg');
           setState(() {});
         },
@@ -297,9 +297,9 @@ class _TableTicketState extends State<TableTicket> {
     ];
   }
 
-  void _updateDropDownBloc(DropDownBloc dropDownBloc, String title,
-      int index) async {
-    dropDownBloc.filterSelectedProduct();
+  void _updateDropDownBloc(
+      DropDownBloc dropDownBloc, String title, int index) async {
+    await dropDownBloc.filterSelectedProduct();
     Classification classificationEntity = Classification();
 
     if (title == 'Producto') {
@@ -311,7 +311,7 @@ class _TableTicketState extends State<TableTicket> {
           "'${dropDownBloc.state.selectedValues['product']!}'"
         ]);
         final classifications =
-        await classificationEntity.getData<Classification>(
+            await classificationEntity.getData<Classification>(
           where: [
             'name',
             SqlBuilder.constOperators['like']!,
@@ -327,17 +327,37 @@ class _TableTicketState extends State<TableTicket> {
         productTickets.addAll([
           ProductTicketModel()
               .updateValue<ProductTicketModel>(
-              'classification', classificationModel)
+                  'classification', classificationModel)
               .updateValue<ProductTicketModel>(
-              'product',
-              dropDownBloc.state.models['product']!
-                  .where((element) =>
-              element.name ==
-                  dropDownBloc.state.selectedValues['product'])
-                  .first)
+                  'product',
+                  dropDownBloc.state.models['product']!
+                      .where((element) =>
+                          element.name ==
+                          dropDownBloc.state.selectedValues['product'])
+                      .first)
         ]);
         setState(() {});
       }
+    } else if (title == 'Rend') {
+      PerformanceModel selectedPerformance = dropDownBloc
+          .state.models['performance']!
+          .where((element) =>
+              element.performance ==
+              int.parse(dropDownBloc.state.selectedValues['performance'] != ''
+                  ? dropDownBloc.state.selectedValues['performance']!
+                  : performances.first))
+          .first;
+
+      if (!performances
+          .contains(dropDownBloc.state.selectedValues['performance']!)) {
+        selectedPerformance = dropDownBloc.state.models['performance']!
+            .where((element) =>
+                element.performance == int.parse(performances.first))
+            .first;
+      }
+      productTickets[index] = productTickets[index]
+          .updateValue<ProductTicketModel>('performance', selectedPerformance);
+      setState(() {});
     }
   }
 
@@ -358,8 +378,8 @@ class _TableTicketState extends State<TableTicket> {
     );
   }
 
-  Widget buildEditableCell(String value, Map<String, String> label,
-      int listIndex) {
+  Widget buildEditableCell(
+      String value, Map<String, String> label, int listIndex) {
     final appColors = AppColors(context: context).getColors();
 
     return TableCell(
@@ -369,63 +389,71 @@ class _TableTicketState extends State<TableTicket> {
           padding: EdgeInsets.zero,
           foregroundColor: appColors['valueTableColor'],
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          disabledBackgroundColor: appColors!['backgroundValueColor'],
+          disabledForegroundColor: appColors['valueTableColor'],
         ),
-        onPressed: label.keys.first == "Clasificacion" ? null : () async {
-          textController.text = value;
-          Map<String, dynamic> list = await dropDownBloc!.getSelectedModel();
-          setState(() {});
-          if (label.keys.first == 'Producto' ||
-              (label.keys.first == 'NºCorderos' &&
-                  productTickets[listIndex].product != null) ||
-              (productTickets[listIndex].product != null &&
-                  productTickets[listIndex].numAnimals != null &&
-                  productTickets[listIndex].numAnimals! > 0)) {
-            showEditDialog(label.keys.first, listIndex, value,
-                    (newValue) async {
-                  dynamic requestValue = list;
-                  String key = label.keys.first;
-                  switch (key) {
-                    case 'NºCorderos':
-                    case 'Kg':
-                      requestValue = newValue;
-                    case 'Clasif':
-                      requestValue =
-                          list[ClassificationModel().runtimeType.toString()]
-                              .name;
-                      break;
-                    case 'Rend':
-                      requestValue = await dropDownBloc!.getSelectedModel();
-                      break;
-                    default:
-                      requestValue = list;
-                  }
+        onPressed: label.keys.first == "Clasif"
+            ? null
+            : () async {
+                textController.text = value;
+                Map<String, dynamic> list =
+                    await dropDownBloc!.getSelectedModel();
+                setState(() {});
+                if (label.keys.first == 'Producto' ||
+                    (label.keys.first == 'NºCorderos' &&
+                        productTickets[listIndex].product != null) ||
+                    (productTickets[listIndex].product != null &&
+                        productTickets[listIndex].numAnimals != null &&
+                        productTickets[listIndex].numAnimals! > 0)) {
+                  showEditDialog(label.keys.first, listIndex, value,
+                      (newValue) async {
+                    dynamic requestValue = list;
+                    String key = label.keys.first;
+                    switch (key) {
+                      case 'NºCorderos':
+                      case 'Kg':
+                        requestValue = newValue;
+                        break;
+                      case 'Rend':
+                        requestValue = await dropDownBloc!.getSelectedModel();
+                        break;
+                      default:
+                        requestValue = list;
+                    }
 
-                  value = newValue;
-                  productTickets[listIndex] = productTickets[listIndex]
-                      .updateValue<ProductTicketModel>(
-                      label.values.first, requestValue);
-                  setState(() {});
-                });
-          } else if (label.keys.first != 'Producto' &&
-              productTickets[listIndex].product == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'Primero selecciona un producto para poder seguir introduciendo datos.'),
-              ),
-            );
-          } else if (productTickets[listIndex].numAnimals == null ||
-              productTickets[listIndex].numAnimals! == 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Primero añade el número de animales.'),
-              ),
-            );
-          }
+                    if (key == 'Rend') {
+                      newValue = productTickets[listIndex]
+                          .performance!
+                          .performance
+                          .toString();
+                    } else {
+                      value = newValue;
+                      productTickets[listIndex] = productTickets[listIndex]
+                          .updateValue<ProductTicketModel>(
+                              label.values.first, requestValue);
+                    }
+                    setState(() {});
+                  });
+                } else if (label.keys.first != 'Producto' &&
+                    productTickets[listIndex].product == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Primero selecciona un producto para poder seguir introduciendo datos.'),
+                    ),
+                  );
+                } else if (productTickets[listIndex].numAnimals == null ||
+                    productTickets[listIndex].numAnimals! == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Primero añade el número de animales.'),
+                    ),
+                  );
+                }
 
-          textController.selection = TextSelection(
-              baseOffset: 0, extentOffset: textController.text.length);
-        },
+                textController.selection = TextSelection(
+                    baseOffset: 0, extentOffset: textController.text.length);
+              },
         child: Text(value),
       ),
     );
@@ -438,7 +466,7 @@ class _TableTicketState extends State<TableTicket> {
         //! PRIMERA TABLA
         Table(
           border:
-          TableBorder.all(color: appColors!['borderTableColor'], width: 2),
+              TableBorder.all(color: appColors!['borderTableColor'], width: 2),
           columnWidths: const {
             0: FlexColumnWidth(2),
             1: FlexColumnWidth(3),
@@ -452,9 +480,7 @@ class _TableTicketState extends State<TableTicket> {
             ]),
             TableRow(children: [
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].product == null
-                      ? ''
-                      : productTickets[tableIndex - 1].product!.name}',
+                  '${productTickets[tableIndex - 1].product == null ? '' : productTickets[tableIndex - 1].product!.name}',
                   {'Producto': 'product'},
                   tableIndex - 1),
               buildEditableCell(
@@ -462,9 +488,7 @@ class _TableTicketState extends State<TableTicket> {
                   {'NºCorderos': 'numAnimals'},
                   tableIndex - 1),
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].classification == null
-                      ? ''
-                      : productTickets[tableIndex - 1].classification!.name}',
+                  '${productTickets[tableIndex - 1].classification == null ? '' : productTickets[tableIndex - 1].classification!.name}',
                   {'Clasif': 'nameClassification'},
                   tableIndex - 1),
             ]),
@@ -507,10 +531,7 @@ class _TableTicketState extends State<TableTicket> {
             ]),
             TableRow(children: [
               buildEditableCell(
-                  '${productTickets[tableIndex - 1].performance == null
-                      ? ''
-                      : productTickets[tableIndex - 1].performance!
-                      .performance}',
+                  '${productTickets[tableIndex - 1].performance == null ? '' : productTickets[tableIndex - 1].performance!.performance}',
                   {'Rend': 'performance'},
                   tableIndex - 1),
               buildEditableCell(
@@ -549,203 +570,174 @@ class _TableTicketState extends State<TableTicket> {
 
   @override
   Widget build(BuildContext context) {
-    double tableWidth = MediaQuery
-        .of(context)
-        .size
-        .width * 0.945;
+    double tableWidth = MediaQuery.of(context).size.width * 0.945;
     final appColors = AppColors(context: context).getColors();
-    final dropDownState = context
-        .watch<DropDownBloc>()
-        .state;
+    final dropDownState = context.watch<DropDownBloc>().state;
     final searchableDropdownBloc = context.read<SearchableDropdownBloc>();
 
     String formattedDate =
-        "${DateTime
-        .now()
-        .day
-        .toString()
-        .padLeft(2, '0')}/${DateTime
-        .now()
-        .month
-        .toString()
-        .padLeft(2, '0')}/${DateTime
-        .now()
-        .year}";
+        "${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}/${DateTime.now().year}";
 
     return Scaffold(
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                maxHeight: MediaQuery
-                    .of(context)
-                    .size
-                    .height,
-              ),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  //! FILA 1 - DESPLEGABLES
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InputSettings(
-                            label: 'Fecha',
-                            animate: false,
-                            isNumeric: false,
-                            isEditable: false,
-                            valueNonEditable: formattedDate,
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
-                        const Expanded(
-                          child: NewDropDown(
-                            mapKey: 'vehicle_registration',
-                            labelText: 'Matrícula',
-                          ),
-                        ),
-                      ],
+              children: [
+                SingleChildScrollView(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width,
+                      maxHeight: MediaQuery.of(context).size.height,
                     ),
-                  ),
-                  //! FILA 2 - DESPLEGABLES
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: NewDropDown(
-                            mapKey: 'driver',
-                            labelText: 'Conductor',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //! FILA 3 - DESPLEGABLES
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: NewDropDown(
-                            mapKey: 'slaughterhouse',
-                            labelText: 'Matadero',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //! FILA 4 - DESPLEGABLES
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        //! FILA 1 - DESPLEGABLES
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5),
-                                child: Text('Ganadero',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: appColors?[
-                                        'labelInputColor'])),
+                              Expanded(
+                                child: InputSettings(
+                                  label: 'Fecha',
+                                  animate: false,
+                                  isNumeric: false,
+                                  isEditable: false,
+                                  valueNonEditable: formattedDate,
+                                ),
                               ),
-                              CustomButton(
-                                text: _selectedRancher.isEmpty
-                                    ? dropDownState
-                                    .selectedValues['rancher']!
-                                    : _selectedRancher,
-                                onPressed: () async {
-                                  searchableDropdownBloc.setItems(
-                                      dropDownState.values['rancher']!);
-                                  searchableDropdownBloc.setHeight(
-                                      screenHeight: MediaQuery
-                                          .of(context)
-                                          .size
-                                          .height);
-                                  setState(() {});
-                                },
-                                textColor: appColors!['valueTableColor'],
+                              const SizedBox(width: 16.0),
+                              const Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'vehicle_registration',
+                                  labelText: 'Matrícula',
+                                ),
                               ),
                             ],
                           ),
                         ),
+                        //! FILA 2 - DESPLEGABLES
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'driver',
+                                  labelText: 'Conductor',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //! FILA 3 - DESPLEGABLES
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: NewDropDown(
+                                  mapKey: 'slaughterhouse',
+                                  labelText: 'Matadero',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //! FILA 4 - DESPLEGABLES
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      child: Text('Ganadero',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: appColors?[
+                                                  'labelInputColor'])),
+                                    ),
+                                    CustomButton(
+                                      text: _selectedRancher.isEmpty
+                                          ? dropDownState
+                                              .selectedValues['rancher']!
+                                          : _selectedRancher,
+                                      onPressed: () async {
+                                        searchableDropdownBloc.setItems(
+                                            dropDownState.values['rancher']!);
+                                        searchableDropdownBloc.setHeight(
+                                            screenHeight: MediaQuery.of(context)
+                                                .size
+                                                .height);
+                                        setState(() {});
+                                      },
+                                      textColor: appColors!['valueTableColor'],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 26.0),
+
+                        //! LISTA SCROLLEABLE DE TABLAS
+                        Expanded(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(
+                                decelerationRate:
+                                    ScrollDecelerationRate.normal),
+                            scrollDirection: Axis.horizontal,
+                            controller: _scrollController,
+                            itemCount: productTickets.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                  margin: const EdgeInsets.all(2.0),
+                                  width: tableWidth - 12,
+                                  child: Column(children: [
+                                    buildTable(dropDownState, index + 1),
+                                  ]));
+                            },
+                          ),
+                        )
                       ],
                     ),
                   ),
-                  const SizedBox(height: 26.0),
-
-                  //! LISTA SCROLLEABLE DE TABLAS
-                  Expanded(
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(
-                          decelerationRate:
-                          ScrollDecelerationRate.normal),
-                      scrollDirection: Axis.horizontal,
-                      controller: _scrollController,
-                      itemCount: productTickets.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            margin: const EdgeInsets.all(2.0),
-                            width: tableWidth - 12,
-                            child: Column(children: [
-                              buildTable(dropDownState, index + 1),
-                            ]));
-                      },
-                    ),
-                  )
-                ],
-              ),
+                ),
+                SearchableDropdown(
+                  dropdownValue: 'rancher',
+                  titleText: 'Selecciona un ganadero',
+                  onItemSelected: (String selectedRancher) {
+                    setState(() {
+                      _selectedRancher = selectedRancher;
+                    });
+                  },
+                ),
+              ],
             ),
-          ),
-          SearchableDropdown(
-            dropdownValue: 'rancher',
-            titleText: 'Selecciona un ganadero',
-            onItemSelected: (String selectedRancher) {
-              setState(() {
-                _selectedRancher = selectedRancher;
-              });
-            },
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: !activateButton ? null : () async {
-          final dropDownBloc = context.read<DropDownBloc>();
-          Map<String, dynamic> list = await dropDownBloc.getSelectedModel();
+        onPressed: !activateButton
+            ? null
+            : () async {
+                final dropDownBloc = context.read<DropDownBloc>();
+                Map<String, dynamic> list =
+                    await dropDownBloc.getSelectedModel();
 
-          if (await Permission.bluetooth
-              .request()
-              .isGranted &&
-              await Permission.bluetoothScan
-                  .request()
-                  .isGranted &&
-              await Permission.location
-                  .request()
-                  .isGranted &&
-              await Permission.bluetoothAdvertise
-                  .request()
-                  .isGranted &&
-              await Permission.bluetoothConnect
-                  .request()
-                  .isGranted) {
-            endTicket(list);
-            burdenBloc!.add(IncrementTableIndex());
-          }
-        },
+                if (await Permission.bluetooth.request().isGranted &&
+                    await Permission.bluetoothScan.request().isGranted &&
+                    await Permission.location.request().isGranted &&
+                    await Permission.bluetoothAdvertise.request().isGranted &&
+                    await Permission.bluetoothConnect.request().isGranted) {
+                  endTicket(list);
+                  burdenBloc!.add(IncrementTableIndex());
+                }
+              },
         child: const Padding(
           padding: EdgeInsets.all(8.0),
           child: Row(

@@ -22,6 +22,7 @@ class ProductTicketModel extends ModelBase {
   String? color;
   int? losses;
   ClientDeliveryNoteModel? outDelivery;
+  double? weightLosses;
 
   ProductTicketModel();
 
@@ -35,6 +36,7 @@ class ProductTicketModel extends ModelBase {
     required this.performance,
     required this.color,
     required this.losses,
+    required this.weightLosses,
     required this.outDelivery,
   });
 
@@ -56,6 +58,8 @@ class ProductTicketModel extends ModelBase {
   String? get getColor => color;
 
   int? get getLosses => losses;
+
+  double? get getWeightLosses => weightLosses;
 
   ClientDeliveryNoteModel? get getOutDelivery => outDelivery;
 
@@ -80,6 +84,8 @@ class ProductTicketModel extends ModelBase {
   set setColor(String? color) => this.color = color;
 
   set setLosses(int? losses) => this.losses = losses;
+
+  set setWeightLosses(double? weihtLosses) => this.weightLosses = weihtLosses;
 
   set setOutDelivery(ClientDeliveryNoteModel? outDelivery) => this.outDelivery = outDelivery;
 
@@ -129,6 +135,8 @@ class ProductTicketModel extends ModelBase {
     color = productTicket.color;
 
     losses = productTicket.losses;
+
+    weightLosses = productTicket.weightLosses;
 
     if(productTicket.idOutDelivery == null) return this;
 

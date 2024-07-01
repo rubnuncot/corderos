@@ -38,7 +38,7 @@ class NewTableDropDown extends StatelessWidget {
             ),
             initialItem: dropdownState.selectedValues[mapKey],
             onChanged: (value) async {
-              await dropdownBloc.changeValue(mapKey, value);
+              await dropdownBloc.changeValue(mapKey, value!);
             },
           ),
         ),

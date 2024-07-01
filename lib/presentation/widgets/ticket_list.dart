@@ -15,9 +15,9 @@ class TicketList extends StatefulWidget {
 }
 
 class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
-  ClientBloc? clientBloc;
-  StreamSubscription? clientSubscription;
-  SendBloc? sendBloc;
+  late ClientBloc clientBloc;
+  late SendBloc sendBloc;
+  late StreamSubscription clientSubscription;
   List<bool> isOpen = [];
   List<AnimationController> animationControllers = [];
   Map<int, List<ProductTicketModel>> productTicketModels = {};
@@ -34,19 +34,25 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   void _initializeBloc() {
     clientBloc = BlocProvider.of<ClientBloc>(context);
     sendBloc = BlocProvider.of<SendBloc>(context);
-    clientBloc!.add(FetchTicketsEmail());
 
-    clientSubscription = clientBloc!.stream.listen((state) {
+    LogHelper.logger.i('Inicializando bloc y solicitando tickets por email');
+    clientBloc.add(FetchTicketsEmail());
+
+    clientSubscription = clientBloc.stream.listen((state) {
       if (state is ClientSuccess) {
+        LogHelper.logger.i('Recibido estado de éxito del bloc de cliente');
         _handleClientSuccess(state);
       }
     });
   }
 
   void _handleClientSuccess(ClientSuccess state) {
+    LogHelper.logger.i('Manejando estado de éxito: ${state.event}');
     switch (state.event) {
       case 'FetchTicketsEmail':
         _handleFetchTickets(state);
+        selectedTickets = clientBloc.selectedTickets;
+        sendBloc.add(Initialize(tickets));
         break;
       case 'FetchProductTickets':
         _handleFetchProductTickets(state);
@@ -55,7 +61,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
         _handleSelectSendTicket(state);
         break;
       default:
-        LogHelper.logger.d('Evento no reconocido');
+        LogHelper.logger.d('Evento no reconocido: ${state.event}');
     }
   }
 
@@ -64,10 +70,12 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       tickets = state.data as List<DeliveryTicket>;
       isOpen = List.generate(tickets.length, (_) => false);
       animationControllers = List.generate(
-          tickets.length,
-              (_) => AnimationController(
-              duration: const Duration(milliseconds: 300), vsync: this));
+        tickets.length,
+            (_) => AnimationController(
+            duration: const Duration(milliseconds: 300), vsync: this),
+      );
     });
+    LogHelper.logger.i('Tickets obtenidos y animaciones inicializadas');
     _fetchProductTickets();
   }
 
@@ -77,23 +85,27 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
       productTicketModels[ticketId] = state.data[0];
       deliveryTicketModels[ticketId] = state.data[1];
     });
+    LogHelper.logger.i('Tickets de productos obtenidos para el ticket ID: $ticketId');
   }
 
   void _handleSelectSendTicket(ClientSuccess state) {
     setState(() {
       selectedTickets = state.selectedTickets!;
     });
+    LogHelper.logger.i('Tickets seleccionados actualizados');
   }
 
   void _fetchProductTickets() {
     for (var ticket in tickets) {
-      clientBloc!.add(FetchProductTickets(idTicket: ticket.id!));
+      LogHelper.logger.i('Solicitando tickets de productos para el ticket ID: ${ticket.id}');
+      clientBloc.add(FetchProductTickets(idTicket: ticket.id!));
     }
   }
 
   void _toggleSelection(DeliveryTicket ticket) {
-    clientBloc!.add(SelectSendTicket(ticket: ticket));
-    sendBloc!.add(AddSelected(ticket));
+    LogHelper.logger.i('Seleccionando/deseleccionando ticket ID: ${ticket.id}');
+    context.read<ClientBloc>().add(SelectSendTicket(ticket: ticket));
+    context.read<SendBloc>().add(AddSelected(ticket));
   }
 
   @override
@@ -101,7 +113,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     for (var controller in animationControllers) {
       controller.dispose();
     }
-    clientSubscription?.cancel();
+    clientSubscription.cancel();
     super.dispose();
   }
 
@@ -124,8 +136,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTicketCard(
-      BuildContext context, int index, Map<String, dynamic>? appColors) {
+  Widget _buildTicketCard(BuildContext context, int index, Map<String, dynamic>? appColors) {
     final ticket = tickets[index];
     final productTicketModelsList = productTicketModels[ticket.id];
     final deliveryTicketModel = deliveryTicketModels[ticket.id];
@@ -173,8 +184,7 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
               : appColors['unSelectedTitleCard'],
         ),
       ),
-      trailing:
-      _buildAnimatedIcon(isSelected, animationController, index, appColors),
+      trailing: _buildAnimatedIcon(isSelected, animationController, index, appColors),
       onTap: () {
         _toggleSelection(deliveryTicket);
       },
@@ -285,17 +295,12 @@ class _TicketListState extends State<TicketList> with TickerProviderStateMixin {
   List<TableRow> _buildProductTableRows(
       ProductTicketModel productTicketModel, bool isSelected) {
     return [
-      _buildTableRow(
-          'Producto', productTicketModel.product?.name ?? '', isSelected),
-      _buildTableRow(
-          'Nº Animales', '${productTicketModel.numAnimals ?? ' '}', isSelected),
+      _buildTableRow('Producto', productTicketModel.product?.name ?? '', isSelected),
+      _buildTableRow('Nº Animales', '${productTicketModel.numAnimals ?? ' '}', isSelected),
       _buildTableRow('Peso', '${productTicketModel.weight ?? ' '}', isSelected),
-      _buildTableRow('Clasificación',
-          productTicketModel.classification!.name ?? '', isSelected),
-      _buildTableRow('Rendimiento',
-          '${productTicketModel.performance?.performance ?? ''}', isSelected),
-      _buildTableRow(
-          'Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),
+      _buildTableRow('Clasificación', productTicketModel.classification!.name ?? '', isSelected),
+      _buildTableRow('Rendimiento', '${productTicketModel.performance?.performance ?? ''}', isSelected),
+      _buildTableRow('Pérdidas', '${productTicketModel.losses ?? ' '}', isSelected),
     ];
   }
 

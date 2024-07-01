@@ -32,6 +32,7 @@ class _TicketsListState extends State<TicketsList> {
   List<DeliveryTicket> tickets = [];
   List<Rancher> ranchers = [];
   List<Product> products = [];
+  List<Client> clients = [];
   List<ProductTicketModel> productTickets = [];
 
   int losses = 0;
@@ -53,6 +54,7 @@ class _TicketsListState extends State<TicketsList> {
               tickets = (state.data[0] as List<DeliveryTicket>).reversed.toList();
               ranchers = (state.data[1] as List<Rancher>).reversed.toList();
               products = (state.data[2] as List<Product>).reversed.toList();
+              clients = state.data[3] as List<Client>;
             });
             break;
           case 'SelectTicket':
@@ -195,6 +197,7 @@ class _TicketsListState extends State<TicketsList> {
                           _buildRow("Ganadero",
                               deliveryTicketModel.rancher?.name ?? ""),
                           _buildRow("Bajas", '${x.losses ?? 0}'),
+                          _buildRow("Kg. Bajas", '${x.weightLosses ?? 0}'),
                         ],
                       ),
                     ),
@@ -482,6 +485,7 @@ class _TicketsListState extends State<TicketsList> {
               ticketBloc!.add(GetTicketInfo(ticketId: ticket.id!));
               break;
             case 'print':
+              ticket.deliveryTicket = '${ticket.deliveryTicket}-${ticket.number}';
               ticketBloc!.add(PrintTicketEvent(
                   context: context, deliveryTicket: ticket));
             case 'addLosses':
@@ -714,8 +718,6 @@ class _TicketsListState extends State<TicketsList> {
             final rancher = ranchers[index];
             final product = products[index];
             String formattedDate = dateFormat.format(ticket.date!);
-            ticketBloc!.add(SetIconTicketState(
-                number: ticket.number!));
             return ZoomTapAnimation(
               onTap: () {
                 showDropDown(ticket);
@@ -761,6 +763,15 @@ class _TicketsListState extends State<TicketsList> {
                                   fontSize: 14,
                                 ),
                               ),
+                              if(ticket.idOut != null)
+                                const SizedBox(height: 5),
+                              if(ticket.idOut != null)
+                                Text(
+                                  'Cliente: ${clients[index].name}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
                             ],
                           ),
                         ),

@@ -3,6 +3,7 @@ import 'package:corderos_app/!helpers/!helpers.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/preferences/preferences.dart';
 import 'package:corderos_app/repository/!repository.dart';
+import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 
 class DropDownBloc extends Cubit<DropDownStateBloc> {
   DropDownBloc() : super(DropDownStateBloc());
@@ -28,7 +29,6 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     }
 
     state.selectedValues[key] = value;
-    emit(state);
   }
 
   Future<void> _getDatabaseValues() async {
@@ -112,11 +112,16 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     for (var classification in classifications) {
       if (classification.product!.name == productSelectedValue) {
         state.values["classification"]!.add(classification.name!);
-    }
+      }
     }
   }
 
-  Future<void> filterSelectedClassification(String selectedClassification) async {
+  Future<void> updatePerformanceValues(String performance) async {
+    state.selectedValues['performance'] = performance;
+  }
+
+  Future<void> filterSelectedClassification(
+      String selectedClassification) async {
     String productSelectedValue = state.selectedValues['product']!;
 
     List<PerformanceModel> performances =
@@ -136,7 +141,8 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     try {
       for (var entry in preferencesKeys.entries) {
         final value = await Preferences.getValue(entry.value);
-        if (values[entry.key] != null && preferencesKeys.containsKey(entry.key)) {
+        if (values[entry.key] != null &&
+            preferencesKeys.containsKey(entry.key)) {
           state.selectedValues[entry.key] = value;
         }
       }
@@ -145,7 +151,7 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
     }
   }
 
-  Future<Map<String, dynamic>>  getSelectedModel({dynamic selectedModel}) async {
+  Future<Map<String, dynamic>> getSelectedModel({dynamic selectedModel}) async {
     Map<String, dynamic> returnedList = {};
 
     state.models.forEach((modelListKey, modelList) {
@@ -156,7 +162,8 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
         if (model is VehicleRegistrationModel) {
           shouldAddModel = model.vehicleRegistrationNum == selectedValue;
         } else if (model is PerformanceModel) {
-          shouldAddModel = model.performance == int.tryParse(selectedModel ?? selectedValue);
+          shouldAddModel =
+              model.performance == int.tryParse(selectedModel ?? selectedValue);
         } else {
           shouldAddModel = model.name == selectedValue;
         }

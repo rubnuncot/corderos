@@ -77,7 +77,7 @@ class _NewDropDownState extends State<NewDropDown> {
                     : widget.initialValue,
             onChanged: (value) async {
               if (widget.mapKey != null) {
-                await dropdownBloc.changeValue(widget.mapKey!, value);
+                await dropdownBloc.changeValue(widget.mapKey!, value!);
                 setState(() {
 
                 });

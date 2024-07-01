@@ -36,6 +36,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       if (tickets.isNotEmpty) {
         final List<Rancher> ranchers = [];
         final List<Product> products = [];
+        final List<Client> clients = [];
 
         for (var ticket in tickets) {
           final rancher = await DatabaseRepository.getEntityById(
@@ -46,13 +47,27 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
             Product(),
             ticket.idProduct!,
           );
+          Client? client;
+          List<ClientDeliveryNote> clientDeliveryNote =
+              await ClientDeliveryNote().getData<ClientDeliveryNote>(where: [
+            'id',
+            SqlBuilder.constOperators['equals']!,
+            '${ticket.idOut}'
+          ]);
+          if (clientDeliveryNote.isNotEmpty) {
+            client = await DatabaseRepository.getEntityById(
+              Client(),
+              clientDeliveryNote.first.clientId!,
+            );
+          }
           ranchers.add(rancher);
           products.add(product);
+          clients.add(client ?? Client());
         }
 
         emit(TicketSuccess(
           message: 'Tickets, rancher y product recibidos con éxito',
-          data: [tickets, ranchers, products],
+          data: [tickets, ranchers, products, clients],
           event: 'FetchTicketsScreen',
         ));
       }
@@ -213,16 +228,18 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       'performance': [],
       'kilograms': [],
       'color': [],
+      'losses': [],
+      'weightLosses': [],
     };
 
     for (final productTicket in productTicketModel) {
-      if (productTicket.losses != 0) {
-        ticket['number'].add(productTicket.numAnimals);
-        ticket['classification'].add(productTicket.classification!.name);
-        ticket['performance'].add(productTicket.performance!.performance);
-        ticket['kilograms'].add(productTicket.weight);
-        ticket['color'].add(productTicket.color);
-      }
+      ticket['number'].add(productTicket.numAnimals);
+      ticket['classification'].add(productTicket.classification!.name);
+      ticket['performance'].add(productTicket.performance!.performance);
+      ticket['kilograms'].add(productTicket.weight);
+      ticket['color'].add(productTicket.color);
+      ticket['losses'].add(productTicket.losses);
+      ticket['weightLosses'].add(productTicket.weightLosses);
     }
 
     return ticket;
@@ -262,6 +279,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     final productTicket = await DatabaseRepository.getEntityById(
         ProductTicket(), event.productTicketId);
     productTicket.losses = event.losses;
+
+    double media = productTicket.weight! / productTicket.numAnimals!;
+
+    productTicket.weightLosses = media * event.losses;
+    productTicket.weight = productTicket.weight! - productTicket.weightLosses;
+
+    productTicket.numAnimals = productTicket.numAnimals! - event.losses;
+
     await productTicket.update();
     emit(TicketSuccess(
       message: 'Pérdidas añadidas correctamente',
@@ -299,14 +324,16 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
 
   Future<void> _onSetIconTicketState(
       SetIconTicketState event, Emitter<TicketState> emit) async {
-
     try {
       int deliveryTicketNumber = event.number;
       bool isTicketSend;
 
-      final selectedTicket =  await ClientDeliveryNote().getData<ClientDeliveryNote>(
-        where: ['number', SqlBuilder.constOperators['equals']!, '$deliveryTicketNumber']
-      );
+      final selectedTicket = await ClientDeliveryNote()
+          .getData<ClientDeliveryNote>(where: [
+        'number',
+        SqlBuilder.constOperators['equals']!,
+        '$deliveryTicketNumber'
+      ]);
 
       if (selectedTicket.isEmpty) {
         isTicketSend = false;
@@ -317,9 +344,8 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       emit(TicketSuccess(
           message: 'Icono de ticket establecido correctamente',
           data: [isTicketSend],
-          event: 'SetIconTicketState')
-      );
-    } catch(e) {
+          event: 'SetIconTicketState'));
+    } catch (e) {
       emit(TicketError('Ha habido un error al establecer el estado del icono'));
     }
   }

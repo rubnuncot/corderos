@@ -164,12 +164,11 @@ class _TicketListClientState extends State<TicketListClient> {
                             borderRadius: BorderRadius.circular(12)),
                         children: [
                           _buildRow("Producto",
-                              '${productTicketModel.first.product!.name}'),
+                              '${x.product!.name}'),
                           _buildRow("Unidades", '${x.units}'),
                           _buildRow(
                               "Clasificación", '${x.classification!.name}'),
                           _buildRow("Kilogramos", '${x.kilograms}'),
-                          _buildRow("Color", '${x.color}'),
                           _buildRow("Fecha", formattedDate),
                           _buildRow("Conductor",
                               deliveryTicketModel.driver?.name ?? ""),
