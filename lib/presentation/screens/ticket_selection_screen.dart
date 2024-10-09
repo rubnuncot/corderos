@@ -30,12 +30,12 @@ class TicketSelectionScreenState extends State<TicketSelectionScreen> {
           children: [
             NeomorphicButton(
               onPressed: () => _selectScreen(0),
-              text: 'Tickets',
+              text: 'Cargados',
               isSelected: _selectedScreen == 0,
             ),
             NeomorphicButton(
               onPressed: () => _selectScreen(1),
-              text: 'Enviados',
+              text: 'Descargados',
               isSelected: _selectedScreen == 1,
             ),
           ],

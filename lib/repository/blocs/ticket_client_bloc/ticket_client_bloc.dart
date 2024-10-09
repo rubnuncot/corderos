@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/data/database/entities/!!model_dao.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:reflectable/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
@@ -29,30 +32,23 @@ class TicketClientBloc extends Bloc<TicketClientEvent, TicketClientState> {
     try {
       final tickets = await ClientDeliveryNote().selectAll<ClientDeliveryNote>();
 
-      final List<ClientDeliveryNote> agrTickets = [];
-      ClientDeliveryNote ticketAux = ClientDeliveryNote();
-      for (var ticket in tickets) {
-        if (ticket.clientId != ticketAux.clientId) {
-          agrTickets.add(ticket);
-          ticketAux = ticket;
-        }
-      }
-
-      if (agrTickets.isNotEmpty) {
+      if (tickets.isNotEmpty) {
         final List<Client> clients = [];
         final List<Product> products = [];
 
-        for (var ticket in agrTickets) {
+        for (var ticket in tickets) {
           final client = await DatabaseRepository.getEntityById(
             Client(),
             ticket.clientId!,
-          );
-          clients.add(client);
+          ) as Client;
+          if(client.code != "0000"){
+            clients.add(client);
+          }
         }
 
         emit(TicketClientSuccess(
           message: 'Tickets, rancher y product recibidos con éxito',
-          data: [agrTickets, clients, products],
+          data: [tickets, clients, products],
           event: 'FetchTicketsClientScreen',
         ));
       }
@@ -150,7 +146,7 @@ class TicketClientBloc extends Bloc<TicketClientEvent, TicketClientState> {
   Future<List<ProductDeliveryNote>?> _fetchProductTicketByTicketId(
       int ticketId) async {
     final results = await ProductDeliveryNote().getData<ProductDeliveryNote>(
-        where: ['idDeliveryNote', SqlBuilder.constOperators['equals']!, '$ticketId']);
+        where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId']);
     return results.isNotEmpty ? results : null;
   }
 

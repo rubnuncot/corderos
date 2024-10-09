@@ -50,7 +50,7 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   ProductDeliveryNote toEntity() {
     return ProductDeliveryNote.all(
-      idDeliveryNote: clientDeliveryNote!.idDeliveryNote,
+      idTicket: clientDeliveryNote!.idDeliveryNote,
       idProduct: product!.id,
       idClassification: classification!.id,
       nameClassification: nameClassification,
@@ -77,7 +77,7 @@ class ProductDeliveryNoteModel extends ModelBase{
 
     ClientDeliveryNoteModel clientDeliveryNoteModel = ClientDeliveryNoteModel();
     await clientDeliveryNoteModel.fromEntity(
-        await DatabaseRepository.getEntityById(ClientDeliveryNote(), productDeliveryNote.idDeliveryNote!) as ClientDeliveryNote
+        await DatabaseRepository.getEntityById(ClientDeliveryNote(), productDeliveryNote.idTicket!) as ClientDeliveryNote
     );
     clientDeliveryNote = clientDeliveryNoteModel;
 
@@ -103,6 +103,6 @@ class ProductDeliveryNoteModel extends ModelBase{
 
   @override
   String toString() {
-    return '$id\t${clientDeliveryNote!.idDeliveryNote}\t${product!.code}\t${classification!.code}\t$nameClassification\t$units\t$kilograms\t$color'.replaceAll('\r', '');
+    return '$id\t${clientDeliveryNote!.idDeliveryNote}\t${product!.id}\t${product!.name}\t${classification!.name}\t${classification!.id}\t$units\t$kilograms'.replaceAll('\r', '');
   }
 }

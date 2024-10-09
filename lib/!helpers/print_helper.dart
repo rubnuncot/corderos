@@ -9,6 +9,7 @@ import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import '../data/!data.dart';
 import '../data/preferences/preferences.dart';
 import '../repository/!repository.dart';
+import 'file_logger.dart';
 
 class PrintHelper {
   String mac = 'none';
@@ -20,7 +21,7 @@ class PrintHelper {
 
   Future<void> _getPreferences() async {
     mac = await Preferences.getValue("mac");
-    if (mac == 'none') {
+    if (mac == 'none' || mac.isEmpty) {
       mac = 'NO DISPONIBLE';
     }
   }
@@ -29,50 +30,56 @@ class PrintHelper {
     Map<String, bool> result = {};
     connected = false;
 
-    if (mac == 'none') {
-      await _getPreferences();
-    } else if (mac != "NO DISPONIBLE") {
-      await Preferences.setValue("mac", mac);
-    } else {
-      result.addAll(
-          {'No se puede identificar la dirección mac del dispositivo.': false});
-    }
-    await _getPreferences();
+    try {
+      if (mac == 'none') {
+        await _getPreferences();
+      }
 
-    if (mac != '') {
-      getBluetooth();
+      if (mac != "NO DISPONIBLE" && mac.isNotEmpty) {
+        await Preferences.setValue("mac", mac);
+      } else {
+        LogHelper.logger
+            .e('No se puede identificar la dirección mac del dispositivo.');
+        result.addAll(
+          {'No se puede identificar la dirección mac del dispositivo.': false},
+        );
+      }
+
+      if (mac == '' || mac == 'NO DISPONIBLE') {
+        await getBluetooth();
+        LogHelper.logger.e('No se ha encontrado ningún dispositivo Bluetooth.');
+        result.addAll(
+          {'No se ha encontrado ningún dispositivo Bluetooth.': false},
+        );
+        return result;
+      }
+
       final bool resultBool =
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+      await PrintBluetoothThermal.connect(macPrinterAddress: mac);
       if (resultBool) {
         result.addAll({'Conexión exitosa.': true});
         connected = true;
       } else {
         await Preferences.setValue('mac', '');
+        LogHelper.logger.e('No se ha podido conectar con el dispositivo.');
+
         result.addAll({'No se ha podido conectar con el dispositivo.': false});
       }
-    } else {
-      await Preferences.setValue('mac', '');
-      result.addAll(
-          {'No se puede identificar la dirección mac del dispositivo.': false});
+    } catch(e) {
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'print_helper.dart');
     }
 
     return result;
   }
 
   Future<Map<String, List<BluetoothInfo>>> getBluetooth() async {
-    Map<String, List<BluetoothInfo>> result = {};
     final List<BluetoothInfo> listResult =
         await PrintBluetoothThermal.pairedBluetooths;
-
-    if (listResult.isEmpty) {
-      result.addAll({
-        "Actualmente no hay dispositivos bluetooth conectados.": listResult
-      });
-    } else {
-      result.addAll(
-          {"Selecciona el dispositivo al que desea conectarse.": listResult});
-    }
-    return result;
+    return listResult.isEmpty
+        ? {"Actualmente no hay dispositivos bluetooth conectados.": []}
+        : {"Selecciona el dispositivo al que desea conectarse.": listResult};
   }
 
   void dialogConnect(BuildContext context, List<BluetoothInfo> items) {
@@ -83,28 +90,42 @@ class PrintHelper {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
         child: Container(
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              color: Colors.grey.withOpacity(0.3),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
-            child: ListView.builder(
-              itemCount: items.isNotEmpty ? items.length : 0,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () async {
-                    String newMac = items[index].macAdress;
-                    mac = newMac;
+          height: MediaQuery.of(context).size.height * 0.5,
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.5,
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.grey.withOpacity(0.3),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+          child: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  tileColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                  ),
+                  onTap: () {
+                    mac = items[index].macAdress;
                     connect();
                     Navigator.pop(context);
                   },
                   title: Text('Name: ${items[index].name}'),
-                  subtitle: Text("macAdress: ${items[index].macAdress}"),
-                );
-              },
-            )),
+                  subtitle: Text("MAC Address: ${items[index].macAdress}"),
+                  hoverColor:
+                      Colors.blue.withOpacity(0.2), // Cambio visual al tocar
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -123,7 +144,10 @@ class PrintHelper {
         result = resultPrint ? 'Impresión exitosa.' : 'Error al imprimir.';
       } catch (e) {
         LogHelper.logger.d(e);
-        result = 'Error al imprimir.';
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'home_bloc.dart');
+        result = 'Error al imprimir. $e';
       }
     } else {
       result = 'No se ha podido conectar con el dispositivo.';
@@ -211,9 +235,7 @@ class PrintHelper {
         productsWeight[product.idProduct!] =
             (productsWeight[product.idProduct!] ?? 0) + product.weight!;
         productsNumAnimals[product.idProduct!] =
-            (productsNumAnimals[product.idProduct!] ?? 0) +
-                product.numAnimals! -
-                (product.losses ?? 0);
+            (productsNumAnimals[product.idProduct!] ?? 0) + product.numAnimals!;
       }
 
       bytes += generator.emptyLines(3);
@@ -238,6 +260,9 @@ class PrintHelper {
       return bytes;
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
       return [];
     }
   }
@@ -771,7 +796,7 @@ class PrintHelper {
           if (totalLosses[classification] != null &&
               totalLosses[classification]! > 0) {
             bytes += generator.text(
-                'Bajas: ${totalLosses[classification] ?? 0} -> ${totalLossesWeight[classification] ?? 0} kgs.',
+                'Bajas: ${totalLosses[classification] ?? 0} -> ${totalLossesWeight[classification]!.toStringAsFixed(2)} kgs.',
                 styles: const PosStyles(
                     bold: true,
                     width: PosTextSize.size2,
@@ -823,6 +848,9 @@ class PrintHelper {
       });
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
     }
 
     return bytes;
@@ -874,12 +902,15 @@ class PrintHelper {
                 e.weight!,
             productsMap[productKey]![classificationKey]![performanceKey]!
                     .item2 +
-                (e.numAnimals! - (e.losses ?? 0)),
+                (e.numAnimals!),
           );
         }
       }
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
     }
 
     return productsMap;

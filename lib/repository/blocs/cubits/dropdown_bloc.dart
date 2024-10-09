@@ -21,6 +21,11 @@ class DropDownBloc extends Cubit<DropDownStateBloc> {
   Map<String, String> preferencesKeys = {
     'vehicle_registration': 'vehicle_registration',
     'driver': 'name',
+    'slaughterhouse': 'slaughterhouse',
+    'rancher': 'rancher',
+    'product': 'product',
+    'classification': 'classification',
+    'performance': 'performance',
   };
 
   Future<void> changeValue(String key, String value) async {

@@ -7,7 +7,7 @@ import '!!model_dao.dart';
 
 @reflector
 class ProductDeliveryNote extends ModelDao {
-  int? idDeliveryNote;
+  int? idTicket;
   int? idProduct;
   int? idClassification;
   String? nameClassification;
@@ -19,7 +19,7 @@ class ProductDeliveryNote extends ModelDao {
 
   ProductDeliveryNote.all({
     int? id,
-    @required required this.idDeliveryNote,
+    @required required this.idTicket,
     @required required this.idProduct,
     @required required this.idClassification,
     @required required this.nameClassification,
@@ -32,7 +32,7 @@ class ProductDeliveryNote extends ModelDao {
 
   static final Map<String, String> _fields = {
     'id': Constants.bigint,
-    'idDeliveryNote': Constants.bigint,
+    'idTicket': Constants.bigint,
     'idProduct': Constants.bigint,
     'idClassification': Constants.varchar['255']!,
     'nameClassification': Constants.varchar['255']!,
@@ -44,7 +44,7 @@ class ProductDeliveryNote extends ModelDao {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'idDeliveryNote': idDeliveryNote,
+      'idTicket': idTicket,
       'idProduct': idProduct,
       'idClassification': idClassification,
       'nameClassification': nameClassification,
@@ -60,7 +60,7 @@ class ProductDeliveryNote extends ModelDao {
   factory ProductDeliveryNote.fromJson(Map<String, dynamic> map) {
     return ProductDeliveryNote.all(
       id: map['id'],
-      idDeliveryNote: map['idDeliveryNote'],
+      idTicket: map['idTicket'],
       idProduct: map['idProduct'],
       idClassification: int.parse(map['idClassification']),
       nameClassification: map['nameClassification'],
@@ -98,7 +98,7 @@ class ProductDeliveryNote extends ModelDao {
     if (identical(this, other)) return true;
 
     return other is ProductDeliveryNote &&
-        other.idDeliveryNote == idDeliveryNote &&
+        other.idTicket == idTicket &&
         other.idProduct == idProduct &&
         other.idClassification == idClassification &&
         other.nameClassification == nameClassification &&
@@ -110,7 +110,7 @@ class ProductDeliveryNote extends ModelDao {
   @override
   int get hashCode {
     return
-        idDeliveryNote.hashCode ^
+        idTicket.hashCode ^
         idProduct.hashCode ^
         idClassification.hashCode ^
         nameClassification.hashCode ^

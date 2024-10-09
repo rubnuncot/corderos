@@ -10,6 +10,8 @@ import 'package:reflectable/reflectable.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
+import '../../../!helpers/file_logger.dart';
+
 part 'ticket_event.dart';
 
 part 'ticket_state.dart';
@@ -143,9 +145,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   Future<void> _onPrintTicketEvent(
       PrintTicketEvent event, Emitter<TicketState> emit) async {
     emit(TicketLoading());
+    String printExit = '';
     try {
       final printData = await _gatherPrintData(event.deliveryTicket);
-      await _printTicket(event.context, printData);
+      printExit = await _printTicket(event.context, printData);
       emit(TicketSuccess(
         message: 'Impresión realizada con éxito',
         data: [200],
@@ -153,6 +156,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       ));
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, message: printExit, file: 'ticket_bloc.dart');
       emit(TicketError('Ha ocurrido un error a la hora de imprimir el ticket'));
     }
   }
@@ -245,15 +251,18 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     return ticket;
   }
 
-  Future<void> _printTicket(
+  Future<String> _printTicket(
       BuildContext context, Map<String, dynamic> printData) async {
+    String printExit = '';
     final printHelper = PrintHelper();
     final itemsMap = await printHelper.getBluetooth();
-    await printHelper.print(
+    printExit = await printHelper.print(
       context,
       itemsMap.values.toList().first,
       tickets: printData,
     );
+
+    return printExit;
   }
 
   Future<T> _getModelById<T>(ModelDao entity, int id) async {

@@ -283,7 +283,9 @@ class _TableTicketState extends State<TableTicket> {
           _updateDropDownBloc(dropDownBloc, title, index);
           dropDownBloc.filterSelectedClassification(productTickets.isEmpty
               ? ''
-              : productTickets[index].classification!.name ?? '');
+              : productTickets[index].classification == null
+                  ? ''
+                  : productTickets[index].classification!.name ?? '');
           performances = dropDownBloc.state.values['performance']!;
           onUpdate(textController.text);
           activateButton = (title == 'Kg');
@@ -344,7 +346,9 @@ class _TableTicketState extends State<TableTicket> {
           .where((element) =>
               element.performance ==
               int.parse(dropDownBloc.state.selectedValues['performance'] != ''
-                  ? dropDownBloc.state.selectedValues['performance']!
+                  ? dropDownBloc.state.selectedValues['performance']! != 'none'
+                    ? dropDownBloc.state.selectedValues['performance']!
+                    : performances.first
                   : performances.first))
           .first;
 
@@ -389,7 +393,7 @@ class _TableTicketState extends State<TableTicket> {
           padding: EdgeInsets.zero,
           foregroundColor: appColors['valueTableColor'],
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          disabledBackgroundColor: appColors!['backgroundValueColor'],
+          disabledBackgroundColor: appColors['backgroundValueColor'],
           disabledForegroundColor: appColors['valueTableColor'],
         ),
         onPressed: label.keys.first == "Clasif"

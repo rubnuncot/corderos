@@ -11,7 +11,7 @@ class Preferences {
     'nif': 'none',
     'name': 'none',
     'vehicle_registration': 'none',
-    'slaughterhouse': 1,
+    'slaughterhouse': 'none',
     'host': '81.42.222.136',
     'port': 3021,
     'username': 'tablet',
@@ -33,7 +33,11 @@ class Preferences {
     'last_vehicleregistrations_id': 1,
     'last_saved_ticket': 1,
     'last_saved_tablet_id': 1,
-    'mac': 'none'
+    'mac': 'none',
+    'rancher': 'none',
+    'product': 'none',
+    'classification': 'none',
+    'performance': 'none'
   };
 
   static Future<dynamic> getValue(String key) async {

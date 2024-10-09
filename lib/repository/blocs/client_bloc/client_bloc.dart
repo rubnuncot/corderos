@@ -7,6 +7,7 @@ import '../../../data/!data.dart';
 import '../../data_conversion/database_repository.dart';
 
 part 'client_event.dart';
+
 part 'client_state.dart';
 
 class ClientBloc extends Bloc<ClientEvent, ClientState> {
@@ -23,10 +24,15 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<FetchTicketsEmail>(_onFetchTicketsEmail);
   }
 
-  Future<void> _onFetchClients(FetchClients event, Emitter<ClientState> emit) async {
+  Future<void> _onFetchClients(
+      FetchClients event, Emitter<ClientState> emit) async {
     emit(ClientLoading());
     try {
       clients = await Client().selectAll<Client>();
+
+      // Remove the client with code 0000 cause is the Asovino client
+      clients.removeWhere((element) => element.code == "0000");
+
       emit(ClientSuccess(
           message: 'Clientes recibidos con éxito',
           data: clients,
@@ -45,7 +51,8 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
         selectedClient: event.clientId));
   }
 
-  Future<void> _onFetchTickets(FetchTickets event, Emitter<ClientState> emit) async {
+  Future<void> _onFetchTickets(
+      FetchTickets event, Emitter<ClientState> emit) async {
     emit(ClientLoading());
     try {
       tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
@@ -55,17 +62,20 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
           data: tickets,
           event: 'FetchTickets'));
     } catch (e) {
-      emit(ClientError(
-          'Ha ocurrido un error a la hora de cargar los tickets.'));
+      emit(
+          ClientError('Ha ocurrido un error a la hora de cargar los tickets.'));
     }
   }
 
-  Future<void> _onFetchProductTickets(FetchProductTickets event, Emitter<ClientState> emit) async {
+  Future<void> _onFetchProductTickets(
+      FetchProductTickets event, Emitter<ClientState> emit) async {
     emit(ClientLoading());
     try {
       final selectedTicket = event.idTicket;
-      final deliveryTicketModel = await _fetchDeliveryTicketModel(selectedTicket);
-      final productsTicketModel = await _fetchProductsTicketModel(selectedTicket);
+      final deliveryTicketModel =
+          await _fetchDeliveryTicketModel(selectedTicket);
+      final productsTicketModel =
+          await _fetchProductsTicketModel(selectedTicket);
 
       emit(ClientSuccess(
           message: 'Product Tickets obtenidos con éxito',
@@ -84,7 +94,8 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     return deliveryTicketModel;
   }
 
-  Future<List<ProductTicketModel>> _fetchProductsTicketModel(int ticketId) async {
+  Future<List<ProductTicketModel>> _fetchProductsTicketModel(
+      int ticketId) async {
     final productsTickets = await ProductTicket().getData<ProductTicket>(
       where: ['idTicket', SqlBuilder.constOperators['equals']!, '$ticketId'],
     );
@@ -101,10 +112,12 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   void _onSelectSendTicket(SelectSendTicket event, Emitter<ClientState> emit) {
     if (selectedTickets.contains(event.ticket)) {
       selectedTickets.remove(event.ticket);
-      LogHelper.logger.d("Ticket eliminado: ${event.ticket}, Total: ${selectedTickets.length}");
+      LogHelper.logger.d(
+          "Ticket eliminado: ${event.ticket}, Total: ${selectedTickets.length}");
     } else {
       selectedTickets.add(event.ticket);
-      LogHelper.logger.d("Ticket añadido: ${selectedTickets.last}, Total: ${selectedTickets.length}");
+      LogHelper.logger.d(
+          "Ticket añadido: ${selectedTickets.last}, Total: ${selectedTickets.length}");
     }
 
     emit(ClientSuccess(
@@ -114,11 +127,13 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
         selectedTickets: selectedTickets));
   }
 
-  Future<void> _onFetchTicketsEmail(FetchTicketsEmail event, Emitter<ClientState> emit) async {
+  Future<void> _onFetchTicketsEmail(
+      FetchTicketsEmail event, Emitter<ClientState> emit) async {
     emit(ClientLoading());
     try {
       final tickets = await DeliveryTicket().selectAll<DeliveryTicket>();
-      final deliveryNotes = await ClientDeliveryNote().selectAll<ClientDeliveryNote>();
+      final deliveryNotes =
+          await ClientDeliveryNote().selectAll<ClientDeliveryNote>();
       _getSelectedTickets(tickets, deliveryNotes);
       selectedTickets = tickets.map((e) => e).toList();
       emit(ClientSuccess(
@@ -126,18 +141,17 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
           data: tickets,
           event: 'FetchTicketsEmail'));
     } catch (e) {
-      emit(ClientError(
-          'Ha ocurrido un error a la hora de cargar los tickets.'));
+      emit(
+          ClientError('Ha ocurrido un error a la hora de cargar los tickets.'));
     }
   }
 
-  void _getSelectedTickets(List<DeliveryTicket> tickets, List<ClientDeliveryNote> deliveryNotes) {
+  void _getSelectedTickets(
+      List<DeliveryTicket> tickets, List<ClientDeliveryNote> deliveryNotes) {
     List<DeliveryTicket> removedTickets = [];
     for (var ticket in tickets) {
-      for (var deliveryNote in deliveryNotes) {
-        if (ticket.idOut == deliveryNote.id) {
-          removedTickets.add(ticket);
-        }
+      if (ticket.idOut != null) {
+        removedTickets.add(ticket);
       }
     }
     tickets.removeWhere((element) => removedTickets.contains(element));

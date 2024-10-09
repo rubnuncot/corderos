@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/data/!data.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:corderos_app/repository/blocs/!blocs.dart';
 import 'package:corderos_app/repository/blocs/ticket_client_bloc/ticket_client_bloc.dart';
+import 'package:corderos_app/repository/data_conversion/!data_conversion.dart';
 import 'package:drop_down_list/drop_down_list.dart';
 import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
+
+import '../../!helpers/file_logger.dart';
 
 class TicketListClient extends StatefulWidget {
   const TicketListClient({super.key});
@@ -172,6 +176,7 @@ class _TicketListClientState extends State<TicketListClient> {
                           _buildRow("Fecha", formattedDate),
                           _buildRow("Conductor",
                               deliveryTicketModel.driver?.name ?? ""),
+                          _buildRow("Matadero", deliveryTicketModel.slaughterhouse!.name ?? ""),
                         ],
                       ),
                     ),
@@ -397,15 +402,48 @@ class _TicketListClientState extends State<TicketListClient> {
         data: [
           SelectedListItem(name: 'Borrar', value: 'delete'),
           SelectedListItem(name: 'Ver Ticket', value: 'showTicket'),
+          SelectedListItem(name: 'Imprimir', value: 'print'),
           SelectedListItem(name: 'Enviar', value: 'send'),
         ],
-        selectedItems: (selectedItems) {
+        selectedItems: (selectedItems) async {
           switch (selectedItems.first.value) {
             case 'delete':
               ticketBloc!.add(DeleteTicketClient(ticketId: ticket.id!));
               break;
             case 'showTicket':
               ticketBloc!.add(GetTicketClientInfo(ticketId: ticket.id!));
+              break;
+            case 'print':
+              Client client = await DatabaseRepository.getEntityById(Client(), ticket.clientId!);
+              PrintHelper printHelper = PrintHelper();
+              final itemsMap = await printHelper.getBluetooth();
+
+              List<DeliveryTicketModel> ticketModels = [];
+              List<DeliveryTicket> deliveryTicket = await DeliveryTicket().getData<DeliveryTicket>(where: ['idOut = ${ticket.id}']);
+
+              for(var x in deliveryTicket){
+                ticketModels.add(await DeliveryTicketModel().fromEntity(x));
+              }
+              List<ProductTicket> productTickets = [];
+              for(var x in ticketModels){
+                List<ProductTicket> productTicketAux = await ProductTicket()
+                    .getData<ProductTicket>(where: ['idTicket = ${x.id}']);
+                for(var x in productTicketAux){
+                  productTickets.add(x);
+                }
+              }
+              List<ProductTicketModel> productTicketModels = [];
+              for (var x in productTickets) {
+                productTicketModels.add(await ProductTicketModel().fromEntity(x));
+              }
+
+              try {
+                printHelper.printExit(context, itemsMap.values.toList().first, ticketModels, productTicketModels, client);
+              } catch(e) {
+                FileLogger fileLogger = FileLogger();
+
+                fileLogger.handleError(e, file: 'ticket_list_client.dart');
+              }
               break;
             case 'send':
               ticketBloc!.add(SendTicket(ticketId: ticket.id!));

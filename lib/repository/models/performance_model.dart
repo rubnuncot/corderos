@@ -34,7 +34,7 @@ class PerformanceModel extends ModelBase{
 
     ClassificationModel classificationModel = ClassificationModel();
     await classificationModel.fromEntity(await DatabaseRepository.getEntityByCode(
-        Classification(), performanceEntity.idClassification!) as Classification);
+        Classification(), '${performanceEntity.idClassification!}') as Classification);
 
     classification = classificationModel;
 

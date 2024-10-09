@@ -82,6 +82,6 @@ class ClientDeliveryNoteModel extends ModelBase {
 
   @override
   String toString() {
-    return '$idDeliveryNote\t$series\t$number\t$date\t${client!.nif}\t${slaughterhouse!.code}\t$vehicleRegistration\t${driver!.id}';
+    return '$idDeliveryNote\t$series\t$number\t$date\t${client!.code}\t${slaughterhouse!.code}\t$vehicleRegistration\t${driver!.nif}\t${driver!.name}'.replaceAll('\r', '');
   }
 }

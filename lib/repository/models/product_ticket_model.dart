@@ -149,7 +149,7 @@ class ProductTicketModel extends ModelBase {
 
   @override
   String toString() {
-    return '$id\t${product!.id}\t${product!.name}\t${classification!.id}\t${classification!.name}\t$numAnimals\t$weight\t${performance?.performance}\t$color\t${losses ?? 0}'
+    return '$id\t${product!.id}\t${product!.name}\t${classification!.id}\t${classification!.name}\t$numAnimals\t$weight\t${performance?.performance}\t${losses ?? 0}'
         .replaceAll('\r', '');
   }
 }

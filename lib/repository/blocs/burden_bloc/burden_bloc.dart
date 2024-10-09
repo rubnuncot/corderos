@@ -11,6 +11,7 @@ import 'package:reflectable/mirrors.dart';
 import 'package:sqflite_simple_dao_backend/database/database/sql_builder.dart';
 import 'package:sqflite_simple_dao_backend/sqflite_simple_dao_backend.dart';
 
+import '../../../!helpers/file_logger.dart';
 import '../../../data/database/entities/changes.dart';
 import '../../models/!models.dart';
 
@@ -36,6 +37,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           "GetChanges"));
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
       emit(BurdenError(
           'Ha ocurrido un error a la hora de obtener los cambios de tabla.'));
     }
@@ -77,6 +81,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           [productTickets], "GetProductTickets"));
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
       emit(BurdenError(
           'Ha ocurrido un error a la hora de obtener los albaranes de productos.'));
     }
@@ -106,6 +113,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           "GetTableIndex"));
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
       emit(BurdenError(
           'Ha ocurrido un error a la hora de obtener la última carga.'));
     }
@@ -127,6 +137,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           "IncrementTableIndex"));
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
       emit(BurdenError(
           'Ha ocurrido un error a la hora de crear una nueva carga.'));
     }
@@ -135,8 +148,9 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
   Future<void> _onUploadData(
       UploadData event, Emitter<BurdenState> emit) async {
     emit(BurdenLoading());
+    String res = '';
     try {
-      await _handleUploadData(event);
+      res = await _handleUploadData(event);
       emit(BurdenSuccess(
           'Carga guardada correctamente.',
           [
@@ -145,11 +159,15 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
           "UploadData"));
     } catch (e) {
       LogHelper.logger.d(e);
-      emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.'));
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, file: 'home_bloc.dart');
+      emit(BurdenError('Ha ocurrido un error a la hora de crear la carga.\n$res'));
     }
   }
 
-  Future<void> _handleUploadData(UploadData event) async {
+  Future<String> _handleUploadData(UploadData event) async {
+    String printExit = '';
     try {
       PrintHelper printHelper = PrintHelper();
       var itemsMap = await printHelper.getBluetooth();
@@ -191,10 +209,15 @@ class BurdenBloc extends Bloc<BurdenEvent, BurdenState> {
 
       final data =
           await _gatherPrintData(event.deliveryTicket ?? lastDeliveryTicket);
-      await printHelper.print(event.context!, itemsMap.values.toList().first,
+      printExit = await printHelper.print(event.context!, itemsMap.values.toList().first,
           tickets: data);
+      return 'Correcto!';
     } catch (e) {
       LogHelper.logger.d(e);
+      FileLogger fileLogger = FileLogger();
+
+      fileLogger.handleError(e, message: printExit, file: 'burden_bloc.dart');
+      return 'Error';
     }
   }
 

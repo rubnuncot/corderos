@@ -138,11 +138,25 @@ class FtpDataTransfer {
 
   Future<void> downloadApk () async {
     try{
-      FTPConnect ftpConnect = await ftp.ftpConnection(isDefault: true);
-      Directory directory = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+      FTPConnect ftpConnect = await ftp.ftpConnection();
+      Directory? directory = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+
+      // Asegurar que la transferencia sea en modo binario
+      await ftpConnect.setTransferType(TransferType.binary);
+
       File apk = File('${directory.path}/app-release.apk');
-      await ftpConnect.downloadFile('app-release.apk', apk);
-      ftp.closeConnection();
+
+      // Eliminar el archivo si ya existe
+      if (apk.existsSync()) {
+        apk.deleteSync();
+      }
+
+      await ftpConnect.downloadFile(
+          'app-release.apk',
+          apk
+      );
+
+      await ftp.closeConnection();
     } catch(e) {
       LogHelper.logger.d('Error downloading APK: $e');
     }

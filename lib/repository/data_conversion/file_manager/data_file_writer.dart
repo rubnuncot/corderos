@@ -68,7 +68,7 @@ class DataFileWriter {
         var dataString = "";
         var fileName = key;
 
-        if (key.contains('delivery')) {
+        if (!key.contains('client')) {
           dataString = await _getDataString(
               restData, key, dataString, productData, 'product_ticket$fileDate.txt');
         } else {
@@ -115,7 +115,7 @@ class DataFileWriter {
         await instanceMirrorProductData.fromEntity(product);
 
         if (product.idTicket == data.id) {
-          dataString += 'L\t${instanceMirrorProductData.toString()}\n';
+          dataString += 'L\t${instanceMirrorProductData.toString()}\n';dataString += 'L\t${instanceMirrorProductData.toString()}\n';
         }
       }
     }

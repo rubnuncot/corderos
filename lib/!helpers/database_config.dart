@@ -18,6 +18,6 @@ class DatabaseConfig {
       ProductTicket,
       Performance
     ]);
-    Append.dbParameters(param: 'version', value: 2);
+    Append.dbParameters(param: 'version', value: 3);
   }
 }

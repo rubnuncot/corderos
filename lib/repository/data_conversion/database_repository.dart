@@ -73,12 +73,12 @@ class DatabaseRepository {
     return res.first;
   }
 
-  static Future<dynamic> getEntityByCode(dynamic entity, int code) async {
+  static Future<dynamic> getEntityByCode(dynamic entity, String code) async {
     dynamic res = await entity.select(
         sqlBuilder: SqlBuilder()
             .querySelect(fields: ['*'])
             .queryFrom(table: entity.getTableName(entity))
-            .queryWhere(conditions: ['code = $code']),
+            .queryWhere(conditions: ['code = "$code"']),
         model: entity);
     return res.first;
   }

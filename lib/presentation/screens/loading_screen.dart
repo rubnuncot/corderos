@@ -2,6 +2,7 @@ import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../!helpers/file_logger.dart';
 import '../../repository/!repository.dart';
 
 class LoadingScreen extends StatelessWidget {
@@ -17,8 +18,15 @@ class LoadingScreen extends StatelessWidget {
     Future<void> load() async {
       await themeBloc.preferencesTheme();
       await dropDownBloc.getData();
-      PrintHelper printHelper = PrintHelper();
-      printHelper.connect();
+      try {
+        PrintHelper printHelper = PrintHelper();
+        printHelper.connect();
+      } catch(e) {
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'loading_screen.dart');
+      }
+
     }
 
     return FutureBuilder(

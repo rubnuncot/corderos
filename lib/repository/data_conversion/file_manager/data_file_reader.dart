@@ -150,8 +150,11 @@ class DataFileReader {
 
     if (await ftpDataTransfer.checkVersion()) {
       try {
-        ftpDataTransfer.downloadApk();
-        if (await Permission.requestInstallPackages.request().isGranted && await Permission.manageExternalStorage.request().isGranted) {
+        await ftpDataTransfer.downloadApk();
+        await Permission.photos.request().isGranted;
+        await Permission.storage.request();
+        bool permission = await Permission.storage.request().isGranted;
+        if (await Permission.requestInstallPackages.request().isGranted && permission) {
           final result = await OpenFile.open('${directory.path}/app-release.apk');
           LogHelper.logger.d('Result: $result');
         } else {

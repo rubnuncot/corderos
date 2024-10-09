@@ -39,5 +39,12 @@ class PrintResume extends HomeEvent {
   });
 }
 
+class PrintConnect extends HomeEvent {
+  final BuildContext context;
+  PrintConnect({
+    required this.context
+  });
+}
+
 
 

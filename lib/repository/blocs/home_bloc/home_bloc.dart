@@ -1,4 +1,5 @@
 import 'package:corderos_app/!helpers/!helpers.dart';
+import 'package:corderos_app/!helpers/file_logger.dart';
 import 'package:corderos_app/!helpers/print_helper.dart';
 import 'package:corderos_app/repository/!repository.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeSuccess('Datos recibidos correctamente', [], 'GetFtpData'));
       } catch (e) {
         LogHelper.logger.d(e);
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'home_bloc.dart');
         emit(HomeError('Error cargando datos'));
       }
     });
@@ -38,6 +42,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       } catch (e) {
         LogHelper.logger.d(e);
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'home_bloc.dart');
         emit(HomeError('Error enviando datos'));
       }
     });
@@ -51,6 +58,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       } catch (e) {
         LogHelper.logger.d(e);
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'home_bloc.dart');
         emit(HomeError('Error actualizando app'));
       }
     });
@@ -58,15 +68,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<PrintResume>((event, emit) async {
       emit(HomeLoading());
 
+      String printExit = '';
       try {
         PrintHelper printHelper = PrintHelper();
         final itemsMap = await printHelper.getBluetooth();
-        await printHelper.printResume(event.context, itemsMap.values.toList().first);
+        printExit = await printHelper.printResume(event.context, itemsMap.values.toList().first);
         emit(HomeSuccess('Resumen impreso correctamente', [], 'PrintResume'));
 
       } catch (e) {
         LogHelper.logger.d(e);
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, message: printExit, file: 'home_bloc.dart');
         emit(HomeError('Error imprimiendo resumen'));
+
+      }
+    });
+
+    on<PrintConnect>((event, emit) async {
+      emit(HomeLoading());
+
+      try{
+        PrintHelper printHelper = PrintHelper();
+
+        final itemsMap = await printHelper.getBluetooth();
+
+        printHelper.dialogConnect(event.context, itemsMap.values.toList().first);
+
+        emit(HomeSuccess('Logger Compartido', [], 'GetLog'));
+      } catch (e) {
+        FileLogger fileLogger = FileLogger();
+
+        fileLogger.handleError(e, file: 'home_bloc.dart');
+        emit(HomeError('Error compartiendo el Log\n$e'));
       }
     });
   }
